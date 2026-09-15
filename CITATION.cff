@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: If you use this software, please cite it as below.
 type: software
 title: 'cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables'
-version: 0.0.0.9000
+version: 1.0.0
 date-released: '2026-09-15'
 authors:
 - family-names: Heller

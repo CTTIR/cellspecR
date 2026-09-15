@@ -13,7 +13,7 @@
 #' Create the cellspec review application
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("stable")`
 #'
 #' Builds a local Shiny application for reading an export, reviewing format
 #' detection and validation, and downloading the resulting tables. The

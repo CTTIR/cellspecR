@@ -28,7 +28,8 @@
       shiny::tableOutput("dictionary")
     ),
     shiny::tabPanel("Images", shiny::tableOutput("images")),
-    shiny::tabPanel("Plot", shiny::plotOutput("overview"))
+    shiny::tabPanel("Plot", shiny::plotOutput("overview")),
+    shiny::tabPanel("About", .cs_app_about())
   )
   if (requireNamespace("bslib", quietly = TRUE)) {
     bslib::page_sidebar(

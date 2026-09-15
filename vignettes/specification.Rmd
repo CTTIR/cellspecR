@@ -30,6 +30,9 @@ tissue images. The key words **MUST**, **SHOULD** and **MAY** are used as in
 RFC 2119. Every table below is generated from the objects that the validator
 uses (`cs_vocabulary()`), so the text and the checks cannot drift apart.
 
+This specification is shipped with cellspecR version
+`r as.character(utils::packageVersion("cellspecR"))`.
+
 ## 1. Object
 
 A `cellspec` object is a list of class `"cellspec"` with these components:

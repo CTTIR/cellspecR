@@ -1,7 +1,7 @@
 #' cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("stable")`
 #'
 #' cellspecR defines `cellspec`, one table format for segmented cells from
 #' multiplexed tissue images, reads the exports of common image-analysis tools

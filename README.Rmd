@@ -7,7 +7,7 @@ output:
 # cellspecR <img src="man/figures/logo.svg" align="right" height="139" alt="cellspecR hex sticker" />
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
@@ -15,11 +15,11 @@ output:
 multiplexed tissue images. It reads tool exports, validates structure and
 semantics, and writes an integrity checked directory for downstream analysis.
 
-> **Status: development version.** The specification, object model,
+> **Status: 1.0.0 release candidate.** The specification, object model,
 > validation, canonical I/O, signal policy, combination helpers, specialized
 > readers, interoperability, plots and the Shiny app are included in this
-> development build. Release hardening and external fixture cross-checks
-> remain on the checklist.
+> release. Local and shared CI hardening checks are complete; external fixture
+> comparisons and CRAN submission remain maintainer actions.
 
 ## Install
 

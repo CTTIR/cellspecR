@@ -5,11 +5,13 @@
 
 ## R CMD check results
 
-The development build has completed its reader and user-interface work. Local
-validation of the built source tarball completed with 0 errors and 0 warnings;
-the development version reports the expected incoming feasibility notes. Test
-coverage is 95.45% overall. External QuPath/MCQuant/inForm fixture comparisons
-and maintainer submission checks remain release-owner tasks.
+This is the first submission of cellspecR 1.0.0. The package provides the
+versioned cellspec contract, canonical storage, tool readers, validation,
+interoperability helpers, quality-control plots and a local Shiny review app.
+Local validation of the built source tarball completed with 0 errors and 0
+warnings. Test coverage is 95.46% overall. External QuPath/MCQuant/inForm
+fixture comparisons and maintainer builder/submission checks remain
+release-owner tasks.
 
 ## Notes
 

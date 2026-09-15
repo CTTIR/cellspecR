@@ -16,6 +16,15 @@ test_that("the app UI exposes the reader workflow", {
   expect_true(grepl("download_dictionary", paste(capture.output(ui), collapse = " ")))
 })
 
+test_that("the app About panel reports release metadata", {
+  skip_if_not_installed("shiny")
+  about <- cellspecR:::.cs_app_about()
+  rendered <- paste(capture.output(about), collapse = " ")
+  expect_match(rendered, "About cellspecR")
+  expect_match(rendered, "Version\\s+1\\.0\\.0")
+  expect_match(rendered, "Specification\\s+1\\.0\\.0")
+})
+
 test_that("the app server reads a local export and exposes review tables", {
   skip_if_not_installed("shiny")
   path <- tempfile(fileext = ".tsv")

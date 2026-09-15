@@ -1,14 +1,42 @@
-# cellspecR (development version)
+# cellspecR 1.0.0
 
-## cellspecR 0.0.0.9000
+Initial CRAN release.
 
-### New features
+## Specification
 
-* Added the cellspec 1.0 specification tables and JSON Schema, a validated
-  object model with accessors and methods, structural and semantic validation,
-  feature-support summaries, and deterministic synthetic examples.
-* Added the canonical cellspec directory writer, reader, sidecar and
-  SHA-256 integrity manifest.
-* Added QuPath, tiled QuPath, MCQuant, segmantR, inForm and generic table
-  readers, signal policies, tile combination, SpatialExperiment and AnnData
-  interoperability, quality-control plots, and a local Shiny review app.
+* Added the cellspec 1.0 table contract, JSON Schema and vocabulary tables for
+  segmented cells from multiplexed tissue images.
+
+## Readers
+
+* Added readers for QuPath, tiled QuPath, MCQuant, segmantR, inForm and mapped
+  generic CSV/TSV tables, with format detection and provenance records.
+
+## Validation
+
+* Added structural and semantic validation, actionable reports, feature
+  support summaries and deterministic synthetic examples.
+
+## Canonical format
+
+* Added Parquet storage with an exact text fallback, JSON sidecars, SHA-256
+  manifests, completion markers and atomic staging.
+
+## Signals
+
+* Added explicit signal policies, marker maps and selected signal matrices with
+  JSON and CSV persistence.
+
+## Interoperability
+
+* Added guarded conversion to and from SpatialExperiment and AnnData objects.
+
+## Methods
+
+* Added tile binding and merge helpers, cellspec subsetting and coercion, and
+  quality-control map, marker, support, area and overview plots.
+
+## Interactive front-end
+
+* Added a local Shiny review app for reading exports, inspecting validation and
+  downloading review tables.

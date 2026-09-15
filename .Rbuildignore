@@ -24,3 +24,5 @@
 ^CITATION\.cff$
 ^\.zenodo\.json$
 ^.*\.Rcheck$
+^doc$
+^Meta$

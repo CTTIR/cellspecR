@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables",
-  "version": "0.0.0.9000",
+  "version": "1.0.0",
   "publication_date": "2026-09-15",
   "creators": [
     {
