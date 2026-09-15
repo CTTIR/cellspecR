@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cttir.github.io/cellspecR/schema/cellspec-1.0.0.schema.json",
+  "title": "cellspec 1.0 sidecar (cellspec.json)",
+  "description": "Metadata file of a cellspec directory: specification version, file names, column types of the cell table, dictionary, images, channels, provenance and the optional adjacency table.",
+  "type": "object",
+  "required": ["format", "spec_version", "files", "cells", "dictionary", "images", "channels", "provenance", "adjacency"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "cellspec" },
+    "spec_version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+\\.[0-9]+$"
+    },
+    "files": {
+      "type": "object",
+      "required": ["cells", "adjacency"],
+      "additionalProperties": false,
+      "properties": {
+        "cells": { "enum": ["cells.parquet", "cells.tsv.gz"] },
+        "adjacency": {
+          "oneOf": [
+            { "type": "null" },
+            { "enum": ["adjacency.parquet", "adjacency.tsv.gz"] }
+          ]
+        }
+      }
+    },
+    "cells": {
+      "type": "object",
+      "required": ["n_rows", "columns"],
+      "additionalProperties": false,
+      "properties": {
+        "n_rows": { "type": "integer", "minimum": 0 },
+        "columns": { "$ref": "#/definitions/columns" }
+      }
+    },
+    "dictionary": {
+      "type": "object",
+      "required": ["columns", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "columns": { "$ref": "#/definitions/columns" },
+        "rows": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dictionary_row" }
+        }
+      }
+    },
+    "images": {
+      "type": "object",
+      "required": ["columns", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "columns": { "$ref": "#/definitions/columns" },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/image_row" }
+        }
+      }
+    },
+    "channels": {
+      "type": "object",
+      "required": ["columns", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "columns": { "$ref": "#/definitions/columns" },
+        "rows": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/channel_row" }
+        }
+      }
+    },
+    "provenance": { "$ref": "#/definitions/provenance" },
+    "adjacency": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["n_rows", "columns"],
+          "additionalProperties": false,
+          "properties": {
+            "n_rows": { "type": "integer", "minimum": 0 },
+            "columns": { "$ref": "#/definitions/columns" }
+          }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "nonempty_string": { "type": "string", "minLength": 1 },
+    "optional_string": { "type": ["string", "null"] },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "type": { "enum": ["character", "double", "integer", "logical"] }
+        }
+      }
+    },
+    "dictionary_row": {
+      "type": "object",
+      "required": ["feature_id", "kind", "marker", "compartment", "statistic", "unit", "source_name"],
+      "properties": {
+        "feature_id": { "$ref": "#/definitions/nonempty_string" },
+        "kind": { "enum": ["intensity", "shape", "other"] },
+        "marker": { "$ref": "#/definitions/optional_string" },
+        "compartment": { "enum": ["cell", "nucleus", "cytoplasm", "membrane", null] },
+        "statistic": { "$ref": "#/definitions/nonempty_string" },
+        "unit": { "enum": ["a.u.", "um", "um2", "px", "px2", "rad", "1"] },
+        "source_name": { "$ref": "#/definitions/nonempty_string" },
+        "marker_source": { "$ref": "#/definitions/optional_string" }
+      }
+    },
+    "image_row": {
+      "type": "object",
+      "required": ["image_id", "sample_id", "pixel_size"],
+      "properties": {
+        "image_id": { "$ref": "#/definitions/nonempty_string" },
+        "sample_id": { "$ref": "#/definitions/nonempty_string" },
+        "subject_id": { "$ref": "#/definitions/optional_string" },
+        "pixel_size": { "type": "number", "exclusiveMinimum": 0 },
+        "pixel_size_y": {
+          "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0 }]
+        },
+        "width_px": {
+          "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }]
+        },
+        "height_px": {
+          "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }]
+        },
+        "platform": { "$ref": "#/definitions/optional_string" },
+        "source_image": { "$ref": "#/definitions/optional_string" },
+        "source_image_sha256": {
+          "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^[0-9a-f]{64}$" }]
+        },
+        "geometry_ref": { "$ref": "#/definitions/optional_string" }
+      }
+    },
+    "channel_row": {
+      "type": "object",
+      "required": ["image_id", "channel_index", "channel_name", "marker"],
+      "properties": {
+        "image_id": { "$ref": "#/definitions/nonempty_string" },
+        "channel_index": { "type": "integer", "minimum": 1 },
+        "channel_name": { "$ref": "#/definitions/nonempty_string" },
+        "marker": { "$ref": "#/definitions/nonempty_string" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["producer", "reader", "created_utc", "inputs", "counts", "parameters", "history"],
+      "properties": {
+        "producer": {
+          "type": "object",
+          "required": ["tool", "version"],
+          "properties": {
+            "tool": { "$ref": "#/definitions/optional_string" },
+            "version": { "$ref": "#/definitions/optional_string" }
+          }
+        },
+        "reader": {
+          "type": "object",
+          "required": ["package", "version", "adapter", "adapter_version"],
+          "properties": {
+            "package": { "type": "string" },
+            "version": { "type": "string" },
+            "adapter": { "$ref": "#/definitions/optional_string" },
+            "adapter_version": { "$ref": "#/definitions/optional_string" }
+          }
+        },
+        "created_utc": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path_basename", "bytes", "sha256"],
+            "properties": {
+              "path_basename": { "type": "string" },
+              "bytes": { "type": "number", "minimum": 0 },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        },
+        "counts": {
+          "type": "object",
+          "properties": {
+            "rows_read": { "type": "integer", "minimum": 0 },
+            "rows_kept": { "type": "integer", "minimum": 0 },
+            "na_converted": { "type": "integer", "minimum": 0 },
+            "nonfinite_converted": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "parameters": { "type": "object" },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["step", "function", "time_utc"],
+            "properties": {
+              "step": { "type": "string" },
+              "function": { "type": "string" },
+              "time_utc": { "type": "string" },
+              "details": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

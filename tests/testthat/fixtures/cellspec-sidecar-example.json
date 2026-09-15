@@ -1,0 +1,116 @@
+{
+  "format": "cellspec",
+  "spec_version": "1.0.0",
+  "files": {
+    "cells": "cells.parquet",
+    "adjacency": null
+  },
+  "cells": {
+    "n_rows": 2,
+    "columns": [
+      { "name": "cell_id", "type": "character" },
+      { "name": "image_id", "type": "character" },
+      { "name": "sample_id", "type": "character" },
+      { "name": "x", "type": "double" },
+      { "name": "y", "type": "double" },
+      { "name": "area", "type": "double" }
+    ]
+  },
+  "dictionary": {
+    "columns": [
+      { "name": "feature_id", "type": "character" },
+      { "name": "kind", "type": "character" },
+      { "name": "marker", "type": "character" },
+      { "name": "compartment", "type": "character" },
+      { "name": "statistic", "type": "character" },
+      { "name": "unit", "type": "character" },
+      { "name": "source_name", "type": "character" },
+      { "name": "marker_source", "type": "character" }
+    ],
+    "rows": [
+      {
+        "feature_id": "nucleus:FOXP3:mean",
+        "kind": "intensity",
+        "marker": "FOXP3",
+        "compartment": "nucleus",
+        "statistic": "mean",
+        "unit": "a.u.",
+        "source_name": "Nucleus: FOXP3: Mean",
+        "marker_source": null
+      },
+      {
+        "feature_id": "cell:area",
+        "kind": "shape",
+        "marker": null,
+        "compartment": "cell",
+        "statistic": "area",
+        "unit": "um2",
+        "source_name": "Cell: Area µm^2",
+        "marker_source": null
+      }
+    ]
+  },
+  "images": {
+    "columns": [
+      { "name": "image_id", "type": "character" },
+      { "name": "sample_id", "type": "character" },
+      { "name": "pixel_size", "type": "double" },
+      { "name": "width_px", "type": "integer" },
+      { "name": "height_px", "type": "integer" }
+    ],
+    "rows": [
+      {
+        "image_id": "slide01",
+        "sample_id": "S01",
+        "pixel_size": 0.5,
+        "width_px": 1024,
+        "height_px": 1024
+      }
+    ]
+  },
+  "channels": {
+    "columns": [
+      { "name": "image_id", "type": "character" },
+      { "name": "channel_index", "type": "integer" },
+      { "name": "channel_name", "type": "character" },
+      { "name": "marker", "type": "character" }
+    ],
+    "rows": [
+      { "image_id": "slide01", "channel_index": 1, "channel_name": "DAPI", "marker": "DAPI" },
+      { "image_id": "slide01", "channel_index": 2, "channel_name": "FOXP3", "marker": "FOXP3" }
+    ]
+  },
+  "provenance": {
+    "producer": { "tool": "QuPath", "version": "0.7.0" },
+    "reader": {
+      "package": "cellspecR",
+      "version": "0.1.0",
+      "adapter": "qupath",
+      "adapter_version": "1.0.0"
+    },
+    "created_utc": "2026-09-15T12:00:00Z",
+    "inputs": [
+      {
+        "path_basename": "slide01_measurements.tsv",
+        "bytes": 20480,
+        "sha256": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+      }
+    ],
+    "counts": {
+      "rows_read": 2,
+      "rows_kept": 2,
+      "na_converted": 0,
+      "nonfinite_converted": 0
+    },
+    "parameters": { "pixel_size_source": "file" },
+    "history": [
+      {
+        "step": "read",
+        "function": "cs_read",
+        "time_utc": "2026-09-15T12:00:00Z",
+        "details": { "format": "qupath" }
+      }
+    ]
+  },
+  "adjacency": null
+}
