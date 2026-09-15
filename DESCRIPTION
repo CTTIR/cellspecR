@@ -1,0 +1,66 @@
+Package: cellspecR
+Title: Read, Validate and Store Multiplexed Imaging Cell Tables
+Version: 0.0.0.9000
+Authors@R:
+    person("R.", "Heller",
+           email = "raban.heller@uni-ulm.de",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-8006-9742"))
+Author: R. Heller [aut, cre, cph] (ORCID: <https://orcid.org/0000-0001-8006-9742>)
+Maintainer: R. Heller <raban.heller@uni-ulm.de>
+Description: Defines 'cellspec', a versioned table format for segmented
+    cells from multiplexed tissue images: cell identifiers, centroids in
+    micrometres, per-marker measurements with an explicit compartment and
+    statistic, image and channel metadata, and provenance. Reads
+    measurement exports of image-analysis tools such as 'QuPath' and
+    'MCMICRO' into this format, validates its structure and content,
+    selects one signal per marker through an explicit policy, and writes
+    directories with a 'SHA-256' checksum manifest so that later analysis
+    steps can verify what they read.
+License: MIT + file LICENSE
+URL: https://github.com/CTTIR/cellspecR, https://cttir.github.io/cellspecR/
+BugReports: https://github.com/CTTIR/cellspecR/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli,
+    data.table,
+    digest,
+    jsonlite,
+    nanoparquet,
+    rlang,
+    stats,
+    utils
+Suggests:
+    anndataR,
+    bslib,
+    bench,
+    DT,
+    ggplot2,
+    goodpractice,
+    jsonvalidate,
+    knitr,
+    openxlsx2,
+    patchwork,
+    rmarkdown,
+    reticulate,
+    S4Vectors,
+    shiny,
+    shinytest2,
+    SingleCellExperiment,
+    SpatialExperiment,
+    spelling,
+    SummarizedExperiment,
+    testthat (>= 3.0.0),
+    tibble,
+    urlchecker,
+    vdiffr,
+    withr
+VignetteBuilder:
+    knitr
+Config/testthat/edition: 3
+Config/Needs/website: CTTIR/themakR
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0

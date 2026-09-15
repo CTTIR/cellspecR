@@ -1,0 +1,16 @@
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+name: test-coverage
+
+permissions: read-all
+
+jobs:
+  test-coverage:
+    uses: CTTIR/.github/.github/workflows/test-coverage.yaml@main
+    with:
+      floor: 90
+    secrets: inherit
