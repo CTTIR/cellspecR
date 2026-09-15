@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html"><img src="../logo.svg" alt="" class="themakr-navbar-logo">cellspecR</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,16 +46,40 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="cellspecr-development-version">cellspecR (development version)<a class="anchor" aria-label="anchor" href="#cellspecr-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="cellspecr-100">cellspecR 1.0.0<a class="anchor" aria-label="anchor" href="#cellspecr-100"></a></h2>
+<p>Initial CRAN release.</p>
 <div class="section level3">
-<h3 id="cellspecr-development-version-1">cellspecR 0.0.0.9000<a class="anchor" aria-label="anchor" href="#cellspecr-development-version-1"></a></h3>
-<div class="section level4">
-<h4 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h4>
-<ul><li>Added the cellspec 1.0 specification tables and JSON Schema, a validated object model with accessors and methods, structural and semantic validation, feature-support summaries, and deterministic synthetic examples.</li>
-<li>Added the canonical cellspec directory writer, reader, sidecar and SHA-256 integrity manifest.</li>
-<li>Added QuPath, tiled QuPath, MCQuant, segmantR, inForm and generic table readers, signal policies, tile combination, SpatialExperiment and AnnData interoperability, quality-control plots, and a local Shiny review app.</li>
+<h3 id="specification-1-0-0">Specification<a class="anchor" aria-label="anchor" href="#specification-1-0-0"></a></h3>
+<ul><li>Added the cellspec 1.0 table contract, JSON Schema and vocabulary tables for segmented cells from multiplexed tissue images.</li>
 </ul></div>
-</div>
+<div class="section level3">
+<h3 id="readers-1-0-0">Readers<a class="anchor" aria-label="anchor" href="#readers-1-0-0"></a></h3>
+<ul><li>Added readers for QuPath, tiled QuPath, MCQuant, segmantR, inForm and mapped generic CSV/TSV tables, with format detection and provenance records.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="validation-1-0-0">Validation<a class="anchor" aria-label="anchor" href="#validation-1-0-0"></a></h3>
+<ul><li>Added structural and semantic validation, actionable reports, feature support summaries and deterministic synthetic examples.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="canonical-format-1-0-0">Canonical format<a class="anchor" aria-label="anchor" href="#canonical-format-1-0-0"></a></h3>
+<ul><li>Added Parquet storage with an exact text fallback, JSON sidecars, SHA-256 manifests, completion markers and atomic staging.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="signals-1-0-0">Signals<a class="anchor" aria-label="anchor" href="#signals-1-0-0"></a></h3>
+<ul><li>Added explicit signal policies, marker maps and selected signal matrices with JSON and CSV persistence.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="interoperability-1-0-0">Interoperability<a class="anchor" aria-label="anchor" href="#interoperability-1-0-0"></a></h3>
+<ul><li>Added guarded conversion to and from SpatialExperiment and AnnData objects.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="methods-1-0-0">Methods<a class="anchor" aria-label="anchor" href="#methods-1-0-0"></a></h3>
+<ul><li>Added tile binding and merge helpers, cellspec subsetting and coercion, and quality-control map, marker, support, area and overview plots.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="interactive-front-end-1-0-0">Interactive front-end<a class="anchor" aria-label="anchor" href="#interactive-front-end-1-0-0"></a></h3>
+<ul><li>Added a local Shiny review app for reading exports, inspecting validation and downloading review tables.</li>
+</ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

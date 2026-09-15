@@ -7,6 +7,8 @@ table below is generated from the objects that the validator uses
 ([`cs_vocabulary()`](https://cttir.github.io/cellspecR/reference/cs_vocabulary.md)),
 so the text and the checks cannot drift apart.
 
+This specification is shipped with cellspecR version 1.0.0.
+
 ## 1. Object
 
 A `cellspec` object is a list of class `"cellspec"` with these
@@ -40,7 +42,7 @@ x
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 0.0.0.9000)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.0.0)
 ```
 
 ## 2. Cells

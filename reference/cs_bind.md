@@ -40,5 +40,5 @@ cs_bind(cs_example())
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    cs_bind 1.0.0 (cellspecR simulator 0.0.0.9000)
+#>   source    cs_bind 1.0.0 (cellspecR simulator 1.0.0)
 ```

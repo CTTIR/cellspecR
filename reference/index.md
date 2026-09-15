@@ -79,7 +79,7 @@
 - [`cs_as_anndata()`](https://cttir.github.io/cellspecR/reference/cs_as_anndata.md)
   **\[experimental\]** : Convert a cellspec object to AnnData
 - [`cs_app()`](https://cttir.github.io/cellspecR/reference/cs_app.md)
-  **\[experimental\]** : Create the cellspec review application
+  **\[stable\]** : Create the cellspec review application
 
 ## Methods
 
@@ -105,5 +105,5 @@
 
 - [`cellspecR`](https://cttir.github.io/cellspecR/reference/cellspecR-package.md)
   [`cellspecR-package`](https://cttir.github.io/cellspecR/reference/cellspecR-package.md)
-  **\[experimental\]** : cellspecR: Read, Validate and Store Multiplexed
+  **\[stable\]** : cellspecR: Read, Validate and Store Multiplexed
   Imaging Cell Tables

@@ -32,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="index.html"><img src="logo.svg" alt="" class="themakr-navbar-logo">cellspecR</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@
 
 <p><code>cellspecR</code> defines the <code>cellspec</code> 1.0 table contract for segmented cells from multiplexed tissue images. It reads tool exports, validates structure and semantics, and writes an integrity checked directory for downstream analysis.</p>
 <blockquote>
-<p><strong>Status: development version.</strong> The specification, object model, validation, canonical I/O, signal policy, combination helpers, specialized readers, interoperability, plots and the Shiny app are included in this development build. Release hardening and external fixture cross-checks remain on the checklist.</p>
+<p><strong>Status: 1.0.0 release candidate.</strong> The specification, object model, validation, canonical I/O, signal policy, combination helpers, specialized readers, interoperability, plots and the Shiny app are included in this release. Local and shared CI hardening checks are complete; external fixture comparisons and CRAN submission remain maintainer actions.</p>
 </blockquote>
 <div class="section level2">
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
@@ -115,7 +115,7 @@
 <span><span class="co">#&gt;   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3</span></span>
 <span><span class="co">#&gt;   pixel     0.5 um/px</span></span>
 <span><span class="co">#&gt;   adjacency none</span></span>
-<span><span class="co">#&gt;   source    simulate 1.0.0 (cellspecR simulator 0.0.0.9000)</span></span>
+<span><span class="co">#&gt;   source    simulate 1.0.0 (cellspecR simulator 1.0.0)</span></span>
 <span><span class="fu"><a href="reference/cs_validate.html">cs_validate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;cellspec validation&gt; 45 checks: 0 fail, 0 warn, 0 skip, 45 pass</span></span>
 <span><span class="co">#&gt; pass 45 other checks</span></span>
@@ -138,12 +138,12 @@
 <span><span class="co">#&gt; 1                      DONE</span></span>
 <span><span class="co">#&gt;                                                                       expected</span></span>
 <span><span class="co">#&gt; cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994</span></span>
-<span><span class="co">#&gt; cellspec.json e23259ccf6c744a826d59f00258bffdee0e98903ef9308b4abfc2d9dc996a6f4</span></span>
-<span><span class="co">#&gt; 1             489212cfabd36e232f1afd801d229a0a7557d54aa09083fbcec08611ff246cbc</span></span>
+<span><span class="co">#&gt; cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9</span></span>
+<span><span class="co">#&gt; 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de</span></span>
 <span><span class="co">#&gt;                                                                       observed</span></span>
 <span><span class="co">#&gt; cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994</span></span>
-<span><span class="co">#&gt; cellspec.json e23259ccf6c744a826d59f00258bffdee0e98903ef9308b4abfc2d9dc996a6f4</span></span>
-<span><span class="co">#&gt; 1             489212cfabd36e232f1afd801d229a0a7557d54aa09083fbcec08611ff246cbc</span></span>
+<span><span class="co">#&gt; cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9</span></span>
+<span><span class="co">#&gt; 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de</span></span>
 <span><span class="co">#&gt;                 ok</span></span>
 <span><span class="co">#&gt; cells.parquet TRUE</span></span>
 <span><span class="co">#&gt; cellspec.json TRUE</span></span>

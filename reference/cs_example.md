@@ -40,7 +40,7 @@ x
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 0.0.0.9000)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.0.0)
 cs_validate(x)
 #> <cellspec validation> 45 checks: 0 fail, 0 warn, 0 skip, 45 pass
 #> pass 45 other checks

@@ -1,6 +1,6 @@
 # Create the cellspec review application
 
-**\[experimental\]**
+**\[stable\]**
 
 Builds a local Shiny application for reading an export, reviewing format
 detection and validation, and downloading the resulting tables. The

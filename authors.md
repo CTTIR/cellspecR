@@ -11,13 +11,13 @@ Source:
 [`inst/CITATION`](https://github.com/CTTIR/cellspecR/blob/main/inst/CITATION)
 
 Heller R (2026). *cellspecR: Read, Validate and Store Multiplexed
-Imaging Cell Tables*. R package version 0.0.0.9000,
+Imaging Cell Tables*. R package version 1.0.0,
 <https://github.com/CTTIR/cellspecR>.
 
     @Manual{,
       title = {cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables},
       author = {R. Heller},
       year = {2026},
-      note = {R package version 0.0.0.9000},
+      note = {R package version 1.0.0},
       url = {https://github.com/CTTIR/cellspecR},
     }

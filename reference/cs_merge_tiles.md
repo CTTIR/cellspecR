@@ -59,5 +59,5 @@ cs_merge_tiles(list(cs_example()), tile_bounds)
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    cs_merge_tiles 1.0.0 (cellspecR simulator 0.0.0.9000)
+#>   source    cs_merge_tiles 1.0.0 (cellspecR simulator 1.0.0)
 ```

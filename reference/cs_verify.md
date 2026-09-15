@@ -45,12 +45,12 @@ cs_verify(path)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json e23259ccf6c744a826d59f00258bffdee0e98903ef9308b4abfc2d9dc996a6f4
-#> 1             489212cfabd36e232f1afd801d229a0a7557d54aa09083fbcec08611ff246cbc
+#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
+#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json e23259ccf6c744a826d59f00258bffdee0e98903ef9308b4abfc2d9dc996a6f4
-#> 1             489212cfabd36e232f1afd801d229a0a7557d54aa09083fbcec08611ff246cbc
+#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
+#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE
