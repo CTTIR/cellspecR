@@ -185,7 +185,7 @@
           sep = "\t",
           na.strings = "NA",
           data.table = FALSE,
-          colClasses = types,
+          colClasses = "character",
           encoding = "UTF-8",
           showProgress = FALSE
         )
@@ -196,7 +196,7 @@
           na.strings = "NA",
           quote = "\"",
           comment.char = "",
-          colClasses = types,
+          colClasses = "character",
           check.names = FALSE,
           stringsAsFactors = FALSE
         )
