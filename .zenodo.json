@@ -1,0 +1,23 @@
+{
+  "upload_type": "software",
+  "title": "cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables",
+  "version": "0.0.0.9000",
+  "publication_date": "2026-09-15",
+  "creators": [
+    {
+      "name": "Heller, Raban",
+      "orcid": "0000-0001-8006-9742"
+    }
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/CTTIR/cellspecR",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ]
+}

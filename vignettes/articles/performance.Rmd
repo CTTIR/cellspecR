@@ -1,0 +1,21 @@
+---
+title: "Performance measurements"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Performance measurements}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This article records the development-machine performance measurements for
+cellspecR. It is a pkgdown article and is excluded from the CRAN vignette
+build because the benchmark data size is intentionally configurable.
+
+```{r, echo=FALSE, results='asis'}
+path <- file.path("data-raw", "benchmarks", "performance.md")
+if (file.exists(path)) {
+  cat(paste(readLines(path, warn = FALSE), collapse = "\n"))
+} else {
+  cat("Run `Rscript data-raw/benchmarks/performance.R` to generate the local measurements.")
+}
+```

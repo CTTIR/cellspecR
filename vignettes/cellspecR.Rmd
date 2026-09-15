@@ -1,0 +1,55 @@
+---
+title: "Getting started with cellspecR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with cellspecR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(cellspecR)
+```
+
+`cellspecR` puts an explicit contract between segmentation and downstream
+analysis. The first object to inspect is the deterministic bundled example.
+
+```{r}
+x <- cs_example()
+x
+summary(x)
+cs_validate(x)
+```
+
+The dictionary describes every measurement, including its compartment and
+statistic. Select features through dictionary fields rather than parsing a
+feature name.
+
+```{r}
+cs_features(x, kind = "intensity", marker = "CD3e", statistic = "mean")
+cs_feature_support(x)
+```
+
+Signal selection is explicit and recorded as a policy.
+
+```{r}
+policy <- cs_signal_policy(
+  marker = c("CD3e", "FOXP3"),
+  compartment = c("cell", "nucleus"),
+  statistic = "mean"
+)
+selected <- cs_signal_matrix(x, policy)
+head(selected$signal)
+```
+
+Finally, write an integrity checked directory and verify it before handing the
+object to another analysis package.
+
+```{r}
+destination <- file.path(tempdir(), "cellspec-getting-started")
+cs_write(x, destination, overwrite = TRUE)
+cs_verify(destination)
+y <- cs_read_cellspec(destination)
+identical(cs_cells(x), cs_cells(y))
+```

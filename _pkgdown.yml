@@ -1,0 +1,72 @@
+url: https://cttir.github.io/cellspecR/
+
+template:
+  package: themakR
+
+development:
+  mode: auto
+
+home:
+  title: cellspecR
+  description: Specification, readers and validation for multiplexed imaging cell tables.
+
+reference:
+  - title: Specification
+    contents:
+      - cs_spec_version
+      - cs_vocabulary
+
+  - title: Object
+    contents:
+      - cs_new
+      - cs_accessors
+      - cs_features
+      - cs_markers
+      - is_cellspec
+
+  - title: Validation
+    contents:
+      - cs_validate
+      - cs_feature_support
+
+  - title: Readers and storage
+    contents:
+      - cs_formats
+      - cs_detect_format
+      - cs_column_map
+      - cs_read
+      - cs_read_cellspec
+      - cs_verify
+      - cs_write
+      - cs_bind
+      - cs_merge_tiles
+
+  - title: Signals
+    contents:
+      - cs_signal_policy
+      - cs_signal_matrix
+      - cs_marker_map
+      - cs_read_signal_policy
+      - cs_write_signal_policy
+
+  - title: Interoperability and app
+    contents:
+      - cs_as_spe
+      - cs_from_spe
+      - cs_as_anndata
+      - cs_app
+
+  - title: Methods
+    contents:
+      - cellspec-methods
+      - as.data.frame.cellspec
+      - "[.cellspec"
+      - plot.cellspec
+
+  - title: Examples
+    contents:
+      - cs_example
+
+  - title: Package
+    contents:
+      - cellspecR-package

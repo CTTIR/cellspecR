@@ -1,0 +1,41 @@
+---
+title: "Reading cell measurement exports"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reading cell measurement exports}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(cellspecR)
+```
+
+Readers are selected explicitly when a project contains more than one
+possible grammar. The bundled synthetic export uses QuPath-style headers.
+
+```{r}
+path <- system.file("extdata", "qupath-0.7.0-instanseg.tsv", package = "cellspecR")
+cs_detect_format(path)
+x <- cs_read(path, format = "qupath")
+print(x)
+cs_validate(x)
+```
+
+For an unrecognised table, map the source columns and describe measurements in
+the dictionary at the boundary.
+
+```{r}
+map <- cs_column_map(
+  cell_id = "Cell ID", x = "Centroid X um", y = "Centroid Y um",
+  measurements = data.frame(
+    source_name = "CD3e: Mean", kind = "intensity", marker = "CD3e",
+    compartment = "cell", statistic = "mean", unit = "a.u."
+  )
+)
+map
+```
+
+Pixel coordinates always need a calibration. A missing or inconsistent unit
+is an error rather than a guess.
