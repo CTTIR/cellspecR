@@ -47,8 +47,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="cellspecr-development-version">cellspecR (development version)<a class="anchor" aria-label="anchor" href="#cellspecr-development-version"></a></h2>
-<ul><li>QuPath readers recognize compartment-first cell area and nuclear morphology with explicit units. Whole-cell area is kept separately from nuclear area; shape dictionaries retain the original headers and dimensional units.</li>
-<li>The segmantR reader converts one-based pixel-index centroid means to the image’s pixel-edge coordinate frame and converts pixel area to square micrometres. Unrecognized centroid conventions are rejected. Crop, pyramid and anisotropic transforms must be handled explicitly before image integration. Raw shape measurements retain their pixel or radian units.</li>
+<ul><li><p>Header-only TSV exports now write a complete gzip stream, including empty cell and adjacency tables. Their declared column types survive read-back.</p></li>
+<li><p>QuPath readers recognize compartment-first cell area and nuclear morphology with explicit units. Whole-cell area is kept separately from nuclear area; shape dictionaries retain the original headers and dimensional units.</p></li>
+<li><p>The segmantR reader converts one-based pixel-index centroid means to the image’s pixel-edge coordinate frame and converts pixel area to square micrometres. Unrecognized centroid conventions are rejected. Crop, pyramid and anisotropic transforms must be handled explicitly before image integration. Raw shape measurements retain their pixel or radian units.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="cellspecr-100">cellspecR 1.0.0<a class="anchor" aria-label="anchor" href="#cellspecr-100"></a></h2>
