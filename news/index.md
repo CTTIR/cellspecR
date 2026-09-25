@@ -1,5 +1,18 @@
 # Changelog
 
+## cellspecR (development version)
+
+- QuPath readers recognize compartment-first cell area and nuclear
+  morphology with explicit units. Whole-cell area is kept separately
+  from nuclear area; shape dictionaries retain the original headers and
+  dimensional units.
+- The segmantR reader converts one-based pixel-index centroid means to
+  the image’s pixel-edge coordinate frame and converts pixel area to
+  square micrometres. Unrecognized centroid conventions are rejected.
+  Crop, pyramid and anisotropic transforms must be handled explicitly
+  before image integration. Raw shape measurements retain their pixel or
+  radian units.
+
 ## cellspecR 1.0.0
 
 Initial CRAN release.

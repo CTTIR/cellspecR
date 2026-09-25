@@ -10,10 +10,10 @@ its adapter and version in provenance.
 cs_formats()
 #>         format adapter_version
 #> 1        table           1.0.0
-#> 2       qupath           1.0.0
-#> 3 qupath_tiled           1.0.0
+#> 2       qupath           1.0.1
+#> 3 qupath_tiled           1.0.1
 #> 4      mcquant           1.0.0
-#> 5     segmantr           1.0.0
+#> 5     segmantr           1.0.1
 #> 6       inform           1.0.0
 #>                                            description
 #> 1 Generic delimited table with an explicit column map.

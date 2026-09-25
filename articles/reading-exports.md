@@ -22,7 +22,7 @@ print(x)
 #>   markers   2: DAPI, CD3e
 #>   pixel     1 um/px
 #>   adjacency none
-#>   source    qupath 1.0.0
+#>   source    qupath 1.0.1
 cs_validate(x)
 #> <cellspec validation> 45 checks: 0 fail, 0 warn, 0 skip, 45 pass
 #> pass 45 other checks

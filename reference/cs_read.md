@@ -2,10 +2,21 @@
 
 **\[experimental\]**
 
-Reads a generic delimited cell table using an explicit
+Reads a delimited cell table using a format-specific adapter or an
+explicit
 [`cs_column_map()`](https://cttir.github.io/cellspecR/reference/cs_column_map.md).
-Only `format = "table"` is implemented in this adapter; specialized
-formats remain extension points for future adapters.
+See
+[`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md)
+for supported formats.
+
+The `segmantr` adapter expects the one-based row and column centroid
+means returned by `segmantR::sg_extract_features()`. It subtracts 0.5
+before converting to micrometres and scales pixel `area` by
+`pixel_size^2`. Coordinates refer to the supplied image: cropped or
+downsampled inputs require an explicit external frame transform before
+combining with a full-resolution image. This adapter assumes square
+pixels. Shape measurements retain source units in the feature
+dictionary.
 
 ## Usage
 
