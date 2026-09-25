@@ -1,6 +1,6 @@
 # QuPath measurement-export adapter.
 
-.cs_qupath_adapter_version <- "1.0.0"
+.cs_qupath_adapter_version <- "1.0.1"
 
 .cs_qupath_header <- function(x) {
   value <- as.character(x)
@@ -118,6 +118,40 @@
   statistic
 }
 
+.cs_qupath_shape_metadata <- function(name) {
+  clean <- tolower(.cs_qupath_header(name))
+  parts <- trimws(strsplit(clean, ":", fixed = TRUE)[[1L]])
+  compartment <- "cell"
+  if (length(parts) == 2L) {
+    compartment <- .cs_qupath_compartment(parts[[1L]])
+    clean <- parts[[2L]]
+  } else if (length(parts) != 1L) {
+    return(NULL)
+  }
+  if (is.null(compartment)) return(NULL)
+  unit <- if (grepl(" um2$", clean)) "um2" else if (grepl(" um$", clean)) "um" else
+    if (grepl(" px2$", clean)) "px2" else if (grepl(" px$", clean)) "px" else "1"
+  label <- sub(" (um2|um|px2|px)$", "", clean)
+  shapes <- c(
+    area = "area", perimeter = "perimeter", length = "length",
+    circularity = "circularity", solidity = "solidity",
+    `max diameter` = "max_diameter", `min diameter` = "min_diameter",
+    `nucleus/cell area ratio` = "nucleus_cell_area_ratio"
+  )
+  if (!label %in% names(shapes)) return(NULL)
+  statistic <- unname(shapes[[label]])
+  if (statistic == "area" && !unit %in% c("um2", "px2")) return(NULL)
+  if (statistic %in% c("perimeter", "length", "max_diameter", "min_diameter") &&
+      !unit %in% c("um", "px")) return(NULL)
+  if (statistic %in% c("circularity", "solidity", "nucleus_cell_area_ratio") &&
+      unit != "1") return(NULL)
+  data.frame(
+    source_name = name, kind = "shape", marker = NA_character_,
+    compartment = compartment, statistic = statistic, unit = unit,
+    stringsAsFactors = FALSE
+  )
+}
+
 .cs_qupath_map <- function(table_names, pixel_size = NULL, marker_map = NULL,
                            call = rlang::caller_env()) {
   id <- .cs_qupath_find(table_names, c(
@@ -141,7 +175,7 @@
   x <- if (unit == "um") x_um else x_px
   y <- if (unit == "um") y_um else y_px
   area <- .cs_qupath_find(table_names, c(
-    "area um2", "cell area um2", "area", "cell: area"
+    "cell: area um2", "cell area um2", "area um2", "cell: area", "area"
   ))
   if (!is.null(area) && identical(.cs_qupath_shape(area), "area")) {
     area <- area
@@ -155,6 +189,7 @@
   candidates <- setdiff(table_names, excluded)
   for (name in candidates) {
     row <- .cs_qupath_measurement(name)
+    if (is.null(row)) row <- .cs_qupath_shape_metadata(name)
     if (!is.null(row)) metadata[[length(metadata) + 1L]] <- row
   }
   metadata <- if (length(metadata) == 0L) {

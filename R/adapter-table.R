@@ -345,7 +345,7 @@ cs_formats <- function() {
   for (format in names(optional)) {
     rows[[length(rows) + 1L]] <- data.frame(
       format = format,
-      adapter_version = "1.0.0",
+      adapter_version = if (format %in% c("qupath", "qupath_tiled", "segmantr")) "1.0.1" else "1.0.0",
       description = optional[[format]][[1L]],
       tested_with = optional[[format]][[2L]],
       status = "experimental",
@@ -516,9 +516,16 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' @description
 #' `r lifecycle::badge("experimental")`
 #'
-#' Reads a generic delimited cell table using an explicit [cs_column_map()].
-#' Only `format = "table"` is implemented in this adapter; specialized
-#' formats remain extension points for future adapters.
+#' Reads a delimited cell table using a format-specific adapter or an explicit
+#' [cs_column_map()]. See [cs_formats()] for supported formats.
+#'
+#' The `segmantr` adapter expects the one-based row and column centroid
+#' means returned by `segmantR::sg_extract_features()`.
+#' It subtracts 0.5 before converting to micrometres and scales pixel `area`
+#' by `pixel_size^2`. Coordinates refer to the supplied image: cropped or
+#' downsampled inputs require an explicit external frame transform before
+#' combining with a full-resolution image. This adapter assumes square pixels.
+#' Shape measurements retain source units in the feature dictionary.
 #'
 #' @param path One delimited table file.
 #' @param format Reader format. Use `"table"` for this adapter or `"auto"`

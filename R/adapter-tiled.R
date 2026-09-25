@@ -1,6 +1,6 @@
 # Bounded tiled QuPath adapter.
 
-.cs_tiled_adapter_version <- "1.0.0"
+.cs_tiled_adapter_version <- "1.0.1"
 .cs_tiled_prefix <- c(
   "sample", "cell_id", "centroid_x_px", "centroid_y_px",
   "centroid_x_um", "centroid_y_um"

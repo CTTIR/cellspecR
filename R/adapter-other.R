@@ -187,6 +187,14 @@
       class = "cellspec_error_units", call = call
     )
   }
+  if (format == "segmantr" &&
+      (!identical(x, "centroid_col") || !identical(y, "centroid_row") || unit != "px")) { # nolint: cttir_domain_vocab
+    .cs_other_abort(
+      paste0("The segmantR adapter requires the one-based centroid_col/centroid_row ", # nolint: cttir_domain_vocab
+             "convention from sg_extract_features(); use an explicit table map for other frames."),
+      class = "cellspec_error_units", call = call
+    )
+  }
   image <- .cs_other_find(names_table, c("image", "image_id", "image id", "sample"))
   sample <- .cs_other_find(names_table, c("sample", "sample_id", "sample id"))
   area <- .cs_other_find(names_table, c("area", "area_um2", "area um2", "cell area"))
@@ -196,6 +204,12 @@
   metadata <- if (length(metadata) == 0L) NULL else do.call(rbind, metadata)
   metadata <- .cs_other_apply_marker_map(metadata, marker_map, call)
   if (!is.null(metadata)) {
+    if (format == "segmantr") {
+      lengths <- metadata$kind == "shape" & metadata$statistic %in%
+        c("perimeter", "major_axis_length", "minor_axis_length")
+      metadata$unit[lengths] <- "px"
+      metadata$unit[metadata$statistic == "orientation"] <- "rad"
+    }
     metadata <- .cs_check_measurements(metadata, call = call)
   }
   map <- cs_column_map(
@@ -219,8 +233,23 @@
     image_id = image_id, sample_id = sample_id, column_map = map,
     keep_other = keep_other, keep_paths = keep_paths, quiet = quiet
   )
+  if (format == "segmantr") {
+    out$cells$x_px <- out$cells$x_px - 0.5
+    out$cells$y_px <- out$cells$y_px - 0.5
+    out$cells$x <- out$cells$x_px * pixel_size
+    out$cells$y <- out$cells$y_px * pixel_size
+    if (!is.null(area) && identical(tolower(area), "area")) {
+      out$cells$area <- out$cells$area * pixel_size^2
+    }
+    out$provenance$parameters$coordinate_conversion <- list(
+      source_frame = "one-based pixel-index means from sg_extract_features",
+      destination_frame = "pixel-edge origin at top left of input image",
+      index_offset = -0.5, pixel_size_um = pixel_size,
+      area_scale = if (identical(tolower(area), "area")) pixel_size^2 else 1
+    )
+  }
   out$provenance$reader$adapter <- format
-  out$provenance$reader$adapter_version <- "1.0.0"
+  out$provenance$reader$adapter_version <- if (format == "segmantr") "1.0.1" else "1.0.0"
   out$provenance$parameters$source_convention <- switch(
     format,
     mcquant = "MCQuant pixel or micrometre centroid columns",

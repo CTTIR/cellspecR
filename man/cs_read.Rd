@@ -60,9 +60,16 @@ A validated \code{cellspec} object.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Reads a generic delimited cell table using an explicit \code{\link[=cs_column_map]{cs_column_map()}}.
-Only \code{format = "table"} is implemented in this adapter; specialized
-formats remain extension points for future adapters.
+Reads a delimited cell table using a format-specific adapter or an explicit
+\code{\link[=cs_column_map]{cs_column_map()}}. See \code{\link[=cs_formats]{cs_formats()}} for supported formats.
+
+The \code{segmantr} adapter expects the one-based row and column centroid
+means returned by \code{segmantR::sg_extract_features()}.
+It subtracts 0.5 before converting to micrometres and scales pixel \code{area}
+by \code{pixel_size^2}. Coordinates refer to the supplied image: cropped or
+downsampled inputs require an explicit external frame transform before
+combining with a full-resolution image. This adapter assumes square pixels.
+Shape measurements retain source units in the feature dictionary.
 }
 \examples{
 path <- tempfile(fileext = ".csv")

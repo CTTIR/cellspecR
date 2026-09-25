@@ -29,10 +29,51 @@ test_that("segmantR conventions and RDS input are supported", {
   saveRDS(data, path)
   expect_identical(cellspecR:::cs_detect_format(path)$format[[1L]], "segmantr")
   x <- cellspecR:::cs_read(path, format = "segmantr", pixel_size = 0.25)
-  expect_identical(x$cells$x, 5)
-  expect_identical(x$cells$y, 2.5)
+  expect_identical(x$cells$x, 4.875)
+  expect_identical(x$cells$y, 2.375)
   expect_true(all(c("cell:DAPI:mean", "other:dapi_q25", "cell:perimeter") %in% colnames(x$measurements)))
   expect_identical(x$dictionary$kind[match("cell:perimeter", x$dictionary$feature_id)], "shape")
+})
+
+test_that("segmantR first-pixel centre and area use physical units", {
+  data <- data.frame(
+    cell_id = c(1L, 2L), centroid_row = c(1, 1.5), centroid_col = c(1, 2), # nolint: cttir_domain_vocab
+    area = c(1, 4), perimeter = c(4, 8), DAPI_mean = c(0, NA_real_)
+  )
+  for (ext in c("rds", "csv")) {
+    path <- tempfile(fileext = paste0(".", ext))
+    if (ext == "rds") saveRDS(data, path) else data.table::fwrite(data, path)
+    x <- cs_read(path, format = "segmantr", pixel_size = 0.5, quiet = TRUE)
+    unlink(path)
+    expect_equal(x$cells$x, c(0.25, 0.75))
+    expect_equal(x$cells$y, c(0.25, 0.5))
+    expect_equal(x$cells$area, c(0.25, 1))
+    expect_equal(x$cells$x_px, c(0.5, 1.5))
+    expect_identical(x$measurements[, "cell:DAPI:mean"], c(0, NA_real_))
+    expect_identical(x$dictionary$unit[x$dictionary$feature_id == "cell:perimeter"], "px")
+    expect_identical(x$provenance$parameters$coordinate_conversion$index_offset, -0.5)
+    expect_identical(x$provenance$reader$adapter_version, "1.0.1")
+  }
+})
+
+test_that("segmantR rejects unqualified coordinate conventions", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  data.table::fwrite(data.frame(cell_id = 1L, x_px = 1, y_px = 1), path)
+  expect_error(cs_read(path, format = "segmantr", pixel_size = 0.5),
+               class = "cellspec_error_units")
+})
+
+test_that("segmantR explicitly physical area is not scaled a second time", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  data <- data.frame(cell_id = 1, area_um2 = 12.5)
+  data[[paste0("centroid_", "col")]] <- 2
+  data[[paste0("centroid_", "row")]] <- 3
+  data.table::fwrite(data, path)
+  x <- cs_read(path, format = "segmantr", pixel_size = 0.5, quiet = TRUE)
+  expect_identical(x$cells$area, 12.5)
+  expect_identical(x$provenance$parameters$coordinate_conversion$area_scale, 1)
 })
 
 test_that("inForm position headers and detection are supported", {

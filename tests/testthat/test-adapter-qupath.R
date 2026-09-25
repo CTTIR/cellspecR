@@ -25,6 +25,77 @@ qupath_fixture <- function(path, units = "um") {
   invisible(path)
 }
 
+test_that("compartment morphology preserves cell area and nuclear shapes", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  for (unit in c("um", "\u00b5m", "\u03bcm", "\u00c2\u00b5m")) {
+    data <- data.frame(cell_id = c("a", "b"), centroid_x_um = c(1, 2),
+                       centroid_y_um = c(3, 4), check.names = FALSE)
+    data[[paste0("Nucleus: Area ", unit, "^2")]] <- c(4, 8)
+    data[[paste0("Cell: Area ", unit, "^2")]] <- c(10, 20)
+    data[[paste0("Nucleus: Length ", unit)]] <- c(6, 12)
+    data[["Cell: Circularity"]] <- c(0.5, 0.7)
+    data[["Nucleus/Cell area ratio"]] <- c(0.4, 0.4)
+    data[["Cell: CD3e: Mean"]] <- c(0, NA_real_)
+    data.table::fwrite(data, path)
+    x <- cs_read(path, format = "qupath", quiet = TRUE)
+    expect_identical(x$cells$area, c(10, 20))
+    expect_identical(x$measurements[, "nucleus:area"], c(4, 8))
+    expect_identical(x$measurements[, "cell:CD3e:mean"], c(0, NA_real_))
+    expect_identical(x$dictionary$source_name, names(data)[c(4, 6:9)])
+    expect_identical(x$dictionary$unit, c("um2", "um", "1", "1", "a.u."))
+    expect_identical(x$provenance$reader$adapter_version, "1.0.1")
+  }
+})
+
+test_that("a complete synthetic compartment export preserves area and intensities", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  data <- data.frame(sample = "synthetic", cell_id = "a", centroid_x_px = 2,
+                     centroid_y_px = 4, centroid_x_um = 1, centroid_y_um = 2)
+  shapes <- c("Area um^2", "Length um", "Circularity", "Solidity",
+              "Max diameter um", "Min diameter um")
+  for (compartment in c("Nucleus", "Cell")) {
+    for (shape in shapes) data[[paste0(compartment, ": ", shape)]] <- 10
+  }
+  data[["Nucleus/Cell area ratio"]] <- 1
+  for (compartment in c("Nucleus", "Cell", "Cytoplasm", "Membrane")) {
+    for (marker in paste0("Channel", seq_len(18))) {
+      for (stat in c("Mean", "Median", "Std.Dev.", "Max", "Min")) {
+        data[[paste(compartment, marker, stat, sep = ": ")]] <- 7
+      }
+    }
+  }
+  expect_equal(ncol(data), 379)
+  data.table::fwrite(data, path)
+  x <- cs_read(path, format = "qupath", pixel_size = 0.5, quiet = TRUE)
+  expect_identical(x$cells$area, 10)
+  expect_equal(sum(x$dictionary$kind == "shape"), 12)
+  expect_equal(ncol(x$measurements), 374)
+  expect_true(all(x$measurements[, x$dictionary$kind == "intensity"] == 7))
+  expect_identical(x$cells$cell_id, "a")
+  expect_identical(x$cells$x, 1)
+  expect_identical(x$cells$y, 2)
+})
+
+test_that("shape grammar is conservative about dimensions and compartments", {
+  parse <- cellspecR:::.cs_qupath_shape_metadata
+  expect_null(parse("Unknown: Area um2"))
+  expect_null(parse("Cell: unknown: shape"))
+  expect_null(parse("Cell: Area"))
+  expect_null(parse("Cell: Length"))
+  expect_null(parse("Cell: Circularity um"))
+  expect_null(parse("Cell: novel score"))
+  expect_identical(parse("Nucleus: Area px^2")$unit, "px2")
+  expect_identical(parse("Cell: Perimeter px")$unit, "px")
+  expect_identical(parse("Area um2")$compartment, "cell")
+  map <- cellspecR:::.cs_qupath_map(
+    c("cell_id", "centroid_x_um", "centroid_y_um", "Nucleus: Area um2")
+  )
+  expect_null(map$area)
+  expect_identical(map$measurements$compartment, "nucleus")
+})
+
 test_that("QuPath channel-first and compartment-first headers map correctly", {
   path <- tempfile(fileext = ".tsv")
   on.exit(unlink(path), add = TRUE)
