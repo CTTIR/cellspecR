@@ -97,7 +97,12 @@
   doubles <- vapply(out, is.double, logical(1))
   out[doubles] <- lapply(out[doubles], .cs_format_tsv_double)
   tryCatch(
-    data.table::fwrite(
+    if (nrow(out) == 0L) {
+      con <- gzfile(path, open = "wt", encoding = "UTF-8")
+      on.exit(close(con), add = TRUE)
+      utils::write.table(out, con, sep = "\t", quote = TRUE,
+                         row.names = FALSE, na = "NA")
+    } else data.table::fwrite(
       out,
       file = path,
       sep = "\t",

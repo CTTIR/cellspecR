@@ -1,5 +1,8 @@
 # cellspecR (development version)
 
+* Header-only TSV exports now write a complete gzip stream, including empty
+  cell and adjacency tables. Their declared column types survive read-back.
+
 * QuPath readers recognize compartment-first cell area and nuclear morphology
   with explicit units. Whole-cell area is kept separately from nuclear area;
   shape dictionaries retain the original headers and dimensional units.
