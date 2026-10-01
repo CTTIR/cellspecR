@@ -1,5 +1,9 @@
 # cellspecR (development version)
 
+* Canonical TSV decimal conversion now preserves double precision on platforms
+  where extended precision equals double precision, including macOS ARM.
+  The 17-digit file format and exact-value roundtrip contract are unchanged.
+
 * Header-only TSV exports now write a complete gzip stream, including empty
   cell and adjacency tables. Their declared column types survive read-back.
 

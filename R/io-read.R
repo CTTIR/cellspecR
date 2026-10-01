@@ -126,6 +126,40 @@
   stats::setNames(cols$type, cols$name)
 }
 
+# R's character-to-double parser can lose precision when long double has the
+# same precision as double. jsonlite uses strtod for decimal conversion.
+.cs_parse_io_double <- function(x, call = rlang::caller_env()) {
+  if (!is.character(x)) {
+    return(as.double(x))
+  }
+  out <- rep(NA_real_, length(x))
+  out[x %in% "Inf"] <- Inf
+  out[x %in% "-Inf"] <- -Inf
+  out[x %in% "NaN"] <- NaN
+  indices <- which(!is.na(x) & !x %in% c("NA", "NaN", "Inf", "-Inf"))
+  if (!length(indices)) {
+    return(out)
+  }
+  tokens <- x[indices]
+  valid <- grepl("^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?$", tokens)
+  if (!all(valid)) {
+    .cs_abort(
+      "A declared double column contains invalid decimal text.",
+      class = "cellspec_error_format", call = call
+    )
+  }
+  # Force floating-point parsing even for integer-looking tokens, including -0.
+  integer_token <- !grepl("[.eE]", tokens)
+  tokens[integer_token] <- paste0(tokens[integer_token], "e0")
+  for (start in seq.int(1L, length(indices), by = 10000L)) {
+    block <- seq.int(start, min(start + 9999L, length(indices)))
+    out[indices[block]] <- jsonlite::fromJSON(
+      paste0("[", paste(tokens[block], collapse = ","), "]")
+    )
+  }
+  out
+}
+
 .cs_coerce_io_table <- function(df, payload, component,
                                 call = rlang::caller_env()) {
   cols <- .cs_io_descriptors(payload, component, call = call)
@@ -143,7 +177,7 @@
     type <- cols[[nm]]
     df[[nm]] <- switch(type,
       character = as.character(df[[nm]]),
-      double = as.double(df[[nm]]),
+      double = .cs_parse_io_double(df[[nm]], call = call),
       integer = as.integer(df[[nm]]),
       logical = as.logical(df[[nm]])
     )
