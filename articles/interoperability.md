@@ -14,6 +14,8 @@ if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
 } else {
   message("Install SpatialExperiment to run this section.")
 }
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 #> [1] TRUE
 ```
 

@@ -47,6 +47,7 @@ if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
   spe <- cs_as_spe(x, policy)
   spe
 }
+#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 #> class: SpatialExperiment 
 #> dim: 4 80 
 #> metadata(1): cellspec
