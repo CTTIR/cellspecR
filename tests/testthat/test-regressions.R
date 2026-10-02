@@ -1,7 +1,7 @@
 # Regression tests are named after the bug they prevent (05_TESTING.md).
 
 test_that("constant_channel_support: an all-zero marker is flagged", {
-  # A blank channel must be visible before any correction (LCNEC audit F1).
+  # A blank channel must be visible before any correction.
   x <- cs_example()
   x$measurements[, cs_features(x, marker = "FOXP3", statistic = "mean")] <- 0
   s <- cs_feature_support(x)

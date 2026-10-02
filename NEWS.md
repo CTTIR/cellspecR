@@ -1,3 +1,7 @@
+# cellspecR development
+
+* Signal policies can declare separate preferred and fallback finite domains, including negative finite measurements. Existing minimum-domain defaults and five-column policies remain unchanged. Extended seven-column policies preserve both domains through JSON and CSV.
+
 # cellspecR (development version)
 
 * Canonical TSV decimal conversion now preserves double precision on platforms
@@ -58,3 +62,5 @@ Initial CRAN release.
 
 * Added a local Shiny review app for reading exports, inspecting validation and
   downloading review tables.
+
+* Signal-policy I/O preserves structured error classes when parser diagnostics or paths contain literal braces.

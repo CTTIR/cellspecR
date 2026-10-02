@@ -25,7 +25,7 @@ cs_read(path = , format = "auto", pixel_size = NULL, image_id = NULL, sample_id 
 cs_read_cellspec(dir = , verify = TRUE)
 cs_read_signal_policy(path = , format = NULL)
 cs_signal_matrix(x = , policy = , image_id = NULL)
-cs_signal_policy(marker = , compartment = "cell", statistic = "mean", fallback_compartment = NA_character_, min_value = 0)
+cs_signal_policy(marker = , compartment = "cell", statistic = "mean", fallback_compartment = NA_character_, min_value = 0, preferred_domain = "minimum", fallback_domain = "minimum")
 cs_spec_version()
 cs_validate(x = , level = c("structure", "semantic"), area_range = c(1, 5000), na_max = 0.01)
 cs_verify(dir = )

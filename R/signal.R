@@ -4,6 +4,17 @@
   "marker", "compartment", "statistic", "fallback_compartment", "min_value"
 )
 
+.cs_signal_domain_columns <- c("preferred_domain", "fallback_domain")
+
+.cs_signal_domain_valid <- function(x) {
+  is.character(x) && is.null(dim(x)) && !is.object(x) &&
+    length(x) > 0L && !anyNA(x) && all(x %in% c("minimum", "finite"))
+}
+
+.cs_signal_domain <- function(policy, column) {
+  if (column %in% names(policy)) policy[[column]] else rep("minimum", nrow(policy))
+}
+
 .cs_signal_compartments <- function() {
   .cs_vocab_values("compartment")
 }
@@ -39,7 +50,8 @@
       call = call
     )
   }
-  if (!identical(names(policy), .cs_signal_policy_columns)) {
+  if (!identical(names(policy), .cs_signal_policy_columns) &&
+      !identical(names(policy), c(.cs_signal_policy_columns, .cs_signal_domain_columns))) {
     .cs_abort(
       c(
         "{.arg {arg}} has the wrong columns.",
@@ -54,6 +66,12 @@
   }
   if (nrow(policy) < 1L) {
     .cs_abort("{.arg {arg}} must contain at least one marker.", call = call)
+  }
+  for (column in .cs_signal_domain_columns) {
+    if (column %in% names(policy) &&
+        !.cs_signal_domain_valid(policy[[column]])) {
+      .cs_abort("{.arg {arg}} contains an invalid signal domain.", call = call)
+    }
   }
   if (!is.character(policy$marker) ||
       !is.character(policy$compartment) ||
@@ -201,8 +219,14 @@
 #'   `NA` disables fallback. A single value is recycled across `marker`.
 #' @param min_value Minimum usable value for each marker. Values below this
 #'   threshold are unavailable. A single value is recycled across `marker`.
+#' @param preferred_domain,fallback_domain Usability domain for each branch:
+#'   `"minimum"` requires a finite value at least `min_value`; `"finite"`
+#'   accepts any finite value, including negatives, without applying the minimum.
+#'   A plain character scalar is recycled across markers.
 #' @return A data frame with class `cs_signal_policy` and columns `marker`,
 #'   `compartment`, `statistic`, `fallback_compartment` and `min_value`.
+#'   Non-default domains append `preferred_domain` and `fallback_domain`.
+#'   Default policies retain the original five-column representation.
 #' @family signals
 #' @seealso [cs_signal_matrix()], [cs_marker_map()]
 #' @export
@@ -216,12 +240,21 @@ cs_signal_policy <- function(marker,
                              compartment = "cell",
                              statistic = "mean",
                              fallback_compartment = NA_character_,
-                             min_value = 0) {
+                             min_value = 0,
+                             preferred_domain = "minimum",
+                             fallback_domain = "minimum") {
   call <- rlang::caller_env()
   if (!is.character(marker) || length(marker) < 1L) {
     .cs_abort("{.arg marker} must be a non-empty character vector.", call = call)
   }
   n <- length(marker)
+  domains <- list(preferred_domain = preferred_domain, fallback_domain = fallback_domain)
+  for (nm in names(domains)) {
+    if (!.cs_signal_domain_valid(domains[[nm]])) {
+      .cs_abort("{.arg {nm}} must contain plain minimum or finite domain strings.", call = call)
+    }
+    domains[[nm]] <- .cs_recycle_signal_argument(domains[[nm]], n, nm, call)
+  }
   args <- list(
     compartment = compartment,
     statistic = statistic,
@@ -247,6 +280,10 @@ cs_signal_policy <- function(marker,
     min_value = as.double(args$min_value),
     stringsAsFactors = FALSE
   )
+  if (any(domains$preferred_domain != "minimum") || any(domains$fallback_domain != "minimum")) {
+    policy$preferred_domain <- domains$preferred_domain
+    policy$fallback_domain <- domains$fallback_domain
+  }
   class(policy) <- c("cs_signal_policy", "data.frame")
   .cs_validate_signal_policy(policy, call = call)
   policy
@@ -258,8 +295,10 @@ cs_signal_policy <- function(marker,
 #' `r lifecycle::badge("experimental")`
 #'
 #' Applies a `cs_signal_policy` to the intensity measurements in a
-#' `cellspec` object. A preferred value is used when it is non-missing and at
-#' least the row's `min_value`; otherwise the configured fallback is tested.
+#' `cellspec` object. A preferred finite value is used when its declared domain
+#' accepts it; otherwise the configured fallback is tested using its own domain.
+#' Default domains require values at least `min_value`. The `"finite"` domain
+#' accepts negative finite values. Nonfinite values remain unavailable in both.
 #'
 #' @param x A `cellspec` object.
 #' @param policy A `cs_signal_policy` created by [cs_signal_policy()].
@@ -281,6 +320,8 @@ cs_signal_matrix <- function(x, policy, image_id = NULL) {
   call <- rlang::caller_env()
   .cs_check_cellspec(x, call = call)
   .cs_validate_signal_policy(policy, call = call)
+  preferred_domain <- .cs_signal_domain(policy, "preferred_domain")
+  fallback_domain <- .cs_signal_domain(policy, "fallback_domain")
   if (!is.null(image_id)) {
     .cs_check_string(image_id, arg = "image_id", call = call)
     if (!image_id %in% x$images$image_id) {
@@ -328,7 +369,7 @@ cs_signal_matrix <- function(x, policy, image_id = NULL) {
       x$measurements[rows, preferred_id[[1L]], drop = TRUE]
     }
     preferred_ok <- !is.na(preferred) & is.finite(preferred) &
-      preferred >= policy$min_value[[j]]
+      (preferred_domain[[j]] == "finite" | preferred >= policy$min_value[[j]])
     if (any(preferred_ok)) {
       signal[preferred_ok, j] <- preferred[preferred_ok]
       source[preferred_ok, j] <- paste0(
@@ -351,7 +392,8 @@ cs_signal_matrix <- function(x, policy, image_id = NULL) {
         x$measurements[rows, fallback_id[[1L]], drop = TRUE]
       }
       fallback_ok <- !preferred_ok & !is.na(fallback_values) &
-        is.finite(fallback_values) & fallback_values >= policy$min_value[[j]]
+        is.finite(fallback_values) &
+        (fallback_domain[[j]] == "finite" | fallback_values >= policy$min_value[[j]])
       if (any(fallback_ok)) {
         signal[fallback_ok, j] <- fallback_values[fallback_ok]
         source[fallback_ok, j] <- paste0(
@@ -451,10 +493,11 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
         pretty = TRUE
       ),
       error = function(e) {
+        detail <- conditionMessage(e)
         .cs_abort(
           c(
             "Could not write the signal policy to {.path {path}}.",
-            "x" = conditionMessage(e)
+            "x" = "{detail}"
           ),
           class = "cellspec_error_format",
           call = call
@@ -470,10 +513,11 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
     tryCatch(
       data.table::fwrite(csv, path, na = "NA", quote = TRUE),
       error = function(e) {
+        detail <- conditionMessage(e)
         .cs_abort(
           c(
             "Could not write the signal policy to {.path {path}}.",
-            "x" = conditionMessage(e)
+            "x" = "{detail}"
           ),
           class = "cellspec_error_format",
           call = call
@@ -515,10 +559,11 @@ cs_read_signal_policy <- function(path, format = NULL) {
       data.table::fread(path, data.table = FALSE, encoding = "UTF-8")
     },
     error = function(e) {
+      detail <- conditionMessage(e)
       .cs_abort(
         c(
           "Could not read the signal policy from {.path {path}}.",
-          "x" = conditionMessage(e)
+          "x" = "{detail}"
         ),
         class = "cellspec_error_format",
         call = call

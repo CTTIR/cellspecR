@@ -186,3 +186,178 @@ testthat::test_that("signal policy I/O rejects unsupported formats and schemas",
     class = "cellspec_error"
   )
 })
+
+testthat::test_that("branch domains retain negative finite values only when declared", {
+  x <- signal_fixture()
+  before <- serialize(x, NULL)
+  policy <- cellspecR::cs_signal_policy(
+    c("A", "B"), compartment = c("nucleus", "cell"),
+    fallback_compartment = c("cell", NA_character_),
+    preferred_domain = c("minimum", "finite"), fallback_domain = "finite"
+  )
+  result <- cellspecR::cs_signal_matrix(x, policy)
+  testthat::expect_identical(unname(result$signal[, "A"]), c(10, 2, -1, 0))
+  testthat::expect_identical(unname(result$signal[, "B"]), c(NA_real_, 2, 0, -1))
+  testthat::expect_identical(
+    unname(result$source[, "A"]),
+    c("nucleus:mean", "fallback:cell:mean", "fallback:cell:mean", "nucleus:mean")
+  )
+  testthat::expect_identical(serialize(x, NULL), before)
+  testthat::expect_identical(result$policy, policy)
+  testthat::expect_identical(
+    cellspecR::cs_signal_matrix(x, policy, image_id = "img2")$signal,
+    result$signal[3:4, , drop = FALSE]
+  )
+})
+
+testthat::test_that("default domain declarations preserve the five-column policy", {
+  old <- cellspecR::cs_signal_policy(c("A", "B"), min_value = c(0, 1))
+  explicit <- cellspecR::cs_signal_policy(
+    c("A", "B"), min_value = c(0, 1),
+    preferred_domain = "minimum", fallback_domain = c("minimum", "minimum")
+  )
+  testthat::expect_identical(old, explicit)
+  testthat::expect_length(names(old), 5L)
+  for (format in c("json", "csv")) {
+    first <- tempfile(fileext = paste0(".", format))
+    second <- tempfile(fileext = paste0(".", format))
+    on.exit(unlink(c(first, second)), add = TRUE)
+    cellspecR::cs_write_signal_policy(old, first)
+    cellspecR::cs_write_signal_policy(explicit, second)
+    testthat::expect_identical(readBin(first, "raw", file.info(first)$size),
+                              readBin(second, "raw", file.info(second)$size))
+  }
+})
+
+testthat::test_that("extended policy roundtrips preserve both domains", {
+  policy <- cellspecR::cs_signal_policy(
+    c("A", "B"), preferred_domain = c("finite", "minimum"),
+    fallback_domain = c("minimum", "finite")
+  )
+  for (format in c("json", "csv")) {
+    path <- tempfile(fileext = paste0(".", format))
+    on.exit(unlink(path), add = TRUE)
+    cellspecR::cs_write_signal_policy(policy, path)
+    testthat::expect_identical(cellspecR::cs_read_signal_policy(path), policy)
+    all_minimum <- policy
+    all_minimum$preferred_domain[] <- "minimum"
+    all_minimum$fallback_domain[] <- "minimum"
+    cellspecR::cs_write_signal_policy(all_minimum, path)
+    testthat::expect_identical(cellspecR::cs_read_signal_policy(path), all_minimum)
+  }
+})
+
+testthat::test_that("malformed domains and partial schemas fail closed", {
+  for (bad in list(NA_character_, "Finite", "", character(), 1, TRUE,
+                  matrix("finite"), structure("finite", class = "custom"))) {
+    testthat::expect_error(cellspecR::cs_signal_policy("A", preferred_domain = bad),
+                          class = "cellspec_error")
+    testthat::expect_error(cellspecR::cs_signal_policy("A", fallback_domain = bad),
+                          class = "cellspec_error")
+  }
+  testthat::expect_error(
+    cellspecR::cs_signal_policy(c("A", "B"), preferred_domain = rep("finite", 3)),
+    class = "cellspec_error"
+  )
+  x <- signal_fixture()
+  policy <- cellspecR::cs_signal_policy("A", preferred_domain = "finite")
+  partial <- policy
+  partial$fallback_domain <- NULL
+  testthat::expect_error(cellspecR::cs_signal_matrix(x, partial), class = "cellspec_error")
+  reversed <- policy[, rev(names(policy)), drop = FALSE]
+  testthat::expect_error(cellspecR::cs_signal_matrix(x, reversed), class = "cellspec_error")
+  policy$preferred_domain <- matrix("finite")
+  testthat::expect_error(cellspecR::cs_signal_matrix(x, policy), class = "cellspec_error")
+})
+
+testthat::test_that("finite domains exclude nonfinite values and preserve extreme finite values", {
+  x <- signal_fixture()
+  x$measurements[, "cell:B:mean"] <- c(Inf, -Inf, NaN, NA_real_)
+  policy <- cellspecR::cs_signal_policy("B", preferred_domain = "finite")
+  selected <- cellspecR::cs_signal_matrix(x, policy)
+  testthat::expect_true(all(is.na(selected$signal)))
+  testthat::expect_true(all(selected$source == "unavailable"))
+  tiny <- .Machine$double.xmin * .Machine$double.eps
+  values <- c(-.Machine$double.xmax, -tiny, tiny, -0)
+  x$measurements[, "cell:B:mean"] <- values
+  testthat::expect_identical(unname(cellspecR::cs_signal_matrix(x, policy)$signal[, 1]), values)
+  testthat::expect_identical(
+    unname(cellspecR::cs_signal_matrix(x, policy)$source[, 1]), rep("cell:mean", 4)
+  )
+})
+
+testthat::test_that("explicit formats preserve extended policies without filename inference", {
+  policy <- cellspecR::cs_signal_policy("A", fallback_domain = "finite")
+  for (format in c("json", "csv")) {
+    path <- tempfile(fileext = ".policy")
+    on.exit(unlink(path), add = TRUE)
+    cellspecR::cs_write_signal_policy(policy, path, format = format)
+    testthat::expect_identical(
+      cellspecR::cs_read_signal_policy(path, format = format), policy
+    )
+  }
+})
+
+testthat::test_that("constructor type refusals also apply with finite domains", {
+  for (marker in list(character(), 1)) {
+    testthat::expect_error(
+      cellspecR::cs_signal_policy(marker, preferred_domain = "finite"),
+      class = "cellspec_error"
+    )
+  }
+  for (minimum in list(numeric(), "0")) {
+    testthat::expect_error(
+      cellspecR::cs_signal_policy("A", min_value = minimum, preferred_domain = "finite"),
+      class = "cellspec_error"
+    )
+  }
+  for (compartment in list(character(), 1)) {
+    testthat::expect_error(
+      cellspecR::cs_signal_policy("A", compartment = compartment, preferred_domain = "finite"),
+      class = "cellspec_error"
+    )
+  }
+})
+
+testthat::test_that("malformed JSON returns a structured read error without modifying input", {
+  path <- tempfile(fileext = ".json")
+  on.exit(unlink(path), add = TRUE)
+  bytes <- charToRaw("{not valid JSON")
+  writeBin(bytes, path)
+  error <- tryCatch(cellspecR::cs_read_signal_policy(path), error = identity)
+  testthat::expect_s3_class(error, "cellspec_error_format")
+  testthat::expect_match(conditionMessage(error), "{not valid JSON", fixed = TRUE)
+  testthat::expect_identical(readBin(path, "raw", length(bytes)), bytes)
+})
+
+testthat::test_that("a destination lost after validation yields structured write failures", {
+  original_check <- getFromNamespace(".cs_check_signal_destination", "cellspecR")
+  for (format in c("json", "csv")) {
+    parent <- paste0(tempfile(), "{missing}")
+    dir.create(parent)
+    path <- file.path(parent, paste0("policy.", format))
+    policy <- cellspecR::cs_signal_policy("A", fallback_domain = "finite")
+    before <- policy
+    testthat::with_mocked_bindings({
+      warnings <- character()
+      error <- withCallingHandlers(
+        tryCatch(cellspecR::cs_write_signal_policy(policy, path), error = identity),
+        warning = function(w) {
+          warnings <<- c(warnings, conditionMessage(w))
+          invokeRestart("muffleWarning")
+        }
+      )
+      testthat::expect_s3_class(error, "cellspec_error_format")
+      testthat::expect_match(conditionMessage(error), "{missing}", fixed = TRUE)
+      if (format == "json") {
+        testthat::expect_true(any(grepl("{missing}", warnings, fixed = TRUE)))
+      }
+    }, .cs_check_signal_destination = function(path, call) {
+      original_check(path, call)
+      unlink(dirname(path), recursive = TRUE)
+    }, .package = "cellspecR")
+    testthat::expect_false(file.exists(path))
+    testthat::expect_false(dir.exists(parent))
+    testthat::expect_identical(policy, before)
+  }
+})

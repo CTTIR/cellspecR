@@ -24,8 +24,10 @@ validated policy. Source values are \code{"<compartment>:<statistic>"},
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
 Applies a \code{cs_signal_policy} to the intensity measurements in a
-\code{cellspec} object. A preferred value is used when it is non-missing and at
-least the row's \code{min_value}; otherwise the configured fallback is tested.
+\code{cellspec} object. A preferred finite value is used when its declared domain
+accepts it; otherwise the configured fallback is tested using its own domain.
+Default domains require values at least \code{min_value}. The \code{"finite"} domain
+accepts negative finite values. Nonfinite values remain unavailable in both.
 }
 \examples{
 x <- cs_example()

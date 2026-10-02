@@ -9,7 +9,9 @@ cs_signal_policy(
   compartment = "cell",
   statistic = "mean",
   fallback_compartment = NA_character_,
-  min_value = 0
+  min_value = 0,
+  preferred_domain = "minimum",
+  fallback_domain = "minimum"
 )
 }
 \arguments{
@@ -26,10 +28,17 @@ recycled across \code{marker}.}
 
 \item{min_value}{Minimum usable value for each marker. Values below this
 threshold are unavailable. A single value is recycled across \code{marker}.}
+
+\item{preferred_domain, fallback_domain}{Usability domain for each branch:
+\code{"minimum"} requires a finite value at least \code{min_value}; \code{"finite"}
+accepts any finite value, including negatives, without applying the minimum.
+A plain character scalar is recycled across markers.}
 }
 \value{
 A data frame with class \code{cs_signal_policy} and columns \code{marker},
 \code{compartment}, \code{statistic}, \code{fallback_compartment} and \code{min_value}.
+Non-default domains append \code{preferred_domain} and \code{fallback_domain}.
+Default policies retain the original five-column representation.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
