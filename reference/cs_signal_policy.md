@@ -13,7 +13,9 @@ cs_signal_policy(
   compartment = "cell",
   statistic = "mean",
   fallback_compartment = NA_character_,
-  min_value = 0
+  min_value = 0,
+  preferred_domain = "minimum",
+  fallback_domain = "minimum"
 )
 ```
 
@@ -43,10 +45,19 @@ cs_signal_policy(
   Minimum usable value for each marker. Values below this threshold are
   unavailable. A single value is recycled across `marker`.
 
+- preferred_domain, fallback_domain:
+
+  Usability domain for each branch: `"minimum"` requires a finite value
+  at least `min_value`; `"finite"` accepts any finite value, including
+  negatives, without applying the minimum. A plain character scalar is
+  recycled across markers.
+
 ## Value
 
 A data frame with class `cs_signal_policy` and columns `marker`,
 `compartment`, `statistic`, `fallback_compartment` and `min_value`.
+Non-default domains append `preferred_domain` and `fallback_domain`.
+Default policies retain the original five-column representation.
 
 ## See also
 

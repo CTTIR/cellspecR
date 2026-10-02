@@ -63,7 +63,9 @@ compartment, statistic, fallback and minimum usable value explicit.</p>
 <span>  compartment <span class="op">=</span> <span class="st">"cell"</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  fallback_compartment <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
-<span>  min_value <span class="op">=</span> <span class="fl">0</span></span>
+<span>  min_value <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  preferred_domain <span class="op">=</span> <span class="st">"minimum"</span>,</span>
+<span>  fallback_domain <span class="op">=</span> <span class="st">"minimum"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,11 +96,20 @@ recycled across <code>marker</code>.</p></dd>
 <dd><p>Minimum usable value for each marker. Values below this
 threshold are unavailable. A single value is recycled across <code>marker</code>.</p></dd>
 
+
+<dt id="arg-preferred-domain-fallback-domain">preferred_domain, fallback_domain<a class="anchor" aria-label="anchor" href="#arg-preferred-domain-fallback-domain"></a></dt>
+<dd><p>Usability domain for each branch:
+<code>"minimum"</code> requires a finite value at least <code>min_value</code>; <code>"finite"</code>
+accepts any finite value, including negatives, without applying the minimum.
+A plain character scalar is recycled across markers.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data frame with class <code>cs_signal_policy</code> and columns <code>marker</code>,
-<code>compartment</code>, <code>statistic</code>, <code>fallback_compartment</code> and <code>min_value</code>.</p>
+<code>compartment</code>, <code>statistic</code>, <code>fallback_compartment</code> and <code>min_value</code>.
+Non-default domains append <code>preferred_domain</code> and <code>fallback_domain</code>.
+Default policies retain the original five-column representation.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
