@@ -1,7 +1,6 @@
-# cellspecR
+# cellspecR ![cellspecR logo](reference/figures/logo-with-name.png)
 
-- [cellspecR ![cellspecR hex
-  sticker](reference/figures/logo.svg)](#cellspecr-)
+- [cellspecR](#cellspecr-)
   - [Install](#install)
   - [Quick start](#quick-start)
   - [What the package provides](#what-the-package-provides)
