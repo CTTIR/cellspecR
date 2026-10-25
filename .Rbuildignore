@@ -26,3 +26,4 @@
 ^.*\.Rcheck$
 ^doc$
 ^Meta$
+^tools/branding$

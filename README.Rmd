@@ -4,7 +4,7 @@ output:
     toc: true
 ---
 
-# cellspecR <img src="man/figures/logo.svg" align="right" height="139" alt="cellspecR hex sticker" />
+# cellspecR <img src="man/figures/logo.png" align="right" width="120" height="139" alt="cellspecR logo" />
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -104,3 +104,8 @@ must be reviewed and revised before inclusion, and references must be verified
 against their DOI, arXiv ID or ISBN.
 
 Local software setup: vLLM with Python/PyTorch, plus R and RStudio.
+
+## Branding
+
+Editable R sources and regeneration instructions are in
+[tools/branding](https://github.com/CTTIR/cellspecR/tree/main/tools/branding).

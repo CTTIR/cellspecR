@@ -1,13 +1,13 @@
 
 - [cellspecR
-  <img src="man/figures/logo.svg" align="right" height="139" alt="cellspecR hex sticker" />](#cellspecr-)
+  <img src="man/figures/logo.svg" align="right" width="120" height="139" alt="cellspecR hex sticker" />](#cellspecr-)
   - [Install](#install)
   - [Quick start](#quick-start)
   - [What the package provides](#what-the-package-provides)
   - [Data and reproducibility](#data-and-reproducibility)
   - [Contributing and license](#contributing-and-license)
 
-# cellspecR <img src="man/figures/logo.svg" align="right" height="139" alt="cellspecR hex sticker" />
+# cellspecR <img src="man/figures/logo.png" align="right" width="120" height="139" alt="cellspecR logo" />
 
 <!-- badges: start -->
 
@@ -134,3 +134,8 @@ must be reviewed and revised before inclusion, and references must be verified
 against their DOI, arXiv ID or ISBN.
 
 Local software setup: vLLM with Python/PyTorch, plus R and RStudio.
+
+## Branding
+
+Editable R sources and regeneration instructions are in
+[tools/branding](https://github.com/CTTIR/cellspecR/tree/main/tools/branding).
