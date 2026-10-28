@@ -33,12 +33,14 @@
   )
   if (requireNamespace("bslib", quietly = TRUE)) {
     bslib::page_sidebar(
-      title = "cellspecR",
+    window_title = "cellspecR",
+      title = shiny::tagList(.cttir_brand_logo(), "cellspecR"),
       sidebar = bslib::sidebar(controls),
       body
     )
   } else {
-    shiny::fluidPage(shiny::titlePanel("cellspecR"), shiny::sidebarLayout(
+    shiny::fluidPage(shiny::titlePanel(shiny::tagList(.cttir_brand_logo(), "cellspecR"),
+      windowTitle = "cellspecR"), shiny::sidebarLayout(
       shiny::sidebarPanel(controls), shiny::mainPanel(body)
     ))
   }
