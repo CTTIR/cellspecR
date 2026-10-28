@@ -252,9 +252,14 @@
 }
 
 # Bytes of the first line including its newline, read in chunks so that long
-# headers are complete; NULL when the file has no newline.
+# headers are complete; NULL when the file has no newline. A `.gz` tile is
+# decompressed first, as for reading its table.
 .cs_tiled_header_bytes <- function(file) {
-  con <- file(file, open = "rb")
+  con <- if (grepl("\\.gz$", file, ignore.case = TRUE)) {
+    gzfile(file, open = "rb")
+  } else {
+    file(file, open = "rb")
+  }
   on.exit(close(con), add = TRUE)
   header <- raw()
   repeat {

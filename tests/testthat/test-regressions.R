@@ -344,3 +344,34 @@ test_that("overwrite_foreign_files: only pure cs_write output is replaced", {
                "cellspec.json", class = "cellspec_error_format")
   expect_true(file.exists(file.path(out, "cells.parquet")))
 })
+
+test_that("tile_gz_header: header_sha256 of a gzip tile covers its text", {
+  # The header digest was taken over the compressed bytes of a .tsv.gz tile.
+  dir <- withr::local_tempdir(pattern = "tiles-gz-header-")
+  tile <- data.frame(cell_id = "c1", centroid_x_um = 5, centroid_y_um = 5,
+                     `Cell: CD3: Mean` = 1, check.names = FALSE)
+  file <- file.path(dir, "tileA.tsv.gz")
+  data.table::fwrite(tile, file, sep = "\t", compress = "gzip")
+  con <- gzfile(file, open = "rb")
+  text <- readBin(con, "raw", 4096L)
+  close(con)
+  header <- text[seq_len(match(as.raw(10L), text))]
+  write_done <- function(header_sha256) {
+    done <- data.frame(
+      key = c("csv_sha256", "data_rows", "columns", "bytes", "header_sha256",
+              "xmin_um", "xmax_um", "ymin_um", "ymax_um"),
+      value = c(digest::digest(file = file, algo = "sha256"), "1", "4",
+                as.character(file.size(file)), header_sha256,
+                "0", "100", "0", "100")
+    )
+    utils::write.table(done, file.path(dir, "tileA.done.tsv"), sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+  }
+  write_done(digest::digest(header, algo = "sha256", serialize = FALSE))
+  x <- cs_read(dir, format = "qupath_tiled", image_id = "image-1")
+  expect_identical(x$cells$cell_id, "c1")
+
+  write_done(digest::digest(rev(header), algo = "sha256", serialize = FALSE))
+  expect_error(cs_read(dir, format = "qupath_tiled", image_id = "image-1"),
+               "header_sha256", class = "cellspec_error_format")
+})

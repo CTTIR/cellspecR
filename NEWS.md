@@ -35,7 +35,9 @@
   names the unexpected entries.
 
 * Tiled QuPath done markers with `header_sha256` now verify header lines
-  longer than 1,024 bytes instead of reporting a missing header.
+  longer than 1,024 bytes instead of reporting a missing header, and check
+  the decompressed header line of gzip-compressed (`.gz`) tiles instead of
+  their compressed bytes.
 
 * `cs_app()` now applies `max_upload_mb` as the Shiny upload limit while the
   application runs and restores the previous limit when it stops; uploads
