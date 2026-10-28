@@ -196,7 +196,8 @@ cs_from_spe <- function(spe) {
 #' Python runtime are required.
 #'
 #' @param x A `cellspec` object.
-#' @param policy Signal policy used to form `X`.
+#' @param policy Signal policy used to form `X`. It is required when a marker
+#'   has more than one compartment or statistic; otherwise it can be omitted.
 #' @return An AnnData object supplied by `anndataR`.
 #' @family interoperability
 #' @export
@@ -205,7 +206,7 @@ cs_from_spe <- function(spe) {
 #'   x <- cs_example()
 #'   cs_as_anndata(x, cs_signal_policy(cs_markers(x)))
 #' }
-cs_as_anndata <- function(x, policy) {
+cs_as_anndata <- function(x, policy = NULL) {
   call <- rlang::caller_env()
   .cs_check_cellspec(x, call = call)
   .cs_interop_require("anndataR", call = call)

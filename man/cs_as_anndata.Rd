@@ -4,12 +4,13 @@
 \alias{cs_as_anndata}
 \title{Convert a cellspec object to AnnData}
 \usage{
-cs_as_anndata(x, policy)
+cs_as_anndata(x, policy = NULL)
 }
 \arguments{
 \item{x}{A \code{cellspec} object.}
 
-\item{policy}{Signal policy used to form \code{X}.}
+\item{policy}{Signal policy used to form \code{X}. It is required when a marker
+has more than one compartment or statistic; otherwise it can be omitted.}
 }
 \value{
 An AnnData object supplied by \code{anndataR}.

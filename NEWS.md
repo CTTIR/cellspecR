@@ -40,6 +40,9 @@
   has no `area` column and the marker panel when there are no intensity
   features, instead of failing.
 
+* `cs_as_anndata()` now defaults to `policy = NULL` and derives the policy
+  the same way as `cs_as_spe()`.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

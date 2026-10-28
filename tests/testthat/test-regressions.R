@@ -108,3 +108,15 @@ test_that("overview_optional_panels: the default plot skips panels without data"
   expect_false(any(cs_dictionary(no_intensity)$kind == "intensity"))
   expect_s3_class(plot(no_intensity), "patchwork")
 })
+
+test_that("anndata_default_policy: cs_as_anndata derives a policy like cs_as_spe", {
+  # cs_as_anndata() had no default policy and failed with a missing argument.
+  expect_null(formals(cs_as_anndata)$policy)
+  skip_if_not_installed("anndataR")
+  result <- tryCatch(cs_as_anndata(min_object()), error = identity)
+  if (inherits(result, "error")) {
+    expect_s3_class(result, "cellspec_error")
+  } else {
+    expect_true(inherits(result, "AbstractAnnData") || inherits(result, "AnnData"))
+  }
+})

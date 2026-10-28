@@ -1,6 +1,6 @@
 cs_adjacency(x = )
 cs_app(path = NULL, max_upload_mb = 2048, allow_local_paths = FALSE, max_plot_points = 50000L, ... = )
-cs_as_anndata(x = , policy = )
+cs_as_anndata(x = , policy = NULL)
 cs_as_spe(x = , policy = NULL, assay_name = "intensity")
 cs_assert_valid(x = , level = "structure", call = rlang::caller_env())
 cs_bind(... = )
