@@ -46,9 +46,16 @@ micrometres.}
 metadata against each source file.}
 
 \item{keep_other}{Whether unmapped numeric columns become \code{other}
-measurements and other unmapped columns are retained in \code{cells}. Column
-names that clean to the same \verb{other:} identifier are numbered
-(\code{other:a_b}, \code{other:a_b_1}).}
+measurements and other unmapped columns are retained in \code{cells}. Every
+\code{other} feature, whether kept here or mapped with \code{kind = "other"} in
+\code{column_map} (also when \code{keep_other = FALSE}), is identified as \verb{other:}
+followed by its source name in lower case, with each run of characters
+other than \code{a-z} and \code{0-9} replaced by \verb{_} and leading or trailing \verb{_}
+removed (\code{value} if nothing is left). Identifiers that clash are made
+unique by \code{\link[=make.unique]{make.unique()}} with \code{sep = "_"}, mapped measurements first in
+the order given, then unmapped columns in table order; a suffix that is
+already taken is skipped, so columns \verb{a b}, \code{a_b} and \code{a_b_1} become
+\code{other:a_b}, \code{other:a_b_2} and \code{other:a_b_1}.}
 
 \item{keep_paths}{Whether the full input path may be recorded in
 provenance.}

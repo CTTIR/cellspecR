@@ -32,7 +32,9 @@ cs_column_map(
 pixels.}
 
 \item{measurements}{Optional data frame with \code{source_name}, \code{kind},
-\code{marker}, \code{compartment}, \code{statistic} and \code{unit} metadata columns.}
+\code{marker}, \code{compartment}, \code{statistic} and \code{unit} metadata columns.
+Measurements of kind \code{other} get \verb{other:} identifiers as described for
+\code{keep_other} in \code{\link[=cs_read]{cs_read()}}.}
 }
 \value{
 An object of class \code{cs_column_map}, a named list with the mapped

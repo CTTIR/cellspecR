@@ -48,9 +48,12 @@
 * `cs_as_anndata()` now defaults to `policy = NULL` and derives the policy
   the same way as `cs_as_spe()`.
 
-* With `keep_other = TRUE`, unmapped numeric columns whose names clean to the
-  same identifier (for example "a b" and "a_b") are numbered
-  (`other:a_b`, `other:a_b_1`) instead of aborting the read.
+* `other` features whose source names clean to the same identifier are
+  numbered with `make.unique(sep = "_")` instead of aborting the read. This
+  covers unmapped numeric columns kept by `keep_other = TRUE` and
+  measurements mapped with `kind = "other"`, also with `keep_other = FALSE`.
+  Suffixes already in use are skipped: columns "a b", "a_b" and "a_b_1"
+  become `other:a_b`, `other:a_b_2` and `other:a_b_1`.
 
 * `summary()` and its print method handle valid objects without images.
 

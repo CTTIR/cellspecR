@@ -649,6 +649,8 @@ cs_detect_format <- function(path, n_max = 50L) {
 #'   pixels.
 #' @param measurements Optional data frame with `source_name`, `kind`,
 #'   `marker`, `compartment`, `statistic` and `unit` metadata columns.
+#'   Measurements of kind `other` get `other:` identifiers as described for
+#'   `keep_other` in [cs_read()].
 #' @return An object of class `cs_column_map`, a named list with the mapped
 #'   source names, coordinate unit and validated measurement metadata.
 #' @family adapters
@@ -745,9 +747,16 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' @param verify_done Whether tiled readers should verify optional `.done.tsv`
 #'   metadata against each source file.
 #' @param keep_other Whether unmapped numeric columns become `other`
-#'   measurements and other unmapped columns are retained in `cells`. Column
-#'   names that clean to the same `other:` identifier are numbered
-#'   (`other:a_b`, `other:a_b_1`).
+#'   measurements and other unmapped columns are retained in `cells`. Every
+#'   `other` feature, whether kept here or mapped with `kind = "other"` in
+#'   `column_map` (also when `keep_other = FALSE`), is identified as `other:`
+#'   followed by its source name in lower case, with each run of characters
+#'   other than `a-z` and `0-9` replaced by `_` and leading or trailing `_`
+#'   removed (`value` if nothing is left). Identifiers that clash are made
+#'   unique by [make.unique()] with `sep = "_"`, mapped measurements first in
+#'   the order given, then unmapped columns in table order; a suffix that is
+#'   already taken is skipped, so columns `a b`, `a_b` and `a_b_1` become
+#'   `other:a_b`, `other:a_b_2` and `other:a_b_1`.
 #' @param keep_paths Whether the full input path may be recorded in
 #'   provenance.
 #' @param quiet Reserved for consistency with future readers; suppresses the

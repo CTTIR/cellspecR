@@ -134,6 +134,28 @@ test_that("other_id_collision: unmapped columns with clashing clean names are ke
   expect_identical(colnames(x$measurements), c("other:a_b", "other:a_b_1"))
   expect_identical(x$dictionary$source_name, c("a b", "a_b"))
   expect_identical(unname(x$measurements[, "other:a_b_1"]), c(3, 4))
+
+  # The documented rule: make.unique() skips suffixes already taken, and
+  # mapped `other` measurements are numbered too, also without keep_other.
+  utils::write.csv(
+    data.frame(id = c("c1", "c2"), x = 1:2, y = 3:4, `a b` = c(1, 2),
+               a_b = c(3, 4), a_b_1 = c(5, 6), check.names = FALSE),
+    path, row.names = FALSE
+  )
+  x <- cs_read(path, format = "table",
+               column_map = cs_column_map("id", "x", "y"))
+  expect_identical(colnames(x$measurements),
+                   c("other:a_b", "other:a_b_2", "other:a_b_1"))
+  expect_identical(unname(x$measurements[, "other:a_b_2"]), c(3, 4))
+  mapped <- data.frame(
+    source_name = c("a_b", "a b"), kind = "other", marker = NA,
+    compartment = NA, statistic = "value", unit = "a.u."
+  )
+  x <- cs_read(path, format = "table", keep_other = FALSE, quiet = TRUE,
+               column_map = cs_column_map("id", "x", "y",
+                                          measurements = mapped))
+  expect_identical(colnames(x$measurements), c("other:a_b", "other:a_b_1"))
+  expect_identical(unname(x$measurements[, "other:a_b_1"]), c(1, 2))
 })
 
 test_that("summary_no_images: summary and print handle objects without images", {
