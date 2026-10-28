@@ -1,5 +1,8 @@
 # Getting started with cellspecR
 
+![cellspecR logo](figures/logo.svg)![cellspecR
+logo](figures/logo-dark.svg)
+
 `cellspecR` puts an explicit contract between segmentation and
 downstream analysis. The first object to inspect is the deterministic
 bundled example.

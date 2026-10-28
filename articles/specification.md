@@ -1,5 +1,8 @@
 # The cellspec 1.0 format
 
+![cellspecR logo](figures/logo.svg)![cellspecR
+logo](figures/logo-dark.svg)
+
 This document is the normative description of `cellspec` 1.0.0, the
 table format for segmented cells from multiplexed tissue images. The key
 words **MUST**, **SHOULD** and **MAY** are used as in RFC 2119. Every

@@ -1,5 +1,8 @@
 # Interoperability with SpatialExperiment and AnnData
 
+![cellspecR logo](figures/logo.svg)![cellspecR
+logo](figures/logo-dark.svg)
+
 The SpatialExperiment conversion keeps the selected signal as the main
 assay, all raw measurements as an alternative experiment, and stores the
 images, channels, provenance and policy in metadata.

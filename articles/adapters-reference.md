@@ -1,5 +1,8 @@
 # Adapter reference
 
+![cellspecR logo](figures/logo.svg)![cellspecR
+logo](figures/logo-dark.svg)
+
 [`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md)
 is the machine-readable index of supported reader grammars. Each adapter
 preserves the source column name in `dictionary$source_name` and records

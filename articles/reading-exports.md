@@ -1,5 +1,8 @@
 # Reading cell measurement exports
 
+![cellspecR logo](figures/logo.svg)![cellspecR
+logo](figures/logo-dark.svg)
+
 Readers are selected explicitly when a project contains more than one
 possible grammar. The bundled synthetic export uses QuPath-style
 headers.
