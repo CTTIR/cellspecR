@@ -291,3 +291,34 @@ test_that("gzip_members: BGZF and concatenated gzip members are checked", {
     cellspecR:::.cs_crc32_tail(file, 5000, 1200)
   )
 })
+
+test_that("overwrite_foreign_files: only pure cs_write output is replaced", {
+  # A MANIFEST.sha256 or cellspec.json was enough for overwrite = TRUE to
+  # delete a folder, including files cs_write() never writes.
+  path <- withr::local_tempfile(pattern = "release-")
+  dir.create(path)
+  writeLines("abc  notes.txt", file.path(path, "MANIFEST.sha256"))
+  writeLines("precious", file.path(path, "notes.txt"))
+  expect_error(cs_write(min_object(), path, overwrite = TRUE),
+               "notes.txt", class = "cellspec_error_format")
+  expect_identical(readLines(file.path(path, "notes.txt")), "precious")
+  expect_setequal(list.files(path, all.files = TRUE, no.. = TRUE),
+                  c("MANIFEST.sha256", "notes.txt"))
+
+  out <- withr::local_tempfile(pattern = "cellspec-")
+  cs_write(min_object(), out, format = "tsv.gz")
+  writeLines("my notes", file.path(out, "analysis-notes.txt"))
+  expect_error(cs_write(min_object(), out, overwrite = TRUE),
+               "analysis-notes.txt", class = "cellspec_error_format")
+  expect_true(file.exists(file.path(out, "analysis-notes.txt")))
+  expect_true(file.exists(file.path(out, "cells.tsv.gz")))
+  unlink(file.path(out, "analysis-notes.txt"))
+  cs_write(min_object(), out, overwrite = TRUE)
+  expect_true(all(cs_verify(out)$ok))
+  expect_false(file.exists(file.path(out, "cells.tsv.gz")))
+
+  writeLines('{"format": "other"}', file.path(out, "cellspec.json"))
+  expect_error(cs_write(min_object(), out, overwrite = TRUE),
+               "cellspec.json", class = "cellspec_error_format")
+  expect_true(file.exists(file.path(out, "cells.parquet")))
+})

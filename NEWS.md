@@ -28,9 +28,11 @@
   and anisotropic transforms must be handled explicitly before image integration.
   Raw shape measurements retain their pixel or radian units.
 
-* `cs_write(overwrite = TRUE)` now replaces only an empty directory or an
-  existing cellspec directory; any other directory is left untouched and an
-  error is raised.
+* `cs_write(overwrite = TRUE)` now replaces only an empty directory or
+  earlier `cs_write()` output: a directory whose `cellspec.json` carries the
+  cellspec format marker and which holds no files other than those
+  `cs_write()` creates. Any other directory is left untouched and an error
+  names the unexpected entries.
 
 * Tiled QuPath done markers with `header_sha256` now verify header lines
   longer than 1,024 bytes instead of reporting a missing header.

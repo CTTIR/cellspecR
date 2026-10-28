@@ -325,6 +325,7 @@ test_that("integrity manifest validation catches unsafe, duplicate and extra ent
   expect_error(cellspecR:::.cs_manifest_entries(path),
                class = "cellspec_error_integrity")
 
+  unlink(manifest)
   cs_write(min_object(), path, overwrite = TRUE)
   writeLines("extra", file.path(path, "extra.txt"))
   report <- cs_verify(path)

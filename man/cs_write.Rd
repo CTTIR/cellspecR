@@ -14,9 +14,11 @@ cs_write(x, dir, format = c("parquet", "tsv.gz"), overwrite = FALSE)
 \item{format}{Storage format: parquet or tsv.gz.}
 
 \item{overwrite}{Whether an existing destination may be replaced. Only an
-empty directory or a cellspec directory (one with \code{cellspec.json} or
-\code{MANIFEST.sha256}) is replaced; any other directory is left untouched and
-an error is raised.}
+empty directory or earlier \code{cs_write()} output is replaced: a directory
+whose \code{cellspec.json} carries the cellspec format marker and which holds
+nothing but the files \code{cs_write()} creates. Any other directory, for
+example one with an added file, is left untouched and an error naming
+the unexpected entries is raised.}
 }
 \value{
 x, invisibly.

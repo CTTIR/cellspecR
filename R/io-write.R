@@ -175,12 +175,41 @@
   )
 }
 
+# Every file that cs_write() creates.
+.cs_written_files <- c(
+  "cellspec.json", "MANIFEST.sha256", "DONE", "cells.parquet",
+  "cells.tsv.gz", "adjacency.parquet", "adjacency.tsv.gz"
+)
+
 # Directories that `overwrite = TRUE` may replace: empty ones and earlier
-# cellspec output, recognised by its sidecar or manifest.
-.cs_replaceable_dir <- function(path) {
+# cs_write() output, which holds only files that cs_write() creates and a
+# cellspec.json with the cellspec format marker. Anything else aborts.
+.cs_check_replaceable_dir <- function(path, call = rlang::caller_env()) {
   entries <- list.files(path, all.files = TRUE, no.. = TRUE)
-  length(entries) == 0L ||
-    any(c("cellspec.json", "MANIFEST.sha256") %in% entries)
+  if (length(entries) == 0L) {
+    return(invisible(NULL))
+  }
+  unexpected <- entries[!entries %in% .cs_written_files |
+                          dir.exists(file.path(path, entries))]
+  sidecar <- file.path(path, "cellspec.json")
+  doc <- if (file.exists(sidecar) && !dir.exists(sidecar)) {
+    tryCatch(jsonlite::fromJSON(sidecar, simplifyVector = FALSE),
+             error = function(e) NULL)
+  }
+  marked <- is.list(doc) && identical(doc$format, "cellspec")
+  if (length(unexpected) == 0L && marked) {
+    return(invisible(NULL))
+  }
+  .cs_abort(
+    c(
+      "Destination {.path {path}} is not a cellspec directory.",
+      "x" = if (length(unexpected) > 0L) "It contains entries that {.fn cs_write} does not create: {.val {unexpected}}.",
+      "x" = if (!marked) "It has no {.file cellspec.json} with the cellspec format marker.",
+      "i" = "{.code overwrite = TRUE} replaces only an empty directory or earlier {.fn cs_write} output; choose another destination or remove the directory first."
+    ),
+    class = "cellspec_error_format",
+    call = call
+  )
 }
 
 .cs_commit_stage <- function(stage, target, overwrite, call = rlang::caller_env()) {
@@ -229,9 +258,11 @@
 #' @param dir Destination directory. Its parent is created when needed.
 #' @param format Storage format: parquet or tsv.gz.
 #' @param overwrite Whether an existing destination may be replaced. Only an
-#'   empty directory or a cellspec directory (one with `cellspec.json` or
-#'   `MANIFEST.sha256`) is replaced; any other directory is left untouched and
-#'   an error is raised.
+#'   empty directory or earlier `cs_write()` output is replaced: a directory
+#'   whose `cellspec.json` carries the cellspec format marker and which holds
+#'   nothing but the files `cs_write()` creates. Any other directory, for
+#'   example one with an added file, is left untouched and an error naming
+#'   the unexpected entries is raised.
 #' @return x, invisibly.
 #' @family canonical-format
 #' @seealso cs_read_cellspec(), cs_verify()
@@ -263,15 +294,8 @@ cs_write <- function(x, dir, format = c("parquet", "tsv.gz"),
       class = "cellspec_error_format"
     )
   }
-  if (dir.exists(target) && !.cs_replaceable_dir(target)) {
-    .cs_abort(
-      c(
-        "Destination {.path {target}} is not a cellspec directory.",
-        "x" = "{.code overwrite = TRUE} replaces only an empty directory or earlier {.fn cs_write} output.",
-        "i" = "Choose another destination or remove the directory first."
-      ),
-      class = "cellspec_error_format"
-    )
+  if (dir.exists(target)) {
+    .cs_check_replaceable_dir(target, call = rlang::current_env())
   }
 
   stage <- .cs_stage_path(target)
