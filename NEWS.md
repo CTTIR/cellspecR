@@ -60,7 +60,13 @@
   it names its staging and backup directories.
 
 * Gzip-compressed tables and canonical `tsv.gz` files are decompressed in R
-  on every platform instead of through an external `gzip` program.
+  on every platform instead of through an external `gzip` program. The
+  result is checked against the gzip trailer (CRC-32 and length), so a
+  truncated or corrupt file raises a `cellspec_error_format` instead of
+  loading only part of its rows. BGZF files (`bgzip`) are checked block by
+  block and must end with the BGZF end-of-file block; other files made of
+  several gzip members, which cannot be checked completely, are read with a
+  `cellspec_warning_integrity` warning.
 
 # cellspecR 1.0.0
 

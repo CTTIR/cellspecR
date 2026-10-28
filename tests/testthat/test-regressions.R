@@ -218,3 +218,76 @@ test_that("gzip_in_r: compressed tables are read without an external gzip", {
   expect_identical(y$adjacency, sim_object()$adjacency)
   expect_length(list.files(tempdir(), pattern = "^cellspec-gunzip-"), 0L)
 })
+
+test_that("gzip_truncated: a cut gzip table is an error, not a short table", {
+  # gzfile() stops without a warning where a truncated stream ends, so half
+  # a file loaded as half of the rows.
+  n <- 4000L
+  path <- withr::local_tempfile(fileext = ".tsv.gz")
+  data.table::fwrite(
+    data.frame(id = sprintf("c%05d", seq_len(n)), x = seq_len(n) / 7,
+               y = seq_len(n) / 3, value = sqrt(seq_len(n))),
+    path, sep = "\t", compress = "gzip"
+  )
+  map <- cs_column_map("id", "x", "y")
+  expect_no_warning(x <- cs_read(path, format = "table", column_map = map))
+  expect_identical(nrow(x$cells), n)
+
+  bytes <- readBin(path, "raw", file.size(path))
+  cut <- withr::local_tempfile(fileext = ".tsv.gz")
+  for (keep in c(0.5, 0.99)) {
+    writeBin(bytes[seq_len(floor(length(bytes) * keep))], cut)
+    expect_error(cs_read(cut, format = "table", column_map = map),
+                 "truncated", class = "cellspec_error_format")
+  }
+  # The trailer's length field is not checked by gzfile().
+  bad_length <- bytes
+  bad_length[[length(bytes)]] <- as.raw(255L)
+  writeBin(bad_length, cut)
+  expect_error(cs_read(cut, format = "table", column_map = map),
+               "truncated", class = "cellspec_error_format")
+
+  dir <- withr::local_tempfile(pattern = "cellspec-")
+  cs_write(sim_object(), dir, format = "tsv.gz")
+  cells <- file.path(dir, "cells.tsv.gz")
+  bytes <- readBin(cells, "raw", file.size(cells))
+  writeBin(bytes[seq_len(floor(length(bytes) * 0.6))], cells)
+  expect_error(cs_read_cellspec(dir, verify = FALSE),
+               "truncated", class = "cellspec_error_format")
+  expect_length(list.files(tempdir(), pattern = "^cellspec-gunzip-"), 0L)
+})
+
+test_that("gzip_members: BGZF and concatenated gzip members are checked", {
+  # Only a single-member stream can be checked against one trailer; BGZF
+  # blocks are checked one by one, other members with a warning.
+  parts <- gzip_table_parts()
+  map <- cs_column_map("id", "x", "y")
+  path <- withr::local_tempfile(fileext = ".tsv.gz")
+  read <- function() cs_read(path, format = "table", column_map = map)
+
+  bgzf <- c(bgzf_block(parts$first), bgzf_block(parts$second), bgzf_eof())
+  writeBin(bgzf, path)
+  expect_no_warning(x <- read())
+  expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+  expect_identical(unname(x$measurements[, "other:value"]), (1:60) / 2)
+  writeBin(bgzf[seq_len(length(bgzf) - length(bgzf_eof()))], path)
+  expect_error(read(), "end-of-file", class = "cellspec_error_format")
+  writeBin(bgzf[seq_len(length(bgzf) - 40L)], path)
+  expect_error(read(), "truncated", class = "cellspec_error_format")
+
+  members <- c(gzip_member(parts$first), gzip_member(parts$second))
+  writeBin(members, path)
+  expect_warning(x <- read(), class = "cellspec_warning_integrity")
+  expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+  expect_identical(unname(x$measurements[, "other:value"]), (1:60) / 2)
+  writeBin(members[seq_len(length(members) - 12L)], path)
+  expect_error(read(), "truncated", class = "cellspec_error_format")
+
+  # A tail beyond digest()'s integer offset is hashed from a copy.
+  file <- withr::local_tempfile()
+  writeBin(as.raw(rep_len(0:255, 5000L)), file)
+  expect_identical(
+    cellspecR:::.cs_crc32_tail(file, 5000, 1200, max_skip = 0),
+    cellspecR:::.cs_crc32_tail(file, 5000, 1200)
+  )
+})

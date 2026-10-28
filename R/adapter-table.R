@@ -189,22 +189,214 @@
 }
 
 # Decompresses a gzip file into a temporary file with R's own zlib support,
-# so that no external program is needed. The caller removes the result.
-.cs_gunzip_tempfile <- function(path) {
+# so that no external program is needed. gzfile() stops without a warning
+# where a truncated stream ends, so unless `verify` is FALSE the result is
+# checked against the gzip trailer. The caller removes the result.
+.cs_gunzip_tempfile <- function(path, verify = TRUE) {
   plain <- tempfile("cellspec-gunzip-")
+  complete <- FALSE
+  on.exit(if (!complete) unlink(plain), add = TRUE)
+  size <- .cs_gunzip_copy(path, plain)
+  if (verify) {
+    .cs_gzip_verify(path, plain, size)
+  }
+  complete <- TRUE
+  plain
+}
+
+# Copies the decompressed bytes and returns their number. gzfile() warns
+# and stops early when a member fails its CRC-32 check.
+.cs_gunzip_copy <- function(path, plain) {
   input <- gzfile(path, open = "rb")
   on.exit(close(input), add = TRUE)
   output <- file(plain, open = "wb")
   on.exit(close(output), add = TRUE)
-  complete <- FALSE
-  on.exit(if (!complete) unlink(plain), add = TRUE)
-  repeat {
-    chunk <- readBin(input, what = "raw", n = 1048576L)
-    if (length(chunk) == 0L) break
-    writeBin(chunk, output)
+  size <- 0
+  withCallingHandlers(
+    repeat {
+      chunk <- readBin(input, what = "raw", n = 1048576L)
+      if (length(chunk) == 0L) break
+      writeBin(chunk, output)
+      size <- size + length(chunk)
+    },
+    warning = function(cnd) {
+      .cs_gzip_abort("{conditionMessage(cnd)}")
+    }
+  )
+  size
+}
+
+.cs_gzip_abort <- function(problem, .envir = parent.frame()) {
+  .cs_abort(
+    paste("The gzip stream is truncated or corrupt:", problem),
+    class = "cellspec_error_format",
+    call = NULL,
+    .envir = .envir
+  )
+}
+
+.cs_gzip_magic <- as.raw(c(0x1f, 0x8b))
+
+# The 28-byte empty block that ends a BGZF file.
+.cs_bgzf_eof <- as.raw(c(
+  0x1f, 0x8b, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x06, 0x00,
+  0x42, 0x43, 0x02, 0x00, 0x1b, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00
+))
+
+# Unsigned little-endian integer, as a double.
+.cs_le_uint <- function(bytes) {
+  sum(as.numeric(bytes) * 256^(seq_along(bytes) - 1L))
+}
+
+# A CRC-32 as eight lowercase hex digits, from digest() or from the four
+# little-endian bytes of a gzip trailer.
+.cs_crc32_hex <- function(crc) {
+  if (is.raw(crc)) {
+    return(paste(rev(as.character(crc)), collapse = ""))
   }
-  complete <- TRUE
-  plain
+  paste0(strrep("0", 8L - nchar(crc)), crc)
+}
+
+# CRC-32 of the last `n` of the `size` bytes of `file`, streamed by digest().
+# digest() takes an integer offset, so a tail further in is hashed from a
+# copy.
+.cs_crc32_tail <- function(file, size, n, max_skip = .Machine$integer.max) {
+  skip <- size - n
+  if (skip > max_skip) {
+    tail <- tempfile("cellspec-gunzip-tail-")
+    on.exit(unlink(tail), add = TRUE)
+    input <- file(file, open = "rb")
+    on.exit(close(input), add = TRUE)
+    seek(input, where = skip)
+    output <- file(tail, open = "wb")
+    repeat {
+      chunk <- readBin(input, what = "raw", n = 1048576L)
+      if (length(chunk) == 0L) break
+      writeBin(chunk, output)
+    }
+    close(output)
+    file <- tail
+    skip <- 0
+  }
+  .cs_crc32_hex(digest::digest(file, algo = "crc32", serialize = FALSE,
+                               file = TRUE, skip = skip))
+}
+
+# Checks the decompressed bytes against the trailer that ends the input: the
+# CRC-32 and the length (modulo 2^32) of its last member. For a
+# single-member stream, as written by gzip, gzfile() and data.table::fwrite(),
+# that covers all data. BGZF files are checked block by block. Other
+# multi-member streams are accepted when their last member is complete, with
+# a warning, because a stream cut between two members looks whole.
+.cs_gzip_verify <- function(path, plain, size) {
+  n <- file.size(path)
+  con <- file(path, open = "rb")
+  on.exit(close(con), add = TRUE)
+  if (!identical(readBin(con, what = "raw", n = 2L), .cs_gzip_magic)) {
+    # Not gzip data; gzfile() has read the file as it is.
+    return(invisible(NULL))
+  }
+  if (n < 18) {
+    .cs_gzip_abort("the file ends inside the first gzip member.")
+  }
+  if (isTRUE(.cs_bgzf_verify(path, plain, size))) {
+    return(invisible(NULL))
+  }
+  seek(con, where = n - 8)
+  trailer <- readBin(con, what = "raw", n = 8L)
+  crc <- .cs_crc32_hex(trailer[1:4])
+  isize <- .cs_le_uint(trailer[5:8])
+  candidates <- if (isize > size) numeric() else rev(seq(isize, size, by = 2^32))
+  for (last in candidates) {
+    if (identical(.cs_crc32_tail(plain, size, last), crc)) {
+      if (last < size) {
+        .cs_warn(
+          c(
+            "Could not fully verify {.path {basename(path)}}.",
+            "i" = "It holds several gzip members; only the last one could be checked, so a file cut between two members would go unnoticed."
+          ),
+          class = "cellspec_warning_integrity"
+        )
+      }
+      return(invisible(NULL))
+    }
+  }
+  .cs_gzip_abort(
+    "the data do not match the CRC-32 and length in its trailer."
+  )
+}
+
+# Checks every block of a BGZF file (as written by bgzip): its "BC" extra
+# subfield gives the block size, so each block's CRC-32 and length can be
+# compared with its slice of the decompressed data, and the file must end
+# with the empty end-of-file block. Returns FALSE when a block is not BGZF,
+# so that the caller falls back to the trailer check.
+.cs_bgzf_verify <- function(path, plain, size) {
+  input <- file(path, open = "rb")
+  on.exit(close(input), add = TRUE)
+  output <- file(plain, open = "rb")
+  on.exit(close(output), add = TRUE)
+  total <- 0
+  block <- 0L
+  eof <- FALSE
+  repeat {
+    header <- readBin(input, what = "raw", n = 12L)
+    if (length(header) == 0L) break
+    block <- block + 1L
+    if (length(header) < 12L) {
+      .cs_gzip_abort("the file ends inside the header of BGZF block {block}.")
+    }
+    if (!identical(header[1:3], c(.cs_gzip_magic, as.raw(8L))) ||
+        bitwAnd(as.integer(header[[4L]]), 4L) == 0L) {
+      return(FALSE)
+    }
+    xlen <- .cs_le_uint(header[11:12])
+    extra <- readBin(input, what = "raw", n = xlen)
+    if (length(extra) < xlen) {
+      .cs_gzip_abort("the file ends inside the header of BGZF block {block}.")
+    }
+    bsize <- NULL
+    at <- 1L
+    while (at + 3L <= xlen) {
+      field_length <- .cs_le_uint(extra[at + 2:3])
+      if (identical(extra[at + 0:1], charToRaw("BC")) && field_length == 2 &&
+          at + 5L <= xlen) {
+        bsize <- .cs_le_uint(extra[at + 4:5])
+      }
+      at <- at + 4L + field_length
+    }
+    if (is.null(bsize)) {
+      return(FALSE)
+    }
+    rest <- bsize + 1 - 12 - xlen
+    if (rest < 8) {
+      .cs_gzip_abort("BGZF block {block} declares an impossible size.")
+    }
+    body <- readBin(input, what = "raw", n = rest)
+    if (length(body) < rest) {
+      .cs_gzip_abort("the file ends inside BGZF block {block}.")
+    }
+    trailer <- body[rest - 7:0]
+    isize <- .cs_le_uint(trailer[5:8])
+    data <- if (isize > 65536) raw() else readBin(output, what = "raw", n = isize)
+    if (length(data) != isize ||
+        !identical(
+          .cs_crc32_hex(digest::digest(data, algo = "crc32", serialize = FALSE)),
+          .cs_crc32_hex(trailer[1:4])
+        )) {
+      .cs_gzip_abort("BGZF block {block} does not match its CRC-32 and length.")
+    }
+    total <- total + isize
+    eof <- identical(c(header, extra, body), .cs_bgzf_eof)
+  }
+  if (!eof) {
+    .cs_gzip_abort("the BGZF end-of-file block is missing.")
+  }
+  if (total != size) {
+    .cs_gzip_abort("the BGZF blocks do not add up to the decompressed data.")
+  }
+  TRUE
 }
 
 .cs_table_read <- function(path, n_max = NULL, call = rlang::caller_env()) {
@@ -221,7 +413,8 @@
   plain <- NULL
   on.exit(if (!is.null(plain)) unlink(plain), add = TRUE)
   result <- tryCatch({
-    if (compressed) plain <- .cs_gunzip_tempfile(path)
+    # A partial read only peeks at the columns; it is not verified.
+    if (compressed) plain <- .cs_gunzip_tempfile(path, verify = is.null(n_max))
     args$file <- if (compressed) plain else path
     suppressWarnings(do.call(data.table::fread, args))
   }, error = function(error) error)
