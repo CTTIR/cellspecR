@@ -43,6 +43,10 @@
 * `cs_as_anndata()` now defaults to `policy = NULL` and derives the policy
   the same way as `cs_as_spe()`.
 
+* With `keep_other = TRUE`, unmapped numeric columns whose names clean to the
+  same identifier (for example "a b" and "a_b") are numbered
+  (`other:a_b`, `other:a_b_1`) instead of aborting the read.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

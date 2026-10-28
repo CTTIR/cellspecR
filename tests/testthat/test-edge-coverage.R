@@ -39,8 +39,12 @@ test_that("table mapping and metadata validation reject unsafe descriptions", {
   other$statistic <- "score"
   other$source_name <- "Score (%)"
   expect_identical(cellspecR:::.cs_table_feature_id(other), "other:score")
+  other_twin <- other
+  other_twin$source_name <- "Score"
+  expect_identical(cellspecR:::.cs_table_feature_id(rbind(other, other_twin)),
+                   c("other:score", "other:score_1"))
   expect_error(
-    cellspecR:::.cs_table_feature_id(rbind(other, other)),
+    cellspecR:::.cs_table_feature_id(rbind(valid, valid)),
     class = "cellspec_error"
   )
 

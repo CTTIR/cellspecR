@@ -51,7 +51,8 @@
     source <- gsub("[^a-z0-9]+", "_", source, perl = TRUE)
     source <- gsub("^_+|_+$", "", source, perl = TRUE)
     source[!nzchar(source)] <- "value"
-    ids[other] <- paste0("other:", source)
+    # Distinct columns can clean to the same name ("a b", "a_b"); number them.
+    ids[other] <- make.unique(paste0("other:", source), sep = "_")
   }
   if (anyNA(ids) || anyDuplicated(ids)) {
     .cs_table_abort(
@@ -545,7 +546,9 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' @param verify_done Whether tiled readers should verify optional `.done.tsv`
 #'   metadata against each source file.
 #' @param keep_other Whether unmapped numeric columns become `other`
-#'   measurements and other unmapped columns are retained in `cells`.
+#'   measurements and other unmapped columns are retained in `cells`. Column
+#'   names that clean to the same `other:` identifier are numbered
+#'   (`other:a_b`, `other:a_b_1`).
 #' @param keep_paths Whether the full input path may be recorded in
 #'   provenance.
 #' @param quiet Reserved for consistency with future readers; suppresses the

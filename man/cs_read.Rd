@@ -46,7 +46,9 @@ micrometres.}
 metadata against each source file.}
 
 \item{keep_other}{Whether unmapped numeric columns become \code{other}
-measurements and other unmapped columns are retained in \code{cells}.}
+measurements and other unmapped columns are retained in \code{cells}. Column
+names that clean to the same \verb{other:} identifier are numbered
+(\code{other:a_b}, \code{other:a_b_1}).}
 
 \item{keep_paths}{Whether the full input path may be recorded in
 provenance.}

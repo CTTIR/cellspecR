@@ -120,3 +120,18 @@ test_that("anndata_default_policy: cs_as_anndata derives a policy like cs_as_spe
     expect_true(inherits(result, "AbstractAnnData") || inherits(result, "AnnData"))
   }
 })
+
+test_that("other_id_collision: unmapped columns with clashing clean names are kept", {
+  # "a b" and "a_b" both became other:a_b and aborted the read.
+  path <- withr::local_tempfile(fileext = ".csv")
+  utils::write.csv(
+    data.frame(id = c("c1", "c2"), x = 1:2, y = 3:4, `a b` = c(1, 2),
+               a_b = c(3, 4), check.names = FALSE),
+    path, row.names = FALSE
+  )
+  x <- cs_read(path, format = "table", keep_other = TRUE,
+               column_map = cs_column_map("id", "x", "y"))
+  expect_identical(colnames(x$measurements), c("other:a_b", "other:a_b_1"))
+  expect_identical(x$dictionary$source_name, c("a b", "a_b"))
+  expect_identical(unname(x$measurements[, "other:a_b_1"]), c(3, 4))
+})
