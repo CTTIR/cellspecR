@@ -14,7 +14,9 @@ Description: Defines 'cellspec', a versioned table format for segmented
     'MCMICRO' into this format, validates its structure and content,
     selects one signal per marker through an explicit policy, and writes
     directories with a 'SHA-256' checksum manifest so that later analysis
-    steps can verify what they read.
+    steps can verify what they read. 'QuPath' is described by Bankhead et
+    al. (2017) <doi:10.1038/s41598-017-17204-5> and 'MCMICRO' by Schapiro
+    et al. (2022) <doi:10.1038/s41592-021-01308-y>.
 License: MIT + file LICENSE
 URL: https://github.com/CTTIR/cellspecR, https://cttir.github.io/cellspecR/
 BugReports: https://github.com/CTTIR/cellspecR/issues
