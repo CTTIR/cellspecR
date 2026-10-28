@@ -13,7 +13,10 @@ cs_write(x, dir, format = c("parquet", "tsv.gz"), overwrite = FALSE)
 
 \item{format}{Storage format: parquet or tsv.gz.}
 
-\item{overwrite}{Whether an existing destination may be replaced.}
+\item{overwrite}{Whether an existing destination may be replaced. Only an
+empty directory or a cellspec directory (one with \code{cellspec.json} or
+\code{MANIFEST.sha256}) is replaced; any other directory is left untouched and
+an error is raised.}
 }
 \value{
 x, invisibly.

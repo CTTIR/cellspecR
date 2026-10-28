@@ -26,3 +26,25 @@ test_that("subset_alignment: subsetting never misaligns measurements or adjacenc
     expect_true(all(paste(adj$image_id, adj$cell_id_b) %in% keys))
   }
 })
+
+test_that("overwrite_foreign_directory: cs_write never replaces unrelated folders", {
+  # overwrite = TRUE used to replace any directory, deleting its files.
+  path <- withr::local_tempfile(pattern = "user-folder-")
+  dir.create(path)
+  writeLines("precious", file.path(path, "notes.txt"))
+  expect_error(
+    cs_write(min_object(), path, overwrite = TRUE),
+    class = "cellspec_error_format"
+  )
+  expect_identical(list.files(path, all.files = TRUE, no.. = TRUE), "notes.txt")
+  expect_identical(readLines(file.path(path, "notes.txt")), "precious")
+  expect_length(list.files(dirname(path),
+                           pattern = paste0("^", basename(path), "\\.partial-")), 0L)
+
+  empty <- withr::local_tempfile(pattern = "empty-folder-")
+  dir.create(empty)
+  cs_write(min_object(), empty, overwrite = TRUE)
+  expect_true(all(cs_verify(empty)$ok))
+  cs_write(min_object(), empty, overwrite = TRUE)
+  expect_true(all(cs_verify(empty)$ok))
+})

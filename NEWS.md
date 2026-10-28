@@ -25,6 +25,10 @@
   and anisotropic transforms must be handled explicitly before image integration.
   Raw shape measurements retain their pixel or radian units.
 
+* `cs_write(overwrite = TRUE)` now replaces only an empty directory or an
+  existing cellspec directory; any other directory is left untouched and an
+  error is raised.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.
