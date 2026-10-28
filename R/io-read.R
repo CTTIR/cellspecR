@@ -252,6 +252,21 @@
                       payload, component, call = call)
 }
 
+# Row count declared for a sidecar component: a single non-negative whole
+# number.
+.cs_sidecar_rows <- function(entry, component, call = rlang::caller_env()) {
+  n_rows <- if (is.list(entry)) entry[["n_rows"]] else NULL
+  if (!is.numeric(n_rows) || length(n_rows) != 1L || !is.finite(n_rows) ||
+      n_rows < 0 || n_rows != trunc(n_rows)) {
+    .cs_abort(
+      "cellspec.json has no valid {.field n_rows} for {.field {component}}.",
+      class = "cellspec_error_format",
+      call = call
+    )
+  }
+  n_rows
+}
+
 .cs_version_parts <- function(version) {
   if (!is.character(version) || length(version) != 1L ||
       is.na(version) || !grepl("^[0-9]+\\.[0-9]+\\.[0-9]+$", version)) {
@@ -340,6 +355,7 @@ cs_read_cellspec <- function(dir, verify = TRUE) {
       class = "cellspec_error_format"
     )
   }
+  cell_rows <- .cs_sidecar_rows(doc$cells, "cells")
   cell_path <- file.path(dir, doc$files$cells)
   dictionary <- .cs_json_table(doc$dictionary, "dictionary")
   images <- .cs_json_table(doc$images, "images")
@@ -363,7 +379,7 @@ cs_read_cellspec <- function(dir, verify = TRUE) {
     cell_payload,
     "cells"
   )
-  if (!is.list(doc$cells) || nrow(cells_table) != doc$cells$n_rows) {
+  if (nrow(cells_table) != cell_rows) {
     .cs_abort(
       "The cell-table row count differs from cellspec.json.",
       class = "cellspec_error_format"
@@ -407,13 +423,14 @@ cs_read_cellspec <- function(dir, verify = TRUE) {
         class = "cellspec_error_format"
       )
     }
+    adjacency_rows <- .cs_sidecar_rows(doc$adjacency, "adjacency")
     adjacency <- .cs_read_table(
       file.path(dir, adj_file),
       if (identical(adj_file, "adjacency.parquet")) "parquet" else "tsv.gz",
       doc$adjacency,
       "adjacency"
     )
-    if (nrow(adjacency) != doc$adjacency$n_rows) {
+    if (nrow(adjacency) != adjacency_rows) {
       .cs_abort(
         "The adjacency-table row count differs from cellspec.json.",
         class = "cellspec_error_format"

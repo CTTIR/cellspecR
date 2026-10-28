@@ -153,3 +153,29 @@ test_that("summary_no_images: summary and print handle objects without images", 
   expect_output(print(s), "0 images, 0 cells")
   expect_output(print(empty), "<cellspec>")
 })
+
+test_that("sidecar_missing_rows: a sidecar without n_rows raises a format error", {
+  # A missing n_rows failed with an unclassed "missing value" error.
+  rewrite <- function(path, edit) {
+    sidecar <- file.path(path, "cellspec.json")
+    doc <- jsonlite::fromJSON(sidecar, simplifyVector = FALSE)
+    writeLines(jsonlite::toJSON(edit(doc), auto_unbox = TRUE, null = "null",
+                                digits = NA, pretty = TRUE), sidecar)
+  }
+  path <- withr::local_tempfile(pattern = "cellspec-")
+  cs_write(sim_object(), path)
+  rewrite(path, function(doc) {
+    doc$cells$n_rows <- NULL
+    doc
+  })
+  expect_error(cs_read_cellspec(path, verify = FALSE),
+               class = "cellspec_error_format")
+
+  cs_write(sim_object(), path, overwrite = TRUE)
+  rewrite(path, function(doc) {
+    doc$adjacency$n_rows <- NULL
+    doc
+  })
+  expect_error(cs_read_cellspec(path, verify = FALSE),
+               class = "cellspec_error_format")
+})

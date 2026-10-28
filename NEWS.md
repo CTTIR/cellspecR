@@ -49,6 +49,10 @@
 
 * `summary()` and its print method handle valid objects without images.
 
+* `cs_read_cellspec()` checks the row counts declared in `cellspec.json`
+  before reading and reports a missing or malformed `n_rows` as a
+  `cellspec_error_format`.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.
