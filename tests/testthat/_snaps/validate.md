@@ -102,3 +102,4 @@
       x images_dimensions: 2 images with non-positive `width_px` or `height_px`, e.g. "img1", "img2".
       x channels_names: 1 channel row with an empty name or marker, or a marker used twice in one image.
       i 2 more failing checks; run `cs_validate()` for the full report.
+
