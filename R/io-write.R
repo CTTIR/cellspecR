@@ -85,6 +85,19 @@
   invisible(path)
 }
 
+.cs_write_text <- function(text, path) {
+  con <- file(path, open = "wb")
+  on.exit(close(con), add = TRUE)
+  writeBin(charToRaw(enc2utf8(text)), con)
+  invisible(path)
+}
+
+# The DONE marker holds the manifest digest and is the last file written.
+.cs_write_done <- function(stage, manifest_path) {
+  .cs_write_text(paste0(.cs_sha256_file(manifest_path), "\n"),
+                 file.path(stage, "DONE"))
+}
+
 .cs_format_tsv_double <- function(x) {
   out <- rep(NA_character_, length(x))
   ok <- !is.na(x)
@@ -327,19 +340,8 @@ cs_write <- function(x, dir, format = c("parquet", "tsv.gz"),
   }, character(1))
   manifest_text <- paste(paste(hashes, manifest_files, sep = "  "), collapse = "\n")
   manifest_path <- file.path(stage, "MANIFEST.sha256")
-  con <- file(manifest_path, open = "wb")
-  writeBin(charToRaw(enc2utf8(paste0(manifest_text, "\n"))), con)
-  close(con)
-
-  hook <- getOption("cellspecR.test_write_hook", NULL)
-  if (is.function(hook)) {
-    hook(stage)
-  }
-
-  done_text <- paste0(.cs_sha256_file(manifest_path), "\n")
-  con <- file(file.path(stage, "DONE"), open = "wb")
-  writeBin(charToRaw(done_text), con)
-  close(con)
+  .cs_write_text(paste0(manifest_text, "\n"), manifest_path)
+  .cs_write_done(stage, manifest_path)
 
   .cs_commit_stage(stage, target, overwrite = overwrite)
   complete <- TRUE

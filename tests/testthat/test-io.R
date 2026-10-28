@@ -62,9 +62,9 @@ test_that("DONE is required and interrupted staging is cleaned", {
 
   interrupted <- tempfile("cellspec-interrupted-")
   on.exit(unlink(interrupted, recursive = TRUE, force = TRUE), add = TRUE)
-  withr::local_options(c(cellspecR.test_write_hook = function(stage) {
+  local_mocked_bindings(.cs_write_done = function(stage, manifest_path) {
     rlang::abort("simulated interrupted write")
-  }))
+  })
   expect_error(cs_write(min_object(), interrupted), "simulated interrupted write")
   expect_false(dir.exists(interrupted))
   expect_length(list.files(dirname(interrupted),
