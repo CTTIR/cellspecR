@@ -131,7 +131,9 @@ utils::globalVariables(".data")
 #' `r lifecycle::badge("experimental")`
 #'
 #' Draws a centroid map, marker distribution, feature-support heatmap, cell
-#' area distribution, or a four-panel overview. Large objects are subsampled
+#' area distribution, or an overview of up to four panels. The overview leaves
+#' out the area panel when the cells table has no `area` column and the marker
+#' panel when there are no intensity features. Large objects are subsampled
 #' deterministically for plotting.
 #'
 #' @param x A `cellspec` object.
@@ -163,11 +165,15 @@ plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "a
   if (type == "support") return(.cs_plot_support(x, call))
   if (type == "area") return(.cs_plot_area(x, call))
   .cs_plot_require("patchwork", call = call)
-  patchwork::wrap_plots(
+  panels <- list(
     .cs_plot_map(x, colour_by, max_points, seed, call),
-    .cs_plot_support(x, call),
-    .cs_plot_area(x, call),
-    .cs_plot_marker(x, marker, policy, call),
-    ncol = 2
+    .cs_plot_support(x, call)
   )
+  if ("area" %in% names(x$cells)) {
+    panels <- c(panels, list(.cs_plot_area(x, call)))
+  }
+  if (any(x$dictionary$kind == "intensity")) {
+    panels <- c(panels, list(.cs_plot_marker(x, marker, policy, call)))
+  }
+  patchwork::wrap_plots(panels, ncol = 2)
 }

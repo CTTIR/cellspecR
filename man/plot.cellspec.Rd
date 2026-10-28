@@ -40,7 +40,9 @@ A \code{ggplot} object, or a patchwork object for \code{type = "overview"}.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
 Draws a centroid map, marker distribution, feature-support heatmap, cell
-area distribution, or a four-panel overview. Large objects are subsampled
+area distribution, or an overview of up to four panels. The overview leaves
+out the area panel when the cells table has no \code{area} column and the marker
+panel when there are no intensity features. Large objects are subsampled
 deterministically for plotting.
 }
 \examples{

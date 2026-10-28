@@ -36,6 +36,10 @@
   application runs and restores the previous limit when it stops; uploads
   were previously capped at the 5 MB Shiny default.
 
+* The default `plot()` overview leaves out the area panel when the cells table
+  has no `area` column and the marker panel when there are no intensity
+  features, instead of failing.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

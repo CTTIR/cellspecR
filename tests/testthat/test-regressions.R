@@ -96,3 +96,15 @@ test_that("app_upload_limit: cs_app applies max_upload_mb while it runs", {
   on.exit(cancel_restore(), add = TRUE)
   expect_identical(getOption("shiny.maxRequestSize"), 3 * 1024^2)
 })
+
+test_that("overview_optional_panels: the default plot skips panels without data", {
+  # plot(x) aborted when the cells table had no area column.
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("patchwork")
+  no_area <- min_object()
+  no_area$cells$area <- NULL
+  expect_s3_class(plot(no_area), "patchwork")
+  no_intensity <- min_object()[, "cell:area"]
+  expect_false(any(cs_dictionary(no_intensity)$kind == "intensity"))
+  expect_s3_class(plot(no_intensity), "patchwork")
+})
