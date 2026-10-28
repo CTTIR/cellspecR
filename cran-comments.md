@@ -1,19 +1,23 @@
 ## Test environments
 
-* Local: Ubuntu Linux, R 4.6.1
-* GitHub Actions: Ubuntu, macOS and Windows (release; devel where available)
+* Local: Ubuntu 26.04 LTS, R 4.6.1
+* GitHub Actions: Ubuntu (R devel, release and oldrel-1), macOS (R release)
+  and Windows (R release)
 
 ## R CMD check results
 
-This is the first submission of cellspecR 1.0.0. The package provides the
-versioned cellspec contract, canonical storage, tool readers, validation,
-interoperability helpers, quality-control plots and a local Shiny review app.
-Local validation of the built source tarball completed with 0 errors and 0
-warnings. Test coverage is 95.46% overall. External QuPath/MCQuant/inForm
-fixture comparisons and maintainer builder/submission checks remain
-release-owner tasks.
+0 errors | 0 warnings | 1 note
+
+* This is a new submission.
+* "Version contains large components (1.0.0.9000)": this is the development
+  version number; it will be bumped to a release version before submission.
 
 ## Notes
 
-The package contains only synthetic, non patient data. Optional integrations
-are guarded with `requireNamespace()` and examples do not access the network.
+The Bioconductor packages in Suggests (anndataR, S4Vectors,
+SingleCellExperiment, SpatialExperiment, SummarizedExperiment) and the other
+suggested packages are used conditionally. The package also passes
+`R CMD check --as-cran` with `_R_CHECK_DEPENDS_ONLY_=true`.
+
+Examples and tests use only small synthetic data, write only to temporary
+files and do not access the network.
