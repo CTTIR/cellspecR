@@ -152,7 +152,7 @@
   )
 }
 
-.cs_qupath_map <- function(table_names, pixel_size = NULL, marker_map = NULL,
+.cs_qupath_map <- function(table_names, marker_map = NULL,
                            call = rlang::caller_env()) {
   id <- .cs_qupath_find(table_names, c(
     "cell id", "cell_id", "detection id", "object id", "id"
@@ -177,9 +177,6 @@
   area <- .cs_qupath_find(table_names, c(
     "cell: area um2", "cell area um2", "area um2", "cell: area", "area"
   ))
-  if (!is.null(area) && identical(.cs_qupath_shape(area), "area")) {
-    area <- area
-  }
   image <- .cs_qupath_find(table_names, c(
     "image", "image id", "image_id", "image name", "server"
   ))
@@ -249,7 +246,7 @@
     .cs_table_abort("The QuPath adapter expects one CSV or TSV measurement file.", call = call)
   }
   table <- .cs_table_read(path, call = call)
-  map <- .cs_qupath_map(names(table), pixel_size = pixel_size, marker_map = marker_map, call = call)
+  map <- .cs_qupath_map(names(table), marker_map = marker_map, call = call)
   if (identical(map$coordinate_unit, "px") && is.null(pixel_size)) {
     .cs_abort(
       "Pixel centroids in a QuPath export require {.arg pixel_size} in micrometres per pixel.",

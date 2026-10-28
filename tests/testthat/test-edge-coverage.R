@@ -511,7 +511,7 @@ test_that("QuPath helper aliases and detector failure modes are covered", {
   data.table::fwrite(data.frame(id = "a", x = 1, y = 2), path)
   expect_null(cellspecR:::.cs_qupath_detect(path))
   expect_error(
-    cellspecR:::.cs_qupath_map(c("Cell ID", "Centroid X um"), pixel_size = NULL),
+    cellspecR:::.cs_qupath_map(c("Cell ID", "Centroid X um")),
     class = "cellspec_error"
   )
   expect_error(
