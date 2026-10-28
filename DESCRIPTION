@@ -6,8 +6,6 @@ Authors@R:
            email = "raban.heller@uni-ulm.de",
            role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-8006-9742"))
-Author: R. Heller [aut, cre, cph] (ORCID: <https://orcid.org/0000-0001-8006-9742>)
-Maintainer: R. Heller <raban.heller@uni-ulm.de>
 Description: Defines 'cellspec', a versioned table format for segmented
     cells from multiplexed tissue images: cell identifiers, centroids in
     micrometres, per-marker measurements with an explicit compartment and
