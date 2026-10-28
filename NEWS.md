@@ -56,6 +56,9 @@
 * `cs_write()` no longer advances the session random number generator when
   it names its staging and backup directories.
 
+* Gzip-compressed tables and canonical `tsv.gz` files are decompressed in R
+  on every platform instead of through an external `gzip` program.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

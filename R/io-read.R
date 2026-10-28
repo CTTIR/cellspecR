@@ -211,30 +211,19 @@
     result
   } else {
     types <- .cs_io_descriptors(payload, component, call = call)
-    gzip <- Sys.which("gzip")
+    plain <- NULL
+    on.exit(if (!is.null(plain)) unlink(plain), add = TRUE)
     result <- tryCatch({
-      if (.Platform$OS.type != "windows" && nzchar(gzip)) {
-        data.table::fread(
-          cmd = paste(shQuote(gzip), "-dc", shQuote(path)),
-          sep = "\t",
-          na.strings = "NA",
-          data.table = FALSE,
-          colClasses = "character",
-          encoding = "UTF-8",
-          showProgress = FALSE
-        )
-      } else {
-        utils::read.delim(
-          gzfile(path, open = "rt", encoding = "UTF-8"),
-          sep = "\t",
-          na.strings = "NA",
-          quote = "\"",
-          comment.char = "",
-          colClasses = "character",
-          check.names = FALSE,
-          stringsAsFactors = FALSE
-        )
-      }
+      plain <- .cs_gunzip_tempfile(path)
+      data.table::fread(
+        file = plain,
+        sep = "\t",
+        na.strings = "NA",
+        data.table = FALSE,
+        colClasses = "character",
+        encoding = "UTF-8",
+        showProgress = FALSE
+      )
     }, error = function(e) e)
     if (inherits(result, "error")) {
       .cs_abort(

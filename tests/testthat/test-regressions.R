@@ -189,3 +189,32 @@ test_that("write_rng_state: cs_write leaves the random number stream alone", {
   cs_write(min_object(), path, overwrite = TRUE)
   expect_identical(get(".Random.seed", envir = globalenv()), before)
 })
+
+test_that("gzip_in_r: compressed tables are read without an external gzip", {
+  # Compressed tables were piped through the system gzip program.
+  skip_on_os("windows")
+  bin <- withr::local_tempdir(pattern = "fake-bin-")
+  writeLines(c("#!/bin/sh", "exit 1"), file.path(bin, "gzip"))
+  Sys.chmod(file.path(bin, "gzip"), "0755")
+  withr::local_envvar(
+    PATH = paste(bin, Sys.getenv("PATH"), sep = .Platform$path.sep)
+  )
+
+  table_path <- withr::local_tempfile(fileext = ".tsv.gz")
+  data.table::fwrite(
+    data.frame(id = c("a", "b"), x = c(1, 2), y = c(3, 4), value = c(1.5, 2.5)),
+    table_path, sep = "\t", compress = "gzip"
+  )
+  x <- cs_read(table_path, format = "table",
+               column_map = cs_column_map("id", "x", "y"))
+  expect_identical(x$cells$cell_id, c("a", "b"))
+  expect_identical(unname(x$measurements[, 1]), c(1.5, 2.5))
+
+  path <- withr::local_tempfile(pattern = "cellspec-")
+  cs_write(sim_object(), path, format = "tsv.gz")
+  y <- cs_read_cellspec(path)
+  expect_identical(y$cells, sim_object()$cells)
+  expect_identical(y$measurements, sim_object()$measurements)
+  expect_identical(y$adjacency, sim_object()$adjacency)
+  expect_length(list.files(tempdir(), pattern = "^cellspec-gunzip-"), 0L)
+})

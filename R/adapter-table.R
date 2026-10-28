@@ -188,6 +188,25 @@
   metadata[.cs_table_metadata_names]
 }
 
+# Decompresses a gzip file into a temporary file with R's own zlib support,
+# so that no external program is needed. The caller removes the result.
+.cs_gunzip_tempfile <- function(path) {
+  plain <- tempfile("cellspec-gunzip-")
+  input <- gzfile(path, open = "rb")
+  on.exit(close(input), add = TRUE)
+  output <- file(plain, open = "wb")
+  on.exit(close(output), add = TRUE)
+  complete <- FALSE
+  on.exit(if (!complete) unlink(plain), add = TRUE)
+  repeat {
+    chunk <- readBin(input, what = "raw", n = 1048576L)
+    if (length(chunk) == 0L) break
+    writeBin(chunk, output)
+  }
+  complete <- TRUE
+  plain
+}
+
 .cs_table_read <- function(path, n_max = NULL, call = rlang::caller_env()) {
   compressed <- grepl("\\.gz$", path, ignore.case = TRUE)
   args <- list(
@@ -199,26 +218,13 @@
     na.strings = c("", "NA")
   )
   if (!is.null(n_max)) args$nrows <- as.integer(n_max)
-  if (compressed && .Platform$OS.type != "windows") {
-    args$cmd <- paste("gzip -dc --", shQuote(path))
-  } else if (!compressed) {
-    args$file <- path
-  }
-  result <- tryCatch(
-    if (compressed && .Platform$OS.type == "windows") {
-      utils::read.delim(
-        gzfile(path, open = "rt", encoding = "UTF-8"),
-        header = TRUE,
-        check.names = FALSE,
-        nrows = if (is.null(n_max)) -1L else as.integer(n_max),
-        na.strings = c("", "NA"),
-        stringsAsFactors = FALSE
-      )
-    } else {
-      suppressWarnings(do.call(data.table::fread, args))
-    },
-    error = function(error) error
-  )
+  plain <- NULL
+  on.exit(if (!is.null(plain)) unlink(plain), add = TRUE)
+  result <- tryCatch({
+    if (compressed) plain <- .cs_gunzip_tempfile(path)
+    args$file <- if (compressed) plain else path
+    suppressWarnings(do.call(data.table::fread, args))
+  }, error = function(error) error)
   if (inherits(result, "error")) {
     .cs_table_abort(
       c(
