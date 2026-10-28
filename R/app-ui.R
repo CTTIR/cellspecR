@@ -1,6 +1,6 @@
 # User interface for the cellspec review app.
 
-.cs_app_ui <- function(initial_path = NULL, max_upload_mb = 2048,
+.cs_app_ui <- function(initial_path = NULL,
                        allow_local_paths = FALSE) {
   .cs_app_require("shiny")
   controls <- shiny::tagList(

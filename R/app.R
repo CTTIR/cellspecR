@@ -66,7 +66,7 @@ cs_app <- function(path = NULL, max_upload_mb = 2048,
 .cs_app_object <- function(initial_path, max_upload_mb, allow_local_paths,
                            max_plot_points) {
   shiny::shinyApp(
-    ui = .cs_app_ui(initial_path, max_upload_mb, allow_local_paths),
+    ui = .cs_app_ui(initial_path, allow_local_paths),
     server = function(input, output, session) {
       .cs_app_server(input, output, session, initial_path, allow_local_paths, max_plot_points)
     },
