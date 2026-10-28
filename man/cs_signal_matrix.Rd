@@ -27,7 +27,7 @@ Applies a \code{cs_signal_policy} to the intensity measurements in a
 \code{cellspec} object. A preferred finite value is used when its declared domain
 accepts it; otherwise the configured fallback is tested using its own domain.
 Default domains require values at least \code{min_value}. The \code{"finite"} domain
-accepts negative finite values. Nonfinite values remain unavailable in both.
+accepts negative finite values. Non-finite values remain unavailable in both.
 }
 \examples{
 x <- cs_example()

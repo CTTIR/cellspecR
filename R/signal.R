@@ -298,7 +298,7 @@ cs_signal_policy <- function(marker,
 #' `cellspec` object. A preferred finite value is used when its declared domain
 #' accepts it; otherwise the configured fallback is tested using its own domain.
 #' Default domains require values at least `min_value`. The `"finite"` domain
-#' accepts negative finite values. Nonfinite values remain unavailable in both.
+#' accepts negative finite values. Non-finite values remain unavailable in both.
 #'
 #' @param x A `cellspec` object.
 #' @param policy A `cs_signal_policy` created by [cs_signal_policy()].

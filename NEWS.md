@@ -11,7 +11,7 @@
 
 * Canonical TSV decimal conversion now preserves double precision on platforms
   where extended precision equals double precision, including macOS ARM.
-  The 17-digit file format and exact-value roundtrip contract are unchanged.
+  The 17-digit file format and exact-value round-trip contract are unchanged.
 
 * Header-only TSV exports now write a complete gzip stream, including empty
   cell and adjacency tables. Their declared column types survive read-back.
@@ -21,7 +21,7 @@
   shape dictionaries retain the original headers and dimensional units.
 * The segmantR reader converts one-based pixel-index centroid means to the
   image's pixel-edge coordinate frame and converts pixel area to square
-  micrometres. Unrecognized centroid conventions are rejected. Crop, pyramid
+  micrometres. Unrecognised centroid conventions are rejected. Crop, pyramid
   and anisotropic transforms must be handled explicitly before image integration.
   Raw shape measurements retain their pixel or radian units.
 
