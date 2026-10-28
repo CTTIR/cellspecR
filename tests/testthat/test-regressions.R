@@ -179,3 +179,13 @@ test_that("sidecar_missing_rows: a sidecar without n_rows raises a format error"
   expect_error(cs_read_cellspec(path, verify = FALSE),
                class = "cellspec_error_format")
 })
+
+test_that("write_rng_state: cs_write leaves the random number stream alone", {
+  # Staging and backup names were drawn with sample().
+  path <- withr::local_tempfile(pattern = "cellspec-")
+  withr::local_seed(20261029)
+  before <- get(".Random.seed", envir = globalenv())
+  cs_write(min_object(), path)
+  cs_write(min_object(), path, overwrite = TRUE)
+  expect_identical(get(".Random.seed", envir = globalenv()), before)
+})

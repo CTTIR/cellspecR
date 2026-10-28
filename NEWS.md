@@ -53,6 +53,9 @@
   before reading and reports a missing or malformed `n_rows` as a
   `cellspec_error_format`.
 
+* `cs_write()` no longer advances the session random number generator when
+  it names its staging and backup directories.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

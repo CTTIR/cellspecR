@@ -156,12 +156,9 @@
       call = call
     )
   }
-  paste0(
-    target,
-    ".partial-",
-    Sys.getpid(),
-    "-",
-    paste(sample(c(letters, 0:9), 12L, replace = TRUE), collapse = "")
+  tempfile(
+    pattern = paste0(basename(target), ".partial-", Sys.getpid(), "-"),
+    tmpdir = parent
   )
 }
 
@@ -176,10 +173,9 @@
 .cs_commit_stage <- function(stage, target, overwrite, call = rlang::caller_env()) {
   backup <- NULL
   if (file.exists(target)) {
-    backup <- paste0(
-      target, ".backup-",
-      Sys.getpid(), "-",
-      paste(sample(c(letters, 0:9), 12L, replace = TRUE), collapse = "")
+    backup <- tempfile(
+      pattern = paste0(basename(target), ".backup-", Sys.getpid(), "-"),
+      tmpdir = dirname(target)
     )
     if (!file.rename(target, backup)) {
       .cs_abort(
