@@ -9,6 +9,9 @@
   external zip program.
 * Signal policies can declare separate preferred and fallback finite domains, including negative finite measurements. Existing minimum-domain defaults and five-column policies remain unchanged. Extended seven-column policies preserve both domains through JSON and CSV.
 
+* Signal-policy I/O preserves structured error classes when parser diagnostics
+  or paths contain literal braces.
+
 * Canonical TSV decimal conversion now preserves double precision on platforms
   where extended precision equals double precision, including macOS ARM.
   The 17-digit file format and exact-value round-trip contract are unchanged.
@@ -101,5 +104,3 @@ First public release, on GitHub.
 
 * Added a local Shiny review app for reading exports, inspecting validation and
   downloading review tables.
-
-* Signal-policy I/O preserves structured error classes when parser diagnostics or paths contain literal braces.
