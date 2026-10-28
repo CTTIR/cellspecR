@@ -9,7 +9,7 @@
         markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
         pixel     0.5 um/px
         adjacency none
-        source    simulate 1.0.0 (cellspecR simulator 1.0.0)
+        source    simulate 1.0.0 (cellspecR simulator 1.0.0.9000)
 
 ---
 
@@ -22,7 +22,7 @@
         markers   3: DAPI, CD3e, FOXP3
         pixel     0.5 um/px
         adjacency 16 contacts
-        source    simulate 1.0.0 (cellspecR simulator 1.0.0)
+        source    simulate 1.0.0 (cellspecR simulator 1.0.0.9000)
 
 # summary() returns one row per image with exact values
 
@@ -94,3 +94,4 @@
       Error in `x[1.5, ]`:
       ! `i` must be logical, whole-number positions or (for features) identifiers.
       x Got a number.
+
