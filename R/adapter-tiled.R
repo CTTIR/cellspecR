@@ -251,6 +251,25 @@
   if (integer) as.integer(parsed) else as.double(parsed)
 }
 
+# Bytes of the first line including its newline, read in chunks so that long
+# headers are complete; NULL when the file has no newline.
+.cs_tiled_header_bytes <- function(file) {
+  con <- file(file, open = "rb")
+  on.exit(close(con), add = TRUE)
+  header <- raw()
+  repeat {
+    chunk <- readBin(con, what = "raw", n = 65536L)
+    if (length(chunk) == 0L) {
+      return(NULL)
+    }
+    newline <- match(as.raw(10L), chunk)
+    if (!is.na(newline)) {
+      return(c(header, chunk[seq_len(newline)]))
+    }
+    header <- c(header, chunk)
+  }
+}
+
 .cs_tiled_validate_done <- function(done, file, table, verify = TRUE,
                                     call = rlang::caller_env()) {
   if (is.null(done)) {
@@ -310,14 +329,11 @@
     )
   }
   if ("header_sha256" %in% names(done)) {
-    con <- file(file, open = "rb")
-    on.exit(close(con), add = TRUE)
-    header <- readBin(con, what = "raw", n = 1024L)
-    newline <- match(as.raw(10L), header)
-    if (is.na(newline)) {
+    header <- .cs_tiled_header_bytes(file)
+    if (is.null(header)) {
       .cs_tiled_abort("The tile has no header line to verify.", call = call)
     }
-    observed_header <- unname(digest::digest(header[seq_len(newline)], algo = "sha256",
+    observed_header <- unname(digest::digest(header, algo = "sha256",
                                               serialize = FALSE))
     if (!identical(tolower(done[["header_sha256"]]), tolower(observed_header))) {
       .cs_tiled_abort("Done metadata `header_sha256` does not match the tile.", call = call)

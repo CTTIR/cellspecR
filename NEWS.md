@@ -29,6 +29,9 @@
   existing cellspec directory; any other directory is left untouched and an
   error is raised.
 
+* Tiled QuPath done markers with `header_sha256` now verify header lines
+  longer than 1,024 bytes instead of reporting a missing header.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

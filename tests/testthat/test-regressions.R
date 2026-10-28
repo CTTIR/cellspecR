@@ -48,3 +48,36 @@ test_that("overwrite_foreign_directory: cs_write never replaces unrelated folder
   cs_write(min_object(), empty, overwrite = TRUE)
   expect_true(all(cs_verify(empty)$ok))
 })
+
+test_that("tile_long_header: header_sha256 covers headers longer than 1 KiB", {
+  # Only the first 1024 bytes were searched for the end of the header line.
+  dir <- withr::local_tempdir(pattern = "tiles-long-header-")
+  markers <- sprintf("LongMarkerName%03d", 1:80)
+  tile <- data.frame(
+    cell_id = "c1", centroid_x_um = 5, centroid_y_um = 5,
+    matrix(1, nrow = 1L, ncol = length(markers),
+           dimnames = list(NULL, paste0("Cell: ", markers, ": Mean"))),
+    check.names = FALSE, stringsAsFactors = FALSE
+  )
+  file <- file.path(dir, "tileA.tsv")
+  data.table::fwrite(tile, file, sep = "\t")
+  bytes <- readBin(file, "raw", file.size(file))
+  header_end <- match(as.raw(10L), bytes)
+  expect_gt(header_end, 1024L)
+  done <- data.frame(
+    key = c("csv_sha256", "data_rows", "columns", "bytes", "header_sha256",
+            "xmin_um", "xmax_um", "ymin_um", "ymax_um"),
+    value = c(
+      digest::digest(file = file, algo = "sha256"), "1",
+      as.character(ncol(tile)), as.character(file.size(file)),
+      digest::digest(bytes[seq_len(header_end)], algo = "sha256",
+                     serialize = FALSE),
+      "0", "100", "0", "100"
+    )
+  )
+  utils::write.table(done, file.path(dir, "tileA.done.tsv"), sep = "\t",
+                     quote = FALSE, row.names = FALSE)
+  x <- cs_read(dir, format = "qupath_tiled", image_id = "image-1")
+  expect_identical(x$cells$cell_id, "c1")
+  expect_identical(ncol(x$measurements), length(markers))
+})
