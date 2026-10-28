@@ -54,3 +54,4 @@
       ! `x` must be a <cellspec> object.
       x Got an empty list.
       i Build one with `cs_new()` or `cs_read()`.
+

@@ -3,7 +3,10 @@
 * Standardize the named v5 package logo across README, documentation pages
   and available application headers, with matching light and dark artwork.
 
-
+* `cs_read_npy()` and `cs_read_npz()` read NumPy array files and archives in
+  base R (booleans, integers, floats, complex, fixed-width strings; C or
+  Fortran order); `cs_write_npy()` and `cs_write_npz()` write them without an
+  external zip program.
 * Signal policies can declare separate preferred and fallback finite domains, including negative finite measurements. Existing minimum-domain defaults and five-column policies remain unchanged. Extended seven-column policies preserve both domains through JSON and CSV.
 
 # cellspecR (development version)

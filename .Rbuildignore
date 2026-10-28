@@ -27,3 +27,4 @@
 ^doc$
 ^Meta$
 ^tools/branding$
+^\.git$
