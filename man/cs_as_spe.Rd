@@ -26,11 +26,13 @@ in an \code{altExp}, and records the cellspec metadata needed for a lossless
 round trip.
 }
 \examples{
+\donttest{
 if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
   x <- cs_example()
   policy <- cs_signal_policy(cs_markers(x))
   spe <- cs_as_spe(x, policy)
   spe
+}
 }
 }
 \seealso{
