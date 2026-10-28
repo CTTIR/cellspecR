@@ -135,3 +135,21 @@ test_that("other_id_collision: unmapped columns with clashing clean names are ke
   expect_identical(x$dictionary$source_name, c("a b", "a_b"))
   expect_identical(unname(x$measurements[, "other:a_b_1"]), c(3, 4))
 })
+
+test_that("summary_no_images: summary and print handle objects without images", {
+  # summary() of a valid zero-image object failed in print().
+  p <- min_parts()
+  empty <- cs_new(p$cells[0, ], NULL, NULL, p$images[0, ], NULL)
+  s <- summary(empty)
+  expect_s3_class(s, "cellspec_summary")
+  expect_identical(nrow(s), 0L)
+  expect_identical(
+    names(s),
+    c("image_id", "sample_id", "n_cells", "n_markers", "n_features",
+      "pixel_size", "x_min", "x_max", "y_min", "y_max", "na_fraction")
+  )
+  expect_type(s$x_min, "double")
+  expect_type(s$n_cells, "integer")
+  expect_output(print(s), "0 images, 0 cells")
+  expect_output(print(empty), "<cellspec>")
+})

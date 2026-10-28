@@ -47,6 +47,8 @@
   same identifier (for example "a b" and "a_b") are numbered
   (`other:a_b`, `other:a_b_1`) instead of aborting the read.
 
+* `summary()` and its print method handle valid objects without images.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.

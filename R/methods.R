@@ -151,7 +151,15 @@ summary.cellspec <- function(object, ...) {
       na_fraction = if (length(sub) > 0L) mean(is.na(sub)) else NA_real_
     )
   })
-  stats_df <- do.call(rbind, per_image)
+  stats_df <- if (length(per_image) == 0L) {
+    data.frame(
+      n_cells = integer(), n_markers = integer(), n_features = integer(),
+      x_min = double(), x_max = double(), y_min = double(), y_max = double(),
+      na_fraction = double()
+    )
+  } else {
+    do.call(rbind, per_image)
+  }
   out <- data.frame(
     image_id = images$image_id,
     sample_id = images$sample_id,
