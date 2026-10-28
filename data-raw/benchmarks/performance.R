@@ -2,7 +2,7 @@
 # Run with: Rscript data-raw/benchmarks/performance.R
 
 if (!requireNamespace("bench", quietly = TRUE)) {
-  message("Install the Suggests package bench to run this script.")
+  message("Install the bench package to run this script.")
   quit(status = 0L)
 }
 

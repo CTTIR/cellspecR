@@ -34,31 +34,23 @@ Imports:
 Suggests:
     anndataR,
     bslib,
-    bench,
-    DT,
     ggplot2,
-    goodpractice,
     jsonvalidate,
     knitr,
-    openxlsx2,
     patchwork,
     rmarkdown,
-    reticulate,
     S4Vectors,
     shiny,
-    shinytest2,
     SingleCellExperiment,
     SpatialExperiment,
-    spelling,
     SummarizedExperiment,
     testthat (>= 3.0.0),
     tibble,
-    urlchecker,
-    vdiffr,
     withr
 VignetteBuilder:
     knitr
 Config/testthat/edition: 3
+Config/Needs/dev: bench
 Config/Needs/website: CTTIR/themakR
 Encoding: UTF-8
 Language: en-US
