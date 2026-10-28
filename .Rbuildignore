@@ -28,3 +28,9 @@
 ^Meta$
 ^tools/branding$
 ^\.git$
+^inst/shiny$
+^man/figures/icon-[0-9]+\.png$
+^man/figures/lifecycle-(deprecated|superseded)\.svg$
+^man/figures/logo(-dark|-light|-mono|-symbol)?\.(pdf|png|svg)$
+^man/figures/logo-with-name(-dark|-mono)?\.(pdf|svg)$
+^man/figures/logo-with-name-mono\.png$
