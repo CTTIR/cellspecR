@@ -61,7 +61,7 @@
 
 # cellspecR 1.0.0
 
-Initial CRAN release.
+First public release, on GitHub.
 
 ## Specification
 
