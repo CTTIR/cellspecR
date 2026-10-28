@@ -49,14 +49,6 @@ test_that("interop defaults and failure contracts are explicit", {
     class = "cellspec_error"
   )
 
-  single_source <- min_object()
-  expect_s4_class(cs_as_spe(single_source), "SpatialExperiment")
-  multiple_source <- cs_example()
-  expect_error(
-    cs_as_spe(multiple_source),
-    class = "cellspec_error"
-  )
-
   empty_parts <- min_parts()
   empty_parts$measurements <- matrix(numeric(), nrow = nrow(empty_parts$cells), ncol = 0L)
   empty_parts$dictionary <- empty_parts$dictionary[FALSE, , drop = FALSE]
@@ -67,6 +59,19 @@ test_that("interop defaults and failure contracts are explicit", {
   )
   expect_error(
     cellspecR:::.cs_policy_default(empty_object, NULL, rlang::caller_env()),
+    class = "cellspec_error"
+  )
+})
+
+test_that("SpatialExperiment conversion derives a single-source default policy", {
+  skip_if_not_installed("SpatialExperiment")
+  skip_if_not_installed("SingleCellExperiment")
+  skip_if_not_installed("S4Vectors")
+  single_source <- min_object()
+  expect_s4_class(cs_as_spe(single_source), "SpatialExperiment")
+  multiple_source <- cs_example()
+  expect_error(
+    cs_as_spe(multiple_source),
     class = "cellspec_error"
   )
 })
