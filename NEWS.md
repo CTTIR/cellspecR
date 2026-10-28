@@ -1,4 +1,4 @@
-# cellspecR development
+# cellspecR (development version)
 
 * Standardize the named v5 package logo across README, documentation pages
   and available application headers, with matching light and dark artwork.
@@ -8,8 +8,6 @@
   Fortran order); `cs_write_npy()` and `cs_write_npz()` write them without an
   external zip program.
 * Signal policies can declare separate preferred and fallback finite domains, including negative finite measurements. Existing minimum-domain defaults and five-column policies remain unchanged. Extended seven-column policies preserve both domains through JSON and CSV.
-
-# cellspecR (development version)
 
 * Canonical TSV decimal conversion now preserves double precision on platforms
   where extended precision equals double precision, including macOS ARM.

@@ -40,6 +40,7 @@ reference:
       - cs_write
       - cs_bind
       - cs_merge_tiles
+      - cs_read_npy
 
   - title: Signals
     contents:
