@@ -81,3 +81,18 @@ test_that("tile_long_header: header_sha256 covers headers longer than 1 KiB", {
   expect_identical(x$cells$cell_id, "c1")
   expect_identical(ncol(x$measurements), length(markers))
 })
+
+test_that("app_upload_limit: cs_app applies max_upload_mb while it runs", {
+  # max_upload_mb was validated but Shiny kept its 5 MB upload default.
+  skip_if_not_installed("shiny")
+  withr::local_options(shiny.maxRequestSize = NULL)
+  restore <- cellspecR:::.cs_app_upload_limit(3)
+  expect_identical(getOption("shiny.maxRequestSize"), 3 * 1024^2)
+  restore()
+  expect_null(getOption("shiny.maxRequestSize"))
+
+  app <- cs_app(max_upload_mb = 3)
+  cancel_restore <- app$onStart()
+  on.exit(cancel_restore(), add = TRUE)
+  expect_identical(getOption("shiny.maxRequestSize"), 3 * 1024^2)
+})

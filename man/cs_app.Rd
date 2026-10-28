@@ -16,7 +16,9 @@ cs_app(
 \item{path}{Optional initial file or directory path. The user can also
 select a file in the application.}
 
-\item{max_upload_mb}{Maximum upload size shown to the application in MB.}
+\item{max_upload_mb}{Maximum upload size in MB. It is applied as the
+\code{shiny.maxRequestSize} option while the application runs and the previous
+value is restored when it stops.}
 
 \item{allow_local_paths}{Whether a local path field is available.}
 

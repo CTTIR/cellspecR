@@ -21,7 +21,9 @@
 #'
 #' @param path Optional initial file or directory path. The user can also
 #'   select a file in the application.
-#' @param max_upload_mb Maximum upload size shown to the application in MB.
+#' @param max_upload_mb Maximum upload size in MB. It is applied as the
+#'   `shiny.maxRequestSize` option while the application runs and the previous
+#'   value is restored when it stops.
 #' @param allow_local_paths Whether a local path field is available.
 #' @param max_plot_points Maximum cells passed to plots.
 #' @param ... Reserved for launcher settings.
@@ -54,12 +56,22 @@ cs_app <- function(path = NULL, max_upload_mb = 2048,
   )
 }
 
+# Sets the Shiny upload limit and returns a function that restores the
+# previous value.
+.cs_app_upload_limit <- function(max_upload_mb) {
+  old <- options(shiny.maxRequestSize = max_upload_mb * 1024^2)
+  function() options(old)
+}
+
 .cs_app_object <- function(initial_path, max_upload_mb, allow_local_paths,
                            max_plot_points) {
   shiny::shinyApp(
     ui = .cs_app_ui(initial_path, max_upload_mb, allow_local_paths),
     server = function(input, output, session) {
       .cs_app_server(input, output, session, initial_path, allow_local_paths, max_plot_points)
+    },
+    onStart = function() {
+      shiny::onStop(.cs_app_upload_limit(max_upload_mb))
     }
   )
 }

@@ -32,6 +32,10 @@
 * Tiled QuPath done markers with `header_sha256` now verify header lines
   longer than 1,024 bytes instead of reporting a missing header.
 
+* `cs_app()` now applies `max_upload_mb` as the Shiny upload limit while the
+  application runs and restores the previous limit when it stops; uploads
+  were previously capped at the 5 MB Shiny default.
+
 # cellspecR 1.0.0
 
 Initial CRAN release.
