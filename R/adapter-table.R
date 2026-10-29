@@ -616,7 +616,7 @@ cs_formats <- function() {
     qupath = c("QuPath colon-delimited measurement export", "QuPath 0.6.0 and 0.7.0"),
     qupath_tiled = c("Tiled QuPath tables with centroid ownership", "QuPath 0.7.0"),
     mcquant = c("MCMICRO MCQuant measurement export", "MCMICRO/MCQuant"),
-    segmantr = c("segmantR feature table", "segmantR 0.1.0.9000"),
+    segmantr = c("segmantR feature table", "segmantR 0.2.0"),
     inform = c("inForm cell segmentation data", "inForm/phenoptr")
   )
   for (format in names(optional)) {

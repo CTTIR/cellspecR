@@ -32,7 +32,7 @@
   and anisotropic transforms must be handled explicitly before image integration.
   Raw shape measurements retain their pixel or radian units.
 
-* `cs_formats()` reports segmantR 0.1.0.9000, the version the segmantR reader
+* `cs_formats()` reports segmantR 0.2.0, the version the segmantR reader
   was tested with, instead of the non-existent segmantR 0.5.
 
 * `cs_write(overwrite = TRUE)` now replaces only an empty directory or

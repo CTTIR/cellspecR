@@ -6,7 +6,7 @@ test_that("cs_formats lists the available reader adapters", {
   expect_true(all(c("table", "qupath", "qupath_tiled", "mcquant", "segmantr", "inform") %in% formats$format))
   expect_identical(formats$status[[1L]], "stable")
   # The segmantR reader was labelled with a segmantR release that does not exist.
-  expect_identical(formats$tested_with[formats$format == "segmantr"], "segmantR 0.1.0.9000")
+  expect_identical(formats$tested_with[formats$format == "segmantr"], "segmantR 0.2.0")
 })
 
 test_that("cs_column_map validates mappings and measurement metadata", {
