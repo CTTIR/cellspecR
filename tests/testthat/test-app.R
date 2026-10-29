@@ -16,6 +16,17 @@ test_that("the app UI exposes the reader workflow", {
   expect_true(grepl("download_dictionary", paste(capture.output(ui), collapse = " ")))
 })
 
+test_that("printing the app UI leaves the user cache directory empty", {
+  # bslib compiled the page theme into the user's sass cache during the tests.
+  skip_if_not_installed("shiny")
+  skip_if_not_installed("bslib")
+  cache <- withr::local_tempdir(pattern = "user-cache-")
+  withr::local_envvar(R_USER_CACHE_DIR = cache)
+  ui <- cellspecR:::.cs_app_ui(allow_local_paths = TRUE)
+  expect_match(paste(capture.output(ui), collapse = " "), "f_export")
+  expect_length(list.files(cache, recursive = TRUE, all.files = TRUE, include.dirs = TRUE), 0L)
+})
+
 test_that("the app About panel reports release metadata", {
   skip_if_not_installed("shiny")
   about <- cellspecR:::.cs_app_about()
