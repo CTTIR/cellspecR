@@ -269,11 +269,37 @@ test_that("gzip_truncated: a cut gzip table is an error, not a short table", {
   expect_error(cs_read(cut, format = "table", column_map = map),
                "truncated", class = "cellspec_error_format")
 
+  # A tail zero-filled back to the original size looked like the trailer of
+  # an empty last member and loaded part of the rows with a warning.
+  zero_fill <- function(bytes, keep) {
+    c(bytes[seq_len(keep)], raw(length(bytes) - keep))
+  }
+  for (keep in c(0.3, 0.9)) {
+    writeBin(zero_fill(bytes, floor(length(bytes) * keep)), cut)
+    expect_error(cs_read(cut, format = "table", column_map = map),
+                 "truncated", class = "cellspec_error_format")
+  }
+  parts <- gzip_table_parts()
+  first <- bgzf_block(parts$first)
+  bgzf <- c(first, bgzf_block(parts$second), bgzf_eof())
+  writeBin(zero_fill(bgzf, length(first)), cut)
+  expect_error(cs_read(cut, format = "table", column_map = map),
+               "truncated", class = "cellspec_error_format")
+  # A real empty last member still ends in zeros.
+  empty <- gzip_member(raw())
+  writeBin(c(gzip_member(c(parts$first, parts$second)), empty), cut)
+  expect_warning(x <- cs_read(cut, format = "table", column_map = map),
+                 class = "cellspec_warning_integrity")
+  expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+
   dir <- withr::local_tempfile(pattern = "cellspec-")
   cs_write(sim_object(), dir, format = "tsv.gz")
   cells <- file.path(dir, "cells.tsv.gz")
   bytes <- readBin(cells, "raw", file.size(cells))
   writeBin(bytes[seq_len(floor(length(bytes) * 0.6))], cells)
+  expect_error(cs_read_cellspec(dir, verify = FALSE),
+               "truncated", class = "cellspec_error_format")
+  writeBin(zero_fill(bytes, floor(length(bytes) * 0.6)), cells)
   expect_error(cs_read_cellspec(dir, verify = FALSE),
                "truncated", class = "cellspec_error_format")
   expect_length(list.files(tempdir(), pattern = "^cellspec-gunzip-"), 0L)

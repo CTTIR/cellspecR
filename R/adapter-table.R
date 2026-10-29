@@ -237,6 +237,16 @@
 
 .cs_gzip_magic <- as.raw(c(0x1f, 0x8b))
 
+# Whether `bytes` are the 20-byte gzip member of no data that gzip and
+# gzfile() write: a header without optional fields, an empty final deflate
+# block and an all-zero trailer.
+.cs_gzip_empty_member <- function(bytes) {
+  length(bytes) == 20L &&
+    identical(bytes[1:3], c(.cs_gzip_magic, as.raw(8L))) &&
+    bitwAnd(as.integer(bytes[[4L]]), 0xfe) == 0L &&
+    identical(bytes[11:20], as.raw(c(3L, rep(0L, 9L))))
+}
+
 # The 28-byte empty block that ends a BGZF file.
 .cs_bgzf_eof <- as.raw(c(
   0x1f, 0x8b, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x06, 0x00,
@@ -288,7 +298,9 @@
 # single-member stream, as written by gzip, gzfile() and data.table::fwrite(),
 # that covers all data. BGZF files are checked block by block. Other
 # multi-member streams are accepted when their last member is complete, with
-# a warning, because a stream cut between two members looks whole.
+# a warning, because a stream cut between two members looks whole. An
+# all-zero trailer is accepted only as part of an empty last member: a file
+# cut short and zero-filled back to its size would otherwise pass as one.
 .cs_gzip_verify <- function(path, plain, size) {
   n <- file.size(path)
   con <- file(path, open = "rb")
@@ -305,6 +317,16 @@
   }
   seek(con, where = n - 8)
   trailer <- readBin(con, what = "raw", n = 8L)
+  if (all(trailer == as.raw(0L))) {
+    last_member <- raw()
+    if (n >= 20) {
+      seek(con, where = n - 20)
+      last_member <- readBin(con, what = "raw", n = 20L)
+    }
+    if (!.cs_gzip_empty_member(last_member)) {
+      .cs_gzip_abort("the file ends in zero bytes instead of a gzip trailer.")
+    }
+  }
   crc <- .cs_crc32_hex(trailer[1:4])
   isize <- .cs_le_uint(trailer[5:8])
   candidates <- if (isize > size) numeric() else rev(seq(isize, size, by = 2^32))

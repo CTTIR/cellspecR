@@ -70,7 +70,8 @@
   on every platform instead of through an external `gzip` program. The
   result is checked against the gzip trailer (CRC-32 and length), so a
   truncated or corrupt file raises a `cellspec_error_format` instead of
-  loading only part of its rows. BGZF files (`bgzip`) are checked block by
+  loading only part of its rows. A file whose tail was zero-filled back to its
+  original size counts as truncated. BGZF files (`bgzip`) are checked block by
   block and must end with the BGZF end-of-file block; other files made of
   several gzip members, which cannot be checked completely, are read with a
   `cellspec_warning_integrity` warning.
