@@ -32,7 +32,8 @@ test_that("the app About panel reports release metadata", {
   about <- cellspecR:::.cs_app_about()
   rendered <- paste(capture.output(about), collapse = " ")
   expect_match(rendered, "About cellspecR")
-  expect_match(rendered, "Version\\s+1\\.0\\.0")
+  version <- gsub(".", "\\.", as.character(utils::packageVersion("cellspecR")), fixed = TRUE)
+  expect_match(rendered, paste0("Version\\s+", version, "\\s"))
   expect_match(rendered, "Specification\\s+1\\.0\\.0")
 })
 
