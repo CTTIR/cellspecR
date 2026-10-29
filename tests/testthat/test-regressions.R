@@ -343,6 +343,15 @@ test_that("gzip_members: BGZF and concatenated gzip members are checked", {
   )
 })
 
+test_that("fwrite_gzip_members: tsv.gz output of cs_write is checked in full", {
+  # data.table before 1.17.0 wrote fwrite(compress = "gzip") output as
+  # several gzip members, which are read back with a warning.
+  path <- withr::local_tempfile(pattern = "cellspec-")
+  cs_write(sim_object(), path, format = "tsv.gz")
+  expect_no_warning(y <- cs_read_cellspec(path))
+  expect_identical(y$cells, sim_object()$cells)
+})
+
 test_that("overwrite_foreign_files: only pure cs_write output is replaced", {
   # A MANIFEST.sha256 or cellspec.json was enough for overwrite = TRUE to
   # delete a folder, including files cs_write() never writes.

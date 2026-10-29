@@ -24,7 +24,7 @@ Depends:
     R (>= 4.1.0)
 Imports:
     cli,
-    data.table,
+    data.table (>= 1.17.0),
     digest,
     jsonlite,
     nanoparquet,

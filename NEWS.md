@@ -77,6 +77,11 @@
   be checked completely, are read with a `cellspec_warning_integrity`
   warning.
 
+* cellspecR now requires data.table 1.17.0 or later. Earlier versions write
+  `fwrite(compress = "gzip")` output as several gzip members, which
+  `cs_read_cellspec()` cannot fully check, so it would warn on the `tsv.gz`
+  files written by `cs_write()`.
+
 # cellspecR 1.0.0
 
 First public release, on GitHub.
