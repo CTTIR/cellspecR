@@ -47,8 +47,6 @@ matrix), \code{dictionary}, \code{images}, \code{channels} (data frames), \code{
 (list) and \code{adjacency} (data frame or \code{NULL}).
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Builds a \code{cellspec} object from its components and checks it against the
 structure rules of the specification. Tool exports are normally read with
 \code{cs_read()}; use \code{cs_new()} when you already hold the pieces in memory, for

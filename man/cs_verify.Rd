@@ -15,8 +15,6 @@ and logical column ok. ok is FALSE for a missing, modified or unexpected
 file, or for an invalid DONE marker.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 against the manifest digest. The returned report has one row per declared
 file plus DONE; it does not hide a failed digest behind an error.

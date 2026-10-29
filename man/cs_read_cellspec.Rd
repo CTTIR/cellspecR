@@ -15,8 +15,6 @@ cs_read_cellspec(dir, verify = TRUE)
 A validated cellspec object.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Reads the sidecar and cell table written by cs_write(), verifies the
 manifest and DONE marker by default, and returns a validated object.
 DONE is required even when verification is explicitly disabled.

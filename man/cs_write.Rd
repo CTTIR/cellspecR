@@ -24,8 +24,6 @@ the unexpected entries is raised.}
 x, invisibly.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Writes a canonical cellspec directory in a neighbouring staging directory,
 then renames it into place after the data, sidecar, manifest and DONE
 marker are complete. Parquet is the default because it preserves doubles

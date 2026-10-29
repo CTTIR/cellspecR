@@ -19,8 +19,6 @@ A \code{SpatialExperiment} with cells as columns, markers as rows,
 \code{spatialCoords} containing \code{x} and \code{y}, and a \code{measurements} altExp.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Converts selected signals to the main assay, stores every raw measurement
 in an \code{altExp}, and records the cellspec metadata needed for a lossless
 round trip.

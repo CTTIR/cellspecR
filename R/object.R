@@ -3,8 +3,6 @@
 #' Create a cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Builds a `cellspec` object from its components and checks it against the
 #' structure rules of the specification. Tool exports are normally read with
 #' `cs_read()`; use `cs_new()` when you already hold the pieces in memory, for
@@ -376,8 +374,6 @@ cs_new <- function(cells,
 #' Access the components of a cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Accessors return the components of a `cellspec` object. Use them instead
 #' of `x$cells` so code keeps working if the internal layout changes.
 #'
@@ -458,8 +454,6 @@ cs_adjacency <- function(x) {
 #' Select features and markers by their dictionary entries
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' `cs_features()` returns the identifiers of measurement columns whose
 #' dictionary entries match every supplied filter. Select features through
 #' this function rather than by splitting `feature_id` strings; the identifier

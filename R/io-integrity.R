@@ -132,8 +132,6 @@
 #' Verify a canonical cellspec directory
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 #' against the manifest digest. The returned report has one row per declared
 #' file plus DONE; it does not hide a failed digest behind an error.

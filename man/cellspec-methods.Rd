@@ -35,8 +35,6 @@ fraction of missing measurement values in that image).
 }
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 \code{print()} shows a compact overview that fits in 80 columns: cells, images,
 samples, features by kind, markers, pixel size, specification version and
 the adapter that produced the object. \code{summary()} returns one row per

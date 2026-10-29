@@ -26,8 +26,6 @@ by one double column per selected feature. \code{as_tibble()} returns the
 same content as a tibble (requires the tibble package).
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Combines the \code{cells} columns with selected measurement columns into one
 wide data frame, for example to hand a table to modelling code.
 Measurement columns are named by their feature identifiers.

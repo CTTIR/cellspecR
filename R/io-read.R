@@ -267,8 +267,6 @@
 #' Read a canonical cellspec directory
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Reads the sidecar and cell table written by cs_write(), verifies the
 #' manifest and DONE marker by default, and returns a validated object.
 #' DONE is required even when verification is explicitly disabled.

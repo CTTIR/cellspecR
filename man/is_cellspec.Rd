@@ -14,7 +14,7 @@ is_cellspec(x)
 object is not validated; use \code{\link[=cs_validate]{cs_validate()}} for that.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+Test for a cellspec object
 }
 \examples{
 is_cellspec(cs_example())

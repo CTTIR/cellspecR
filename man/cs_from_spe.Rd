@@ -13,8 +13,6 @@ cs_from_spe(spe)
 A validated \code{cellspec} object.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Reconstructs the cellspec components stored by \code{\link[=cs_as_spe]{cs_as_spe()}}.
 }
 \examples{

@@ -27,8 +27,6 @@ A data frame with one row per image and feature and the columns
 and \code{support} (character, see Details).
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Describes, for every image and feature, how much usable variation a
 feature carries. A marker whose channel was blank, saturated or not
 acquired shows up as \code{"constant"} or \code{"near_constant"} here before any

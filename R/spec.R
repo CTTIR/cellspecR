@@ -157,8 +157,6 @@
 #' Version of the cellspec specification
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Returns the version of the `cellspec` format that this build of cellspecR
 #' writes and validates. Readers of major version 1 accept every 1.y file
 #' whose minor version is not newer than their own.
@@ -176,8 +174,6 @@ cs_spec_version <- function() {
 #' Columns and controlled vocabularies of the cellspec format
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Returns the specification tables as data: the columns each component may
 #' carry, and the allowed values of every controlled vocabulary. The
 #' validator ([cs_validate()]) enforces exactly these tables, so other

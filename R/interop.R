@@ -48,8 +48,6 @@
 #' Convert a cellspec object to SpatialExperiment
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Converts selected signals to the main assay, stores every raw measurement
 #' in an `altExp`, and records the cellspec metadata needed for a lossless
 #' round trip.
@@ -126,8 +124,6 @@ cs_as_spe <- function(x, policy = NULL, assay_name = "intensity") {
 #' Convert a SpatialExperiment back to cellspec
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Reconstructs the cellspec components stored by [cs_as_spe()].
 #'
 #' @param spe A `SpatialExperiment` created by [cs_as_spe()].
@@ -189,8 +185,6 @@ cs_from_spe <- function(spe) {
 #' Convert a cellspec object to AnnData
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Creates an AnnData object with cells in `obs`, selected marker signals in
 #' `X`, and `x`/`y` in `obsm$spatial`. The optional `anndataR` package and its
 #' Python runtime are required.

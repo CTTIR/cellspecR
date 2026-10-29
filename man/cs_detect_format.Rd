@@ -15,8 +15,6 @@ cs_detect_format(path, n_max = 50L)
 A data frame with \code{format}, \code{score} and \code{evidence} columns.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Reads only the header and at most \code{n_max} data rows. A generic table is
 deliberately returned as a low-confidence candidate because its biological
 meaning cannot be inferred safely without an explicit column map.

@@ -41,8 +41,6 @@ An object of class \code{cs_column_map}, a named list with the mapped
 source names, coordinate unit and validated measurement metadata.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Creates a validated description of how a generic delimited table maps to
 the cellspec columns. Source names are checked for shape here and checked
 against the input table by \code{\link[=cs_read]{cs_read()}}.

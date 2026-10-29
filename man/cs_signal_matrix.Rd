@@ -21,8 +21,6 @@ validated policy. Source values are \code{"<compartment>:<statistic>"},
 \code{"fallback:<compartment>:<statistic>"} or \code{"unavailable"}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Applies a \code{cs_signal_policy} to the intensity measurements in a
 \code{cellspec} object. A preferred finite value is used when its declared domain
 accepts it; otherwise the configured fallback is tested using its own domain.

@@ -16,8 +16,6 @@ cs_marker_map(from, to)
 A two-column data frame with character columns \code{from} and \code{to}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Builds a two-column mapping from source marker names to canonical marker
 names. Source names must be unique; several source names may map to the same
 canonical name when they represent the same marker across files.

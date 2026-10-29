@@ -205,8 +205,6 @@
 #' Create a signal selection policy
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Creates one validated row per marker. Signal policies make the selected
 #' compartment, statistic, fallback and minimum usable value explicit.
 #'
@@ -292,8 +290,6 @@ cs_signal_policy <- function(marker,
 #' Select one signal per cell and marker
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Applies a `cs_signal_policy` to the intensity measurements in a
 #' `cellspec` object. A preferred finite value is used when its declared domain
 #' accepts it; otherwise the configured fallback is tested using its own domain.
@@ -408,8 +404,6 @@ cs_signal_matrix <- function(x, policy, image_id = NULL) {
 #' Create a marker-name mapping
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Builds a two-column mapping from source marker names to canonical marker
 #' names. Source names must be unique; several source names may map to the same
 #' canonical name when they represent the same marker across files.
@@ -459,8 +453,6 @@ cs_marker_map <- function(from, to) {
 #' Write a signal policy as JSON or CSV
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Writes a validated signal policy. The format is inferred from the `.json`
 #' or `.csv` extension unless `format` is supplied explicitly.
 #'
@@ -531,8 +523,6 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
 #' Read a signal policy from JSON or CSV
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Reads and validates a policy written by [cs_write_signal_policy()]. The
 #' format is inferred from the `.json` or `.csv` extension unless `format` is
 #' supplied explicitly.

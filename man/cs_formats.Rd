@@ -11,8 +11,6 @@ A data frame with \code{format}, \code{adapter_version}, \code{description},
 \code{tested_with} and \code{status} columns.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Lists the adapters implemented by this build of cellspecR. The generic
 table adapter accepts delimited files when the source columns are mapped
 explicitly with \code{\link[=cs_column_map]{cs_column_map()}}.

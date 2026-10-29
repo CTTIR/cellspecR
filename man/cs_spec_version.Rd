@@ -10,8 +10,6 @@ cs_spec_version()
 A single string in semantic versioning form, for example \code{"1.0.0"}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Returns the version of the \code{cellspec} format that this build of cellspecR
 writes and validates. Readers of major version 1 accept every 1.y file
 whose minor version is not newer than their own.

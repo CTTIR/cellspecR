@@ -24,8 +24,6 @@ means all features.}
 A \code{cellspec} object.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 \code{x[i, j]} keeps the cells selected by \code{i} and the features selected by \code{j}.
 All components stay aligned: \code{cells} and \code{measurements} rows are subset
 together, dictionary rows follow the kept features, and adjacency contacts

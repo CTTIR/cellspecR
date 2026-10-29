@@ -3,8 +3,6 @@
 #' A small synthetic cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Builds a small, deterministic `cellspec` object for examples and
 #' experiments: two images from two samples, 40 cells each, four markers
 #' (`DAPI`, `CD3e`, `Pan-Cytokeratin`, `FOXP3`) measured as mean and median

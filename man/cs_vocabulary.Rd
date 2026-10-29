@@ -21,8 +21,6 @@ validation catalogue used by \code{\link[=cs_validate]{cs_validate()}}: characte
 \code{level} (\code{"structure"} or \code{"semantic"}) and \code{description}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Returns the specification tables as data: the columns each component may
 carry, and the allowed values of every controlled vocabulary. The
 validator (\code{\link[=cs_validate]{cs_validate()}}) enforces exactly these tables, so other

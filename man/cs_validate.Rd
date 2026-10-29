@@ -42,8 +42,6 @@ Rows are in catalogue order; \code{print()} shows failures first.
 class \code{cellspec_error_invalid} whose \code{report} field holds the report.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 \code{cs_validate()} checks an object against the \code{cellspec} specification and
 returns a report with one row per check. \code{cs_assert_valid()} runs the same
 checks and aborts when any check fails.

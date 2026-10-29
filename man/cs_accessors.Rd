@@ -42,8 +42,6 @@ feature identifiers.
 }
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Accessors return the components of a \code{cellspec} object. Use them instead
 of \code{x$cells} so code keeps working if the internal layout changes.
 }

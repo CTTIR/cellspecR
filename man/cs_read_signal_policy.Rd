@@ -16,8 +16,6 @@ cs_read_signal_policy(path, format = NULL)
 A validated data frame with class \code{cs_signal_policy}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Reads and validates a policy written by \code{\link[=cs_write_signal_policy]{cs_write_signal_policy()}}. The
 format is inferred from the \code{.json} or \code{.csv} extension unless \code{format} is
 supplied explicitly.

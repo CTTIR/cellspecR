@@ -592,8 +592,6 @@
 #' List the available cellspec readers
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Lists the adapters implemented by this build of cellspecR. The generic
 #' table adapter accepts delimited files when the source columns are mapped
 #' explicitly with [cs_column_map()].
@@ -637,8 +635,6 @@ cs_formats <- function() {
 #' Detect the generic table format
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Reads only the header and at most `n_max` data rows. A generic table is
 #' deliberately returned as a low-confidence candidate because its biological
 #' meaning cannot be inferred safely without an explicit column map.
@@ -712,8 +708,6 @@ cs_detect_format <- function(path, n_max = 50L) {
 #' Validate a table column map
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Creates a validated description of how a generic delimited table maps to
 #' the cellspec columns. Source names are checked for shape here and checked
 #' against the input table by [cs_read()].
@@ -795,8 +789,6 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' Read a delimited table into a cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Reads a delimited cell table using a format-specific adapter or an explicit
 #' [cs_column_map()]. See [cs_formats()] for supported formats.
 #'

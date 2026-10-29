@@ -18,8 +18,6 @@ cs_write_signal_policy(policy, path, format = NULL)
 \code{policy}, invisibly.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Writes a validated signal policy. The format is inferred from the \code{.json}
 or \code{.csv} extension unless \code{format} is supplied explicitly.
 }

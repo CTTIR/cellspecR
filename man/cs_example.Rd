@@ -10,8 +10,6 @@ cs_example()
 A valid \code{cellspec} object with 80 cells and 19 features.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Builds a small, deterministic \code{cellspec} object for examples and
 experiments: two images from two samples, 40 cells each, four markers
 (\code{DAPI}, \code{CD3e}, \code{Pan-Cytokeratin}, \code{FOXP3}) measured as mean and median

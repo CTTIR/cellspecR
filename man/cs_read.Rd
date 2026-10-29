@@ -67,8 +67,6 @@ informational warning about dropped columns when \code{keep_other = FALSE}.}
 A validated \code{cellspec} object.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Reads a delimited cell table using a format-specific adapter or an explicit
 \code{\link[=cs_column_map]{cs_column_map()}}. See \code{\link[=cs_formats]{cs_formats()}} for supported formats.
 

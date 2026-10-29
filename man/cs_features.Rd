@@ -27,8 +27,6 @@ dictionary order (length 0 when nothing matches). \code{cs_markers()}:
 character vector of marker names in order of first appearance.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 \code{cs_features()} returns the identifiers of measurement columns whose
 dictionary entries match every supplied filter. Select features through
 this function rather than by splitting \code{feature_id} strings; the identifier

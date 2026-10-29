@@ -247,8 +247,6 @@
 #' Write a cellspec directory
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Writes a canonical cellspec directory in a neighbouring staging directory,
 #' then renames it into place after the data, sidecar, manifest and DONE
 #' marker are complete. Parquet is the default because it preserves doubles

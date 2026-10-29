@@ -3,8 +3,6 @@
 #' Test for a cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' @param x Any R object.
 #' @return `TRUE` if `x` inherits from `"cellspec"`, otherwise `FALSE`. The
 #'   object is not validated; use [cs_validate()] for that.
@@ -20,8 +18,6 @@ is_cellspec <- function(x) {
 #' Print, summarise and measure a cellspec object
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' `print()` shows a compact overview that fits in 80 columns: cells, images,
 #' samples, features by kind, markers, pixel size, specification version and
 #' the adapter that produced the object. `summary()` returns one row per
@@ -202,8 +198,6 @@ dim.cellspec <- function(x) {
 #' Subset a cellspec object by cells and features
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' `x[i, j]` keeps the cells selected by `i` and the features selected by `j`.
 #' All components stay aligned: `cells` and `measurements` rows are subset
 #' together, dictionary rows follow the kept features, and adjacency contacts
@@ -321,8 +315,6 @@ dim.cellspec <- function(x) {
 #' Convert a cellspec object to a data frame
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Combines the `cells` columns with selected measurement columns into one
 #' wide data frame, for example to hand a table to modelling code.
 #' Measurement columns are named by their feature identifiers.

@@ -16,8 +16,6 @@ has more than one compartment or statistic; otherwise it can be omitted.}
 An AnnData object supplied by \code{anndataR}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Creates an AnnData object with cells in \code{obs}, selected marker signals in
 \code{X}, and \code{x}/\code{y} in \code{obsm$spatial}. The optional \code{anndataR} package and its
 Python runtime are required.

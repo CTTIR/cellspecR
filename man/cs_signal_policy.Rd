@@ -41,8 +41,6 @@ Non-default domains append \code{preferred_domain} and \code{fallback_domain}.
 Default policies retain the original five-column representation.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-
 Creates one validated row per marker. Signal policies make the selected
 compartment, statistic, fallback and minimum usable value explicit.
 }

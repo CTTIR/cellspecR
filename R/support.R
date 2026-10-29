@@ -1,8 +1,6 @@
 #' Summarise the signal support of features per image
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Describes, for every image and feature, how much usable variation a
 #' feature carries. A marker whose channel was blank, saturated or not
 #' acquired shows up as `"constant"` or `"near_constant"` here before any
