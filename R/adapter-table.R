@@ -237,22 +237,26 @@
 
 .cs_gzip_magic <- as.raw(c(0x1f, 0x8b))
 
-# Whether `bytes` are the 20-byte gzip member of no data that gzip and
-# gzfile() write: a header without optional fields, an empty final deflate
-# block and an all-zero trailer.
-.cs_gzip_empty_member <- function(bytes) {
-  length(bytes) == 20L &&
-    identical(bytes[1:3], c(.cs_gzip_magic, as.raw(8L))) &&
-    bitwAnd(as.integer(bytes[[4L]]), 0xfe) == 0L &&
-    identical(bytes[11:20], as.raw(c(3L, rep(0L, 9L))))
-}
-
 # The 28-byte empty block that ends a BGZF file.
 .cs_bgzf_eof <- as.raw(c(
   0x1f, 0x8b, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x06, 0x00,
   0x42, 0x43, 0x02, 0x00, 0x1b, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00
 ))
+
+# Whether `bytes` end with an empty gzip member: the BGZF end-of-file block
+# or the 20 bytes that gzip and gzfile() write for no data, a header without
+# optional fields, an empty final deflate block and an all-zero trailer.
+.cs_gzip_empty_member <- function(bytes) {
+  if (identical(utils::tail(bytes, 28L), .cs_bgzf_eof)) {
+    return(TRUE)
+  }
+  bytes <- utils::tail(bytes, 20L)
+  length(bytes) == 20L &&
+    identical(bytes[1:3], c(.cs_gzip_magic, as.raw(8L))) &&
+    bitwAnd(as.integer(bytes[[4L]]), 0xfe) == 0L &&
+    identical(bytes[11:20], as.raw(c(3L, rep(0L, 9L))))
+}
 
 # Unsigned little-endian integer, as a double.
 .cs_le_uint <- function(bytes) {
@@ -318,12 +322,8 @@
   seek(con, where = n - 8)
   trailer <- readBin(con, what = "raw", n = 8L)
   if (all(trailer == as.raw(0L))) {
-    last_member <- raw()
-    if (n >= 20) {
-      seek(con, where = n - 20)
-      last_member <- readBin(con, what = "raw", n = 20L)
-    }
-    if (!.cs_gzip_empty_member(last_member)) {
+    seek(con, where = max(n - 28, 0))
+    if (!.cs_gzip_empty_member(readBin(con, what = "raw", n = 28L))) {
       .cs_gzip_abort("the file ends in zero bytes instead of a gzip trailer.")
     }
   }

@@ -285,12 +285,13 @@ test_that("gzip_truncated: a cut gzip table is an error, not a short table", {
   writeBin(zero_fill(bgzf, length(first)), cut)
   expect_error(cs_read(cut, format = "table", column_map = map),
                "truncated", class = "cellspec_error_format")
-  # A real empty last member still ends in zeros.
-  empty <- gzip_member(raw())
-  writeBin(c(gzip_member(c(parts$first, parts$second)), empty), cut)
-  expect_warning(x <- cs_read(cut, format = "table", column_map = map),
-                 class = "cellspec_warning_integrity")
-  expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+  # A real empty last member, also a BGZF end-of-file block, ends in zeros.
+  for (empty in list(gzip_member(raw()), bgzf_eof())) {
+    writeBin(c(gzip_member(c(parts$first, parts$second)), empty), cut)
+    expect_warning(x <- cs_read(cut, format = "table", column_map = map),
+                   class = "cellspec_warning_integrity")
+    expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+  }
 
   dir <- withr::local_tempfile(pattern = "cellspec-")
   cs_write(sim_object(), dir, format = "tsv.gz")
