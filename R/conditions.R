@@ -1,6 +1,19 @@
-# Condition helpers. Every error carries `cellspec_error` plus one specific
-# class from the list in the specification, every warning `cellspec_warning`,
-# so callers can catch a failure by kind. Not exported.
+# Condition helpers. Every error carries `cellspec_error`, every warning
+# `cellspec_warning`; most add one specific class from the list below, so
+# callers can catch a failure by kind. Not exported.
+#
+# cellspec_error_ambiguous_format  cs_read(format = "auto") cannot choose.
+# cellspec_error_argument          an argument has the wrong type or value.
+# cellspec_error_collision         identifiers, keys or tiles clash.
+# cellspec_error_format            input that cannot be read as expected,
+#                                  including truncated or corrupt gzip data.
+# cellspec_error_integrity         a cellspec directory fails its manifest
+#                                  or DONE checks.
+# cellspec_error_invalid           an object fails validation.
+# cellspec_error_io                a file is missing.
+# cellspec_error_units             unusable coordinates or units.
+# cellspec_error_version           an unsupported specification version.
+# cellspec_warning_integrity       data were read but not fully verified.
 
 .cs_abort <- function(message,
                       class = NULL,
