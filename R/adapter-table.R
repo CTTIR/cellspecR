@@ -244,18 +244,64 @@
   0x00, 0x00, 0x00, 0x00
 ))
 
-# Whether `bytes` end with an empty gzip member: the BGZF end-of-file block
-# or the 20 bytes that gzip and gzfile() write for no data, a header without
-# optional fields, an empty final deflate block and an all-zero trailer.
+# Whether `bytes` end with an empty gzip member: the BGZF end-of-file block,
+# or a gzip header (with any optional fields, as gzip -N, pigz and 7-Zip
+# write them) followed by an empty final deflate block, fixed or stored, and
+# an all-zero trailer.
 .cs_gzip_empty_member <- function(bytes) {
   if (identical(utils::tail(bytes, 28L), .cs_bgzf_eof)) {
     return(TRUE)
   }
-  bytes <- utils::tail(bytes, 20L)
-  length(bytes) == 20L &&
-    identical(bytes[1:3], c(.cs_gzip_magic, as.raw(8L))) &&
-    bitwAnd(as.integer(bytes[[4L]]), 0xfe) == 0L &&
-    identical(bytes[11:20], as.raw(c(3L, rep(0L, 9L))))
+  n <- length(bytes)
+  for (body in list(as.raw(c(3L, 0L)), as.raw(c(1L, 0L, 0L, 0xff, 0xff)))) {
+    start <- n - 8L - length(body) + 1L
+    if (start < 11L || !identical(bytes[start:(n - 8L)], body)) next
+    for (p in rev(which(bytes[seq_len(start - 10L)] == .cs_gzip_magic[[1L]]))) {
+      if (identical(.cs_gzip_header_end(bytes, p), start)) {
+        return(TRUE)
+      }
+    }
+  }
+  FALSE
+}
+
+# Position just after the gzip member header that starts at `p` in `bytes`,
+# or NA when there is no complete header there.
+.cs_gzip_header_end <- function(bytes, p) {
+  n <- length(bytes)
+  if (p + 9L > n || !identical(bytes[p + 1:2], as.raw(c(0x8b, 8L)))) {
+    return(NA_integer_)
+  }
+  flags <- as.integer(bytes[[p + 3L]])
+  if (bitwAnd(flags, 0xe0) != 0L) {
+    return(NA_integer_)
+  }
+  at <- p + 10L
+  if (bitwAnd(flags, 4L) != 0L) {
+    # FEXTRA: a two-byte length, then the field.
+    if (at + 1L > n) {
+      return(NA_integer_)
+    }
+    at <- at + 2L + .cs_le_uint(bytes[at + 0:1])
+  }
+  for (bit in c(8L, 16L)) {
+    # FNAME and FCOMMENT end in a zero byte.
+    if (bitwAnd(flags, bit) != 0L) {
+      if (at > n) {
+        return(NA_integer_)
+      }
+      zero <- which(bytes[at:n] == as.raw(0L))[1L]
+      if (is.na(zero)) {
+        return(NA_integer_)
+      }
+      at <- at + zero
+    }
+  }
+  if (bitwAnd(flags, 2L) != 0L) {
+    # FHCRC
+    at <- at + 2L
+  }
+  as.integer(at)
 }
 
 # Unsigned little-endian integer, as a double.
@@ -322,8 +368,10 @@
   seek(con, where = n - 8)
   trailer <- readBin(con, what = "raw", n = 8L)
   if (all(trailer == as.raw(0L))) {
-    seek(con, where = max(n - 28, 0))
-    if (!.cs_gzip_empty_member(readBin(con, what = "raw", n = 28L))) {
+    # Room for an empty member with a stored file name or comment.
+    tail_bytes <- min(n, 4096)
+    seek(con, where = n - tail_bytes)
+    if (!.cs_gzip_empty_member(readBin(con, what = "raw", n = tail_bytes))) {
       .cs_gzip_abort("the file ends in zero bytes instead of a gzip trailer.")
     }
   }

@@ -344,6 +344,41 @@ test_that("gzip_members: BGZF and concatenated gzip members are checked", {
   )
 })
 
+test_that("gzip_empty_member_fields: empty members with optional header fields", {
+  # gzip -N, pigz and 7-Zip store a file name in the header of an empty
+  # member, and 7-Zip writes a stored empty block; such files were taken for
+  # zero-filled truncations.
+  empty <- function(flags = 0L, fields = raw(), body = as.raw(c(3L, 0L))) {
+    c(as.raw(c(0x1f, 0x8b, 8L, flags, 0L, 0L, 0L, 0L, 0L, 3L)), fields, body,
+      raw(8L))
+  }
+  name <- c(charToRaw("cells.tsv"), as.raw(0L))
+  extra <- as.raw(c(4L, 0L, 0x41, 0x42, 0L, 0L))
+  variants <- list(
+    empty(8L, name),
+    empty(16L, c(charToRaw("note"), as.raw(0L))),
+    empty(4L, extra),
+    empty(2L, as.raw(c(0x12, 0x34))),
+    empty(8L, name, as.raw(c(1L, 0L, 0L, 0xff, 0xff))),
+    empty(),
+    bgzf_eof()
+  )
+  for (v in variants) {
+    expect_true(cellspecR:::.cs_gzip_empty_member(c(as.raw(1:200), v)))
+  }
+  # Zero bytes that do not complete a header are still a truncation.
+  expect_false(cellspecR:::.cs_gzip_empty_member(c(as.raw(c(0x1f, 0x8b, 8L, 8L)), raw(30L))))
+  expect_false(cellspecR:::.cs_gzip_empty_member(c(as.raw(1:50), raw(40L))))
+
+  parts <- gzip_table_parts()
+  map <- cs_column_map("id", "x", "y")
+  path <- withr::local_tempfile(fileext = ".tsv.gz")
+  writeBin(c(gzip_member(c(parts$first, parts$second)), empty(8L, name)), path)
+  expect_warning(x <- cs_read(path, format = "table", column_map = map),
+                 class = "cellspec_warning_integrity")
+  expect_identical(x$cells$cell_id, sprintf("c%03d", 1:60))
+})
+
 test_that("fwrite_gzip_members: tsv.gz output of cs_write is checked in full", {
   # data.table before 1.17.0 wrote fwrite(compress = "gzip") output as
   # several gzip members, which are read back with a warning.
