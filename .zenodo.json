@@ -1,11 +1,10 @@
 {
   "upload_type": "software",
   "title": "cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables",
-  "version": "1.0.0",
-  "publication_date": "2026-09-15",
+  "version": "1.1.0",
   "creators": [
     {
-      "name": "Heller, Raban",
+      "name": "Heller, R.",
       "orcid": "0000-0001-8006-9742"
     }
   ],

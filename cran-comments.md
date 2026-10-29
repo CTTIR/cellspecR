@@ -9,8 +9,6 @@
 0 errors | 0 warnings | 1 note
 
 * This is a new submission.
-* "Version contains large components (1.0.0.9000)": this is the development
-  version number; it will be bumped to a release version before submission.
 
 ## Notes
 

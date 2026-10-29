@@ -1,4 +1,8 @@
-# cellspecR (development version)
+# cellspecR 1.1.0
+
+* Functions released in 1.0.0 are no longer marked experimental; like the
+  package, they are stable. The NumPy readers and writers added in this
+  version are experimental.
 
 * The MCQuant, segmantR and inForm readers derive image and sample
   identifiers of an RDS table from its file name, as for delimited files;
