@@ -352,8 +352,8 @@
 # Checks every block of a BGZF file (as written by bgzip): its "BC" extra
 # subfield gives the block size, so each block's CRC-32 and length can be
 # compared with its slice of the decompressed data, and the file must end
-# with the empty end-of-file block. Returns FALSE when a block is not BGZF,
-# so that the caller falls back to the trailer check.
+# with the empty end-of-file block. Returns FALSE when the first block is
+# not BGZF, so that the caller falls back to the trailer check.
 .cs_bgzf_verify <- function(path, plain, size) {
   input <- file(path, open = "rb")
   on.exit(close(input), add = TRUE)
@@ -371,7 +371,7 @@
     }
     if (!identical(header[1:3], c(.cs_gzip_magic, as.raw(8L))) ||
         bitwAnd(as.integer(header[[4L]]), 4L) == 0L) {
-      return(FALSE)
+      return(.cs_bgzf_other_block(block))
     }
     xlen <- .cs_le_uint(header[11:12])
     extra <- readBin(input, what = "raw", n = xlen)
@@ -389,7 +389,7 @@
       at <- at + 4L + field_length
     }
     if (is.null(bsize)) {
-      return(FALSE)
+      return(.cs_bgzf_other_block(block))
     }
     rest <- bsize + 1 - 12 - xlen
     if (rest < 8) {
@@ -419,6 +419,15 @@
     .cs_gzip_abort("the BGZF blocks do not add up to the decompressed data.")
   }
   TRUE
+}
+
+# A file that does not start with a BGZF block is not BGZF; anything else
+# after BGZF blocks, such as a zero-filled tail, is damage.
+.cs_bgzf_other_block <- function(block) {
+  if (block == 1L) {
+    return(FALSE)
+  }
+  .cs_gzip_abort("block {block} follows BGZF blocks but is not one.")
 }
 
 .cs_table_read <- function(path, n_max = NULL, call = rlang::caller_env()) {

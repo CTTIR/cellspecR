@@ -72,9 +72,10 @@
   truncated or corrupt file raises a `cellspec_error_format` instead of
   loading only part of its rows. A file whose tail was zero-filled back to its
   original size counts as truncated. BGZF files (`bgzip`) are checked block by
-  block and must end with the BGZF end-of-file block; other files made of
-  several gzip members, which cannot be checked completely, are read with a
-  `cellspec_warning_integrity` warning.
+  block, may hold nothing but BGZF blocks and must end with the BGZF
+  end-of-file block; other files made of several gzip members, which cannot
+  be checked completely, are read with a `cellspec_warning_integrity`
+  warning.
 
 # cellspecR 1.0.0
 

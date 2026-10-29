@@ -322,6 +322,9 @@ test_that("gzip_members: BGZF and concatenated gzip members are checked", {
   expect_error(read(), "end-of-file", class = "cellspec_error_format")
   writeBin(bgzf[seq_len(length(bgzf) - 40L)], path)
   expect_error(read(), "truncated", class = "cellspec_error_format")
+  # Other data after BGZF blocks fell back to the check of the last trailer.
+  writeBin(c(bgzf_block(parts$first), gzip_member(parts$second)), path)
+  expect_error(read(), "not one", class = "cellspec_error_format")
 
   members <- c(gzip_member(parts$first), gzip_member(parts$second))
   writeBin(members, path)
