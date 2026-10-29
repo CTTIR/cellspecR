@@ -21,7 +21,7 @@ semantics, and writes an integrity checked directory for downstream analysis.
 > marks as experimental may still change with the export formats of their
 > tools. cellspecR is not yet on CRAN.
 
-## Install
+## Installation
 
 ```r
 # install.packages("pak")

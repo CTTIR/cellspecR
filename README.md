@@ -1,6 +1,6 @@
 
 - [cellspecR](#cellspecr-)
-  - [Install](#install)
+  - [Installation](#installation)
   - [Quick start](#quick-start)
   - [What the package provides](#what-the-package-provides)
   - [Data and reproducibility](#data-and-reproducibility)
@@ -27,7 +27,7 @@ downstream analysis.
 > that `cs_formats()` marks as experimental may still change with the
 > export formats of their tools. cellspecR is not yet on CRAN.
 
-## Install
+## Installation
 
 ``` r
 # install.packages("pak")
