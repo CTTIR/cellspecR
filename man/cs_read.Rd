@@ -80,6 +80,18 @@ downsampled inputs require an explicit external frame transform before
 combining with a full-resolution image. This adapter assumes square pixels.
 Shape measurements retain source units in the feature dictionary.
 }
+\section{Compressed input}{
+
+Input files whose names end in \code{.gz} are decompressed in R and checked
+against their gzip trailer before they are parsed, for every format. A
+truncated or corrupt file, also one zero-filled back to its original
+size, raises an error of class \code{cellspec_error_format}. A BGZF file
+(written by \code{bgzip}) is checked block by block and must end with its
+end-of-file block. Other files made of several gzip members, such as
+concatenated \code{.gz} files, can be checked only in their last member; they
+are read with a warning of class \code{cellspec_warning_integrity}.
+}
+
 \examples{
 path <- tempfile(fileext = ".csv")
 utils::write.csv(data.frame(id = c("c1", "c2"), x = 1:2, y = 3:4),

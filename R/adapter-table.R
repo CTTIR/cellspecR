@@ -760,6 +760,16 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' combining with a full-resolution image. This adapter assumes square pixels.
 #' Shape measurements retain source units in the feature dictionary.
 #'
+#' @section Compressed input:
+#' Input files whose names end in `.gz` are decompressed in R and checked
+#' against their gzip trailer before they are parsed, for every format. A
+#' truncated or corrupt file, also one zero-filled back to its original
+#' size, raises an error of class `cellspec_error_format`. A BGZF file
+#' (written by `bgzip`) is checked block by block and must end with its
+#' end-of-file block. Other files made of several gzip members, such as
+#' concatenated `.gz` files, can be checked only in their last member; they
+#' are read with a warning of class `cellspec_warning_integrity`.
+#'
 #' @param path One delimited table file.
 #' @param format Reader format. Use `"table"` for this adapter or `"auto"`
 #'   to request conservative detection.
