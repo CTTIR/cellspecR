@@ -28,7 +28,9 @@ cs_app(
 
 - max_upload_mb:
 
-  Maximum upload size shown to the application in MB.
+  Maximum upload size in MB. It is applied as the `shiny.maxRequestSize`
+  option while the application runs and the previous value is restored
+  when it stops.
 
 - allow_local_paths:
 

@@ -41,6 +41,7 @@ Other interoperability:
 ## Examples
 
 ``` r
+# \donttest{
 if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
   x <- cs_example()
   policy <- cs_signal_policy(cs_markers(x))
@@ -60,4 +61,5 @@ if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
 #> altExpNames(1): measurements
 #> spatialCoords names(2) : x y
 #> imgData names(0):
+# }
 ```

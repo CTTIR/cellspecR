@@ -30,7 +30,12 @@ cs_write(x, dir, format = c("parquet", "tsv.gz"), overwrite = FALSE)
 
 - overwrite:
 
-  Whether an existing destination may be replaced.
+  Whether an existing destination may be replaced. Only an empty
+  directory or earlier `cs_write()` output is replaced: a directory
+  whose `cellspec.json` carries the cellspec format marker and which
+  holds nothing but the files `cs_write()` creates. Any other directory,
+  for example one with an added file, is left untouched and an error
+  naming the unexpected entries is raised.
 
 ## Value
 

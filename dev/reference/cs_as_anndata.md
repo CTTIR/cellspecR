@@ -9,7 +9,7 @@ and its Python runtime are required.
 ## Usage
 
 ``` r
-cs_as_anndata(x, policy)
+cs_as_anndata(x, policy = NULL)
 ```
 
 ## Arguments
@@ -20,7 +20,8 @@ cs_as_anndata(x, policy)
 
 - policy:
 
-  Signal policy used to form `X`.
+  Signal policy used to form `X`. It is required when a marker has more
+  than one compartment or statistic; otherwise it can be omitted.
 
 ## Value
 

@@ -55,7 +55,10 @@ cs_column_map(
 - measurements:
 
   Optional data frame with `source_name`, `kind`, `marker`,
-  `compartment`, `statistic` and `unit` metadata columns.
+  `compartment`, `statistic` and `unit` metadata columns. Measurements
+  of kind `other` get `other:` identifiers as described for `keep_other`
+  in
+  [`cs_read()`](https://cttir.github.io/cellspecR/dev/reference/cs_read.md).
 
 ## Value
 

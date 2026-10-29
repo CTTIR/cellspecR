@@ -2,6 +2,11 @@
 
 ## cellspecR (development version)
 
+- The MCQuant, segmantR and inForm readers derive image and sample
+  identifiers of an RDS table from its file name, as for delimited
+  files; before, they came from a temporary copy and differed between
+  reads.
+
 - Standardize the named v5 package logo across README, documentation
   pages and available application headers, with matching light and dark
   artwork.
@@ -22,10 +27,13 @@
   Extended seven-column policies preserve both domains through JSON and
   CSV.
 
+- Signal-policy I/O preserves structured error classes when parser
+  diagnostics or paths contain literal braces.
+
 - Canonical TSV decimal conversion now preserves double precision on
   platforms where extended precision equals double precision, including
-  macOS ARM. The 17-digit file format and exact-value roundtrip contract
-  are unchanged.
+  macOS ARM. The 17-digit file format and exact-value round-trip
+  contract are unchanged.
 
 - Header-only TSV exports now write a complete gzip stream, including
   empty cell and adjacency tables. Their declared column types survive
@@ -38,14 +46,83 @@
 
 - The segmantR reader converts one-based pixel-index centroid means to
   the image’s pixel-edge coordinate frame and converts pixel area to
-  square micrometres. Unrecognized centroid conventions are rejected.
+  square micrometres. Unrecognised centroid conventions are rejected.
   Crop, pyramid and anisotropic transforms must be handled explicitly
   before image integration. Raw shape measurements retain their pixel or
   radian units.
 
+- [`cs_formats()`](https://cttir.github.io/cellspecR/dev/reference/cs_formats.md)
+  reports segmantR 0.1.0.9000, the version the segmantR reader was
+  tested with, instead of the non-existent segmantR 0.5.
+
+- `cs_write(overwrite = TRUE)` now replaces only an empty directory or
+  earlier
+  [`cs_write()`](https://cttir.github.io/cellspecR/dev/reference/cs_write.md)
+  output: a directory whose `cellspec.json` carries the cellspec format
+  marker and which holds no files other than those
+  [`cs_write()`](https://cttir.github.io/cellspecR/dev/reference/cs_write.md)
+  creates. Any other directory is left untouched and an error names the
+  unexpected entries.
+
+- Tiled QuPath done markers with `header_sha256` now verify header lines
+  longer than 1,024 bytes instead of reporting a missing header, and
+  check the decompressed header line of gzip-compressed (`.gz`) tiles
+  instead of their compressed bytes.
+
+- [`cs_app()`](https://cttir.github.io/cellspecR/dev/reference/cs_app.md)
+  now applies `max_upload_mb` as the Shiny upload limit while the
+  application runs and restores the previous limit when it stops;
+  uploads were previously capped at the 5 MB Shiny default.
+
+- The default [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
+  overview leaves out the area panel when the cells table has no `area`
+  column and the marker panel when there are no intensity features,
+  instead of failing.
+
+- [`cs_as_anndata()`](https://cttir.github.io/cellspecR/dev/reference/cs_as_anndata.md)
+  now defaults to `policy = NULL` and derives the policy the same way as
+  [`cs_as_spe()`](https://cttir.github.io/cellspecR/dev/reference/cs_as_spe.md).
+
+- `other` features whose source names clean to the same identifier are
+  numbered with `make.unique(sep = "_")` instead of aborting the read.
+  This covers unmapped numeric columns kept by `keep_other = TRUE` and
+  measurements mapped with `kind = "other"`, also with
+  `keep_other = FALSE`. Suffixes already in use are skipped: columns “a
+  b”, “a_b” and “a_b_1” become `other:a_b`, `other:a_b_2` and
+  `other:a_b_1`.
+
+- [`summary()`](https://rdrr.io/r/base/summary.html) and its print
+  method handle valid objects without images.
+
+- [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/dev/reference/cs_read_cellspec.md)
+  checks the row counts declared in `cellspec.json` before reading and
+  reports a missing or malformed `n_rows` as a `cellspec_error_format`.
+
+- [`cs_write()`](https://cttir.github.io/cellspecR/dev/reference/cs_write.md)
+  no longer advances the session random number generator when it names
+  its staging and backup directories.
+
+- Gzip-compressed tables and canonical `tsv.gz` files are decompressed
+  in R on every platform instead of through an external `gzip` program.
+  The result is checked against the gzip trailer (CRC-32 and length), so
+  a truncated or corrupt file raises a `cellspec_error_format` instead
+  of loading only part of its rows. A file whose tail was zero-filled
+  back to its original size counts as truncated. BGZF files (`bgzip`)
+  are checked block by block, may hold nothing but BGZF blocks and must
+  end with the BGZF end-of-file block; other files made of several gzip
+  members, which cannot be checked completely, are read with a
+  `cellspec_warning_integrity` warning.
+
+- cellspecR now requires data.table 1.17.0 or later. Earlier versions
+  write `fwrite(compress = "gzip")` output as several gzip members,
+  which
+  [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/dev/reference/cs_read_cellspec.md)
+  cannot fully check, so it would warn on the `tsv.gz` files written by
+  [`cs_write()`](https://cttir.github.io/cellspecR/dev/reference/cs_write.md).
+
 ## cellspecR 1.0.0
 
-Initial CRAN release.
+First public release, on GitHub.
 
 ### Specification
 
@@ -88,6 +165,3 @@ Initial CRAN release.
 
 - Added a local Shiny review app for reading exports, inspecting
   validation and downloading review tables.
-
-- Signal-policy I/O preserves structured error classes when parser
-  diagnostics or paths contain literal braces.

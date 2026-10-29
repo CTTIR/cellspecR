@@ -3,7 +3,9 @@
 **\[experimental\]**
 
 Draws a centroid map, marker distribution, feature-support heatmap, cell
-area distribution, or a four-panel overview. Large objects are
+area distribution, or an overview of up to four panels. The overview
+leaves out the area panel when the cells table has no `area` column and
+the marker panel when there are no intensity features. Large objects are
 subsampled deterministically for plotting.
 
 ## Usage

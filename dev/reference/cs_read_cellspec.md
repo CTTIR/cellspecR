@@ -26,6 +26,17 @@ cs_read_cellspec(dir, verify = TRUE)
 
 A validated cellspec object.
 
+## Compressed input
+
+Tables written with `cs_write(format = "tsv.gz")` are decompressed in R
+and checked against their gzip trailer, also when `verify = FALSE`. A
+truncated or corrupt file, also one zero-filled back to its original
+size, raises an error of class `cellspec_error_format`. A BGZF file
+(written by `bgzip`) is checked block by block and must end with its
+end-of-file block. Other files made of several gzip members can be
+checked only in their last member; they are read with a warning of class
+`cellspec_warning_integrity`.
+
 ## See also
 
 cs_write(), cs_verify()
