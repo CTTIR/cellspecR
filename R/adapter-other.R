@@ -224,8 +224,12 @@
   )
   source_path <- path
   if (grepl("\\.rds$", path, ignore.case = TRUE)) {
-    source_path <- tempfile("cellspec-adapter-", fileext = ".tsv")
-    on.exit(unlink(source_path), add = TRUE)
+    # The copy keeps the file's own name, so identifiers derived from it match
+    # those of the same table read from a delimited file.
+    source_dir <- tempfile("cellspec-adapter-")
+    dir.create(source_dir)
+    on.exit(unlink(source_dir, recursive = TRUE), add = TRUE)
+    source_path <- file.path(source_dir, paste0(.cs_table_derived_image_id(path), ".tsv"))
     data.table::fwrite(table, source_path, sep = "\t", quote = FALSE)
   }
   out <- cs_read(
@@ -258,6 +262,10 @@
     format
   )
   if (!identical(source_path, path)) {
+    if ("source_image" %in% names(out$images)) {
+      copied <- out$images$source_image %in% basename(source_path)
+      out$images$source_image[copied] <- basename(path)
+    }
     info <- file.info(path)
     out$provenance$inputs <- list(list(
       path_basename = basename(path), bytes = as.numeric(info$size),

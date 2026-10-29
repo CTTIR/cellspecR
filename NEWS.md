@@ -1,5 +1,9 @@
 # cellspecR (development version)
 
+* The MCQuant, segmantR and inForm readers derive image and sample
+  identifiers of an RDS table from its file name, as for delimited files;
+  before, they came from a temporary copy and differed between reads.
+
 * Standardize the named v5 package logo across README, documentation pages
   and available application headers, with matching light and dark artwork.
 

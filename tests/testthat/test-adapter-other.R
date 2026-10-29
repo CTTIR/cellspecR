@@ -56,6 +56,28 @@ test_that("segmantR first-pixel centre and area use physical units", {
   }
 })
 
+test_that("RDS input gives the identifiers of the same table read as text", {
+  data <- data.frame(cell_id = c(1L, 2L), area = c(1, 4), DAPI_mean = c(2, 3))
+  data[[paste0("centroid_", "row")]] <- c(1, 2)
+  data[[paste0("centroid_", "col")]] <- c(3, 4)
+  dir <- tempfile()
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE), add = TRUE)
+  rds <- file.path(dir, "sample-A.rds")
+  csv <- file.path(dir, "sample-A.csv")
+  saveRDS(data, rds)
+  data.table::fwrite(data, csv)
+  first <- cs_read(rds, format = "segmantr", pixel_size = 0.5, quiet = TRUE)
+  second <- cs_read(rds, format = "segmantr", pixel_size = 0.5, quiet = TRUE)
+  text <- cs_read(csv, format = "segmantr", pixel_size = 0.5, quiet = TRUE)
+  expect_identical(first$cells$image_id, second$cells$image_id)
+  expect_identical(first$cells$image_id, text$cells$image_id)
+  expect_identical(first$cells$sample_id, text$cells$sample_id)
+  expect_identical(first$images$image_id, text$images$image_id)
+  expect_identical(first$images$source_image, "sample-A.rds")
+  expect_identical(first$provenance$inputs[[1L]]$path_basename, "sample-A.rds")
+})
+
 test_that("segmantR rejects unqualified coordinate conventions", {
   path <- tempfile(fileext = ".csv")
   on.exit(unlink(path), add = TRUE)
