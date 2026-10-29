@@ -17,3 +17,5 @@ jobs:
       # SpatialExperiment and anndataR are Bioconductor Suggests that pak
       # cannot solve without the Bioconductor repository declared.
       bioc-repository: true
+    secrets:
+      CTTIR_PRIVATE_TERMS: ${{ secrets.CTTIR_PRIVATE_TERMS }}
