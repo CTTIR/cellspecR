@@ -21,12 +21,11 @@ cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for
 downstream analysis.
 
-> **Status: 1.0.0 release candidate.** The specification, object model,
-> validation, canonical I/O, signal policy, combination helpers,
-> specialized readers, interoperability, plots and the Shiny app are
-> included in this release. Local and shared CI hardening checks are
-> complete; external fixture comparisons and CRAN submission remain
-> maintainer actions.
+> **Status: 1.0.0.9000, development version.** It follows the 1.0.0
+> release on GitHub; the changes since then are listed in `NEWS.md`. The
+> `cellspec` 1.0 specification and the package API are stable. Readers
+> that `cs_formats()` marks as experimental may still change with the
+> export formats of their tools. cellspecR is not yet on CRAN.
 
 ## Install
 
