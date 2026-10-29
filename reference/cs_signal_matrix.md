@@ -1,12 +1,10 @@
 # Select one signal per cell and marker
 
-**\[experimental\]**
-
 Applies a `cs_signal_policy` to the intensity measurements in a
 `cellspec` object. A preferred finite value is used when its declared
 domain accepts it; otherwise the configured fallback is tested using its
 own domain. Default domains require values at least `min_value`. The
-`"finite"` domain accepts negative finite values. Nonfinite values
+`"finite"` domain accepts negative finite values. Non-finite values
 remain unavailable in both.
 
 ## Usage

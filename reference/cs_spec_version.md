@@ -1,7 +1,5 @@
 # Version of the cellspec specification
 
-**\[experimental\]**
-
 Returns the version of the `cellspec` format that this build of
 cellspecR writes and validates. Readers of major version 1 accept every
 1.y file whose minor version is not newer than their own.

@@ -1,7 +1,5 @@
 # Read a signal policy from JSON or CSV
 
-**\[experimental\]**
-
 Reads and validates a policy written by
 [`cs_write_signal_policy()`](https://cttir.github.io/cellspecR/reference/cs_write_signal_policy.md).
 The format is inferred from the `.json` or `.csv` extension unless

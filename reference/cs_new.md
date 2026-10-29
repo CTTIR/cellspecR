@@ -1,7 +1,5 @@
 # Create a cellspec object
 
-**\[experimental\]**
-
 Builds a `cellspec` object from its components and checks it against the
 structure rules of the specification. Tool exports are normally read
 with

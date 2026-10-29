@@ -1,7 +1,5 @@
 # Convert a SpatialExperiment back to cellspec
 
-**\[experimental\]**
-
 Reconstructs the cellspec components stored by
 [`cs_as_spe()`](https://cttir.github.io/cellspecR/reference/cs_as_spe.md).
 
@@ -31,10 +29,12 @@ Other interoperability:
 ## Examples
 
 ``` r
+# \donttest{
 if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
   x <- cs_example()
   policy <- cs_signal_policy(cs_markers(x))
   identical(cs_cells(x), cs_cells(cs_from_spe(cs_as_spe(x, policy))))
 }
 #> [1] TRUE
+# }
 ```

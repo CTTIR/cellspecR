@@ -1,7 +1,5 @@
 # Create a marker-name mapping
 
-**\[experimental\]**
-
 Builds a two-column mapping from source marker names to canonical marker
 names. Source names must be unique; several source names may map to the
 same canonical name when they represent the same marker across files.

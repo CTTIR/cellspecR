@@ -1,7 +1,7 @@
 # cellspecR ![cellspecR logo](reference/figures/logo-with-name.png)
 
 - [cellspecR](#cellspecr-)
-  - [Install](#install)
+  - [Installation](#installation)
   - [Quick start](#quick-start)
   - [What the package provides](#what-the-package-provides)
   - [Data and reproducibility](#data-and-reproducibility)
@@ -12,14 +12,14 @@ cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for
 downstream analysis.
 
-> **Status: 1.0.0 release candidate.** The specification, object model,
-> validation, canonical I/O, signal policy, combination helpers,
-> specialized readers, interoperability, plots and the Shiny app are
-> included in this release. Local and shared CI hardening checks are
-> complete; external fixture comparisons and CRAN submission remain
-> maintainer actions.
+> **Status: 1.1.0.** The changes since 1.0.0 are listed in `NEWS.md`.
+> The `cellspec` 1.0 specification and the package API are stable.
+> Readers that
+> [`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md)
+> marks as experimental may still change with the export formats of
+> their tools. cellspecR is not yet on CRAN.
 
-## Install
+## Installation
 
 ``` r
 

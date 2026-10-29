@@ -1,7 +1,5 @@
 # Subset a cellspec object by cells and features
 
-**\[experimental\]**
-
 `x[i, j]` keeps the cells selected by `i` and the features selected by
 `j`. All components stay aligned: `cells` and `measurements` rows are
 subset together, dictionary rows follow the kept features, and adjacency

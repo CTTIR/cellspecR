@@ -1,7 +1,5 @@
 # Access the components of a cellspec object
 
-**\[experimental\]**
-
 Accessors return the components of a `cellspec` object. Use them instead
 of `x$cells` so code keeps working if the internal layout changes.
 

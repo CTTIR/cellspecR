@@ -1,7 +1,5 @@
 # Validate a cellspec object
 
-**\[experimental\]**
-
 `cs_validate()` checks an object against the `cellspec` specification
 and returns a report with one row per check. `cs_assert_valid()` runs
 the same checks and aborts when any check fails.

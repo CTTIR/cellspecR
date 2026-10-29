@@ -1,7 +1,5 @@
 # Convert a cellspec object to SpatialExperiment
 
-**\[experimental\]**
-
 Converts selected signals to the main assay, stores every raw
 measurement in an `altExp`, and records the cellspec metadata needed for
 a lossless round trip.
@@ -41,6 +39,7 @@ Other interoperability:
 ## Examples
 
 ``` r
+# \donttest{
 if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
   x <- cs_example()
   policy <- cs_signal_policy(cs_markers(x))
@@ -60,4 +59,5 @@ if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
 #> altExpNames(1): measurements
 #> spatialCoords names(2) : x y
 #> imgData names(0):
+# }
 ```

@@ -1,7 +1,5 @@
 # Print, summarise and measure a cellspec object
 
-**\[experimental\]**
-
 [`print()`](https://rdrr.io/r/base/print.html) shows a compact overview
 that fits in 80 columns: cells, images, samples, features by kind,
 markers, pixel size, specification version and the adapter that produced
@@ -69,7 +67,7 @@ x
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 1.0.0)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.1.0)
 summary(x)
 #> <cellspec summary> 2 images, 80 cells
 #>  image_id sample_id n_cells n_markers n_features pixel_size  x_min  x_max

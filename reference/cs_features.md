@@ -1,7 +1,5 @@
 # Select features and markers by their dictionary entries
 
-**\[experimental\]**
-
 `cs_features()` returns the identifiers of measurement columns whose
 dictionary entries match every supplied filter. Select features through
 this function rather than by splitting `feature_id` strings; the

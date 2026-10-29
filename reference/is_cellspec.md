@@ -1,6 +1,6 @@
 # Test for a cellspec object
 
-**\[experimental\]**
+Test for a cellspec object
 
 ## Usage
 

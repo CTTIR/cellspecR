@@ -1,7 +1,5 @@
 # Verify a canonical cellspec directory
 
-**\[experimental\]**
-
 Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 against the manifest digest. The returned report has one row per
 declared file plus DONE; it does not hide a failed digest behind an
@@ -45,12 +43,12 @@ cs_verify(path)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
-#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
+#> cellspec.json 2621502627126eef19d95160f430f69084db903db7bed152bb9283c9fc0cd685
+#> 1             aea709f5612c5c2a31e1da03012003ef8e5880c556edea4fffe8a35a91905461
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
-#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
+#> cellspec.json 2621502627126eef19d95160f430f69084db903db7bed152bb9283c9fc0cd685
+#> 1             aea709f5612c5c2a31e1da03012003ef8e5880c556edea4fffe8a35a91905461
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE

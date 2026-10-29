@@ -30,7 +30,7 @@ cs_formats()
 #> 2                       QuPath 0.6.0 and 0.7.0 experimental
 #> 3                                 QuPath 0.7.0 experimental
 #> 4                              MCMICRO/MCQuant experimental
-#> 5                                 segmantR 0.5 experimental
+#> 5                               segmantR 0.2.0 experimental
 #> 6                              inForm/phenoptr experimental
 ```
 

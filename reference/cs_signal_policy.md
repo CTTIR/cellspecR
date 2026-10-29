@@ -1,7 +1,5 @@
 # Create a signal selection policy
 
-**\[experimental\]**
-
 Creates one validated row per marker. Signal policies make the selected
 compartment, statistic, fallback and minimum usable value explicit.
 

@@ -1,7 +1,5 @@
 # Write a signal policy as JSON or CSV
 
-**\[experimental\]**
-
 Writes a validated signal policy. The format is inferred from the
 `.json` or `.csv` extension unless `format` is supplied explicitly.
 

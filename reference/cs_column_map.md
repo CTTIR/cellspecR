@@ -1,7 +1,5 @@
 # Validate a table column map
 
-**\[experimental\]**
-
 Creates a validated description of how a generic delimited table maps to
 the cellspec columns. Source names are checked for shape here and
 checked against the input table by
@@ -55,7 +53,10 @@ cs_column_map(
 - measurements:
 
   Optional data frame with `source_name`, `kind`, `marker`,
-  `compartment`, `statistic` and `unit` metadata columns.
+  `compartment`, `statistic` and `unit` metadata columns. Measurements
+  of kind `other` get `other:` identifiers as described for `keep_other`
+  in
+  [`cs_read()`](https://cttir.github.io/cellspecR/reference/cs_read.md).
 
 ## Value
 

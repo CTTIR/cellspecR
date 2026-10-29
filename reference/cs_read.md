@@ -1,7 +1,5 @@
 # Read a delimited table into a cellspec object
 
-**\[experimental\]**
-
 Reads a delimited cell table using a format-specific adapter or an
 explicit
 [`cs_column_map()`](https://cttir.github.io/cellspecR/reference/cs_column_map.md).
@@ -85,7 +83,17 @@ cs_read(
 - keep_other:
 
   Whether unmapped numeric columns become `other` measurements and other
-  unmapped columns are retained in `cells`.
+  unmapped columns are retained in `cells`. Every `other` feature,
+  whether kept here or mapped with `kind = "other"` in `column_map`
+  (also when `keep_other = FALSE`), is identified as `other:` followed
+  by its source name in lower case, with each run of characters other
+  than `a-z` and `0-9` replaced by `_` and leading or trailing `_`
+  removed (`value` if nothing is left). Identifiers that clash are made
+  unique by [`make.unique()`](https://rdrr.io/r/base/make.unique.html)
+  with `sep = "_"`, mapped measurements first in the order given, then
+  unmapped columns in table order; a suffix that is already taken is
+  skipped, so columns `a b`, `a_b` and `a_b_1` become `other:a_b`,
+  `other:a_b_2` and `other:a_b_1`.
 
 - keep_paths:
 
@@ -99,6 +107,17 @@ cs_read(
 ## Value
 
 A validated `cellspec` object.
+
+## Compressed input
+
+Input files whose names end in `.gz` are decompressed in R and checked
+against their gzip trailer before they are parsed, for every format. A
+truncated or corrupt file, also one zero-filled back to its original
+size, raises an error of class `cellspec_error_format`. A BGZF file
+(written by `bgzip`) is checked block by block and must end with its
+end-of-file block. Other files made of several gzip members, such as
+concatenated `.gz` files, can be checked only in their last member; they
+are read with a warning of class `cellspec_warning_integrity`.
 
 ## See also
 
