@@ -14,7 +14,7 @@
     .cs_abort(
       c(
         "Could not read {.path {basename(path)}} as JSON.",
-        "x" = message
+        "x" = "{message}"
       ),
       class = "cellspec_error_format",
       call = call
@@ -73,6 +73,18 @@
       integer = NA_integer_,
       logical = NA
     ))
+  }
+  valid <- is.atomic(value) && length(value) == 1L && !is.object(value) &&
+    switch(type,
+      character = is.character(value),
+      double = is.numeric(value),
+      integer = is.numeric(value) && is.finite(value) &&
+        value == trunc(value) && abs(value) <= .Machine$integer.max,
+      logical = is.logical(value)
+    )
+  if (!isTRUE(valid)) {
+    .cs_abort("A JSON table value does not match its declared {.val {type}} type.",
+      class = "cellspec_error_format")
   }
   switch(type,
     character = as.character(value[[1L]]),
@@ -175,11 +187,25 @@
   }
   for (nm in names(cols)) {
     type <- cols[[nm]]
+    value <- df[[nm]]
+    if (type == "integer") {
+      value <- .cs_parse_io_double(value, call = call)
+      if (any(!is.na(value) & (!is.finite(value) | value != trunc(value) |
+          abs(value) > .Machine$integer.max))) {
+        .cs_abort("Column {.field {nm}} cannot be represented as declared integers.",
+          class = "cellspec_error_format", call = call)
+      }
+    }
+    if (type == "logical" && !is.logical(value) &&
+        (!is.character(value) || any(!is.na(value) & !value %in% c("TRUE", "FALSE")))) {
+      .cs_abort("Column {.field {nm}} contains invalid logical values.",
+        class = "cellspec_error_format", call = call)
+    }
     df[[nm]] <- switch(type,
-      character = as.character(df[[nm]]),
-      double = .cs_parse_io_double(df[[nm]], call = call),
-      integer = as.integer(df[[nm]]),
-      logical = as.logical(df[[nm]])
+      character = as.character(value),
+      double = .cs_parse_io_double(value, call = call),
+      integer = as.integer(value),
+      logical = as.logical(value)
     )
   }
   attr(df, "row.names") <- .set_row_names(nrow(df))
@@ -202,7 +228,7 @@
       .cs_abort(
         c(
           "Could not read {.path {basename(path)}} as Parquet.",
-          "x" = conditionMessage(result)
+          "x" = "{conditionMessage(result)}"
         ),
         class = "cellspec_error_format",
         call = call
@@ -229,7 +255,7 @@
       .cs_abort(
         c(
           "Could not read {.path {basename(path)}} as tab-separated text.",
-          "x" = conditionMessage(result)
+          "x" = "{conditionMessage(result)}"
         ),
         class = "cellspec_error_format",
         call = call
@@ -269,7 +295,9 @@
 #' @description
 #' Reads the sidecar and cell table written by cs_write(), verifies the
 #' manifest and DONE marker by default, and returns a validated object.
-#' DONE is required even when verification is explicitly disabled.
+#' DONE is required even when verification is explicitly disabled. Declared
+#' integer and logical columns are checked before conversion; malformed scalar
+#' metadata is rejected rather than truncated or silently coerced.
 #'
 #' @section Compressed input:
 #' Tables written with `cs_write(format = "tsv.gz")` are decompressed in R
@@ -330,6 +358,9 @@ cs_read_cellspec <- function(dir, verify = TRUE) {
   }
 
   doc <- .cs_read_json(sidecar_path)
+  if (!identical(doc$format, "cellspec")) {
+    .cs_abort("The sidecar does not declare the cellspec format.", class = "cellspec_error_format")
+  }
   parts <- .cs_version_parts(doc$spec_version)
   if (is.null(parts) || parts[[1L]] != 1L) {
     .cs_abort(

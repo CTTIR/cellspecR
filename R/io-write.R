@@ -73,7 +73,7 @@
     .cs_abort(
       c(
         "Could not encode {.path {basename(path)}} as JSON.",
-        "x" = conditionMessage(text)
+        "x" = "{conditionMessage(text)}"
       ),
       class = "cellspec_error_format",
       call = call
@@ -128,7 +128,7 @@
       .cs_abort(
         c(
           "Could not write {.path {basename(path)}}.",
-          "x" = conditionMessage(e)
+          "x" = "{conditionMessage(e)}"
         ),
         class = "cellspec_error_format",
         call = call
@@ -148,7 +148,7 @@
       .cs_abort(
         c(
           "Could not write {.path {basename(path)}} as Parquet.",
-          "x" = conditionMessage(result)
+          "x" = "{conditionMessage(result)}"
         ),
         class = "cellspec_error_format",
         call = call
@@ -190,7 +190,8 @@
     return(invisible(NULL))
   }
   unexpected <- entries[!entries %in% .cs_written_files |
-                          dir.exists(file.path(path, entries))]
+                          dir.exists(file.path(path, entries)) |
+                          .cs_is_link(file.path(path, entries))]
   sidecar <- file.path(path, "cellspec.json")
   doc <- if (file.exists(sidecar) && !dir.exists(sidecar)) {
     tryCatch(jsonlite::fromJSON(sidecar, simplifyVector = FALSE),
@@ -214,7 +215,16 @@
 
 .cs_commit_stage <- function(stage, target, overwrite, call = rlang::caller_env()) {
   backup <- NULL
+  if (.cs_is_link(target)) {
+    .cs_abort("Destination {.path {target}} is a symbolic link and was left untouched.",
+      class = "cellspec_error_format", call = call)
+  }
   if (file.exists(target)) {
+    if (!overwrite || !dir.exists(target)) {
+      .cs_abort("Destination {.path {target}} appeared or changed during writing; it was left untouched.",
+        class = "cellspec_error_format", call = call)
+    }
+    .cs_check_replaceable_dir(target, call = call)
     backup <- tempfile(
       pattern = paste0(basename(target), ".backup-", Sys.getpid(), "-"),
       tmpdir = dirname(target)
@@ -251,6 +261,9 @@
 #' then renames it into place after the data, sidecar, manifest and DONE
 #' marker are complete. Parquet is the default because it preserves doubles
 #' exactly; the tsv.gz option is available for interoperable text output.
+#' Destination permission and contents are checked again before replacement.
+#' Symbolic links are refused. Coordinate concurrent writers externally; these
+#' checks do not implement a cross-process lock.
 #'
 #' @param x A valid cellspec object.
 #' @param dir Destination directory. Its parent is created when needed.
@@ -276,6 +289,9 @@ cs_write <- function(x, dir, format = c("parquet", "tsv.gz"),
   .cs_check_flag(overwrite, arg = "overwrite")
   cs_assert_valid(x, level = "structure")
 
+  if (.cs_is_link(dir)) {
+    .cs_abort("The destination must not be a symbolic link.", class = "cellspec_error_format")
+  }
   target <- normalizePath(dir, winslash = "/", mustWork = FALSE)
   if (file.exists(target) && !overwrite) {
     .cs_abort(

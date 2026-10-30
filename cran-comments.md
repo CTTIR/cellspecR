@@ -1,3 +1,9 @@
+## Candidate status
+
+This isolated development candidate is 1.1.1.9000 and is not a submission.
+See MAINTENANCE.md for the audit and local verification. A release version and
+final builder checks are required before CRAN submission.
+
 ## Test environments
 
 * Local: Ubuntu 26.04 LTS, R 4.6.1

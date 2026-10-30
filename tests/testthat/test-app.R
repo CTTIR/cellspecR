@@ -234,3 +234,50 @@ test_that("the app uses an initial path when local paths are disabled", {
     }
   )
 })
+
+test_that("uploaded RDS names and failed reads keep the review tied to its source", {
+  skip_if_not_installed("shiny")
+  path <- withr::local_tempfile() # Shiny's upload path need not have an extension.
+  data <- data.frame(cell_id = 1L, DAPI_mean = 5)
+  data[[paste0("centroid_", "row")]] <- 10
+  data[[paste0("centroid_", "col")]] <- 20
+  saveRDS(data, path)
+  bad <- withr::local_tempfile(lines = "not a table")
+  shiny::testServer(
+    function(input, output, session) {
+      cellspecR:::.cs_app_server(input, output, session, NULL, FALSE, 10L)
+    },
+    {
+      session$setInputs(f_export = data.frame(name = "sample-A.rds", datapath = path),
+        format = "segmantr", pixel_size = 0.25)
+      session$flushReact()
+      session$setInputs(btn_read = 1)
+      expect_match(output$status, "Read 1 cells")
+      expect_match(output$images, "sample-A.rds", fixed = TRUE)
+      expect_match(output$cells, "sample-A", fixed = TRUE)
+      session$setInputs(f_export = data.frame(name = "bad.tsv", datapath = bad))
+      expect_null(output$cells)
+      expect_null(output$dictionary)
+      expect_null(output$validation)
+      session$setInputs(btn_read = 2)
+      expect_null(output$cells)
+      expect_null(output$dictionary)
+      expect_null(output$validation)
+    }
+  )
+})
+
+test_that("uploaded gzip files retain their suffix and cannot escape staging", {
+  skip_if_not_installed("shiny")
+  path <- withr::local_tempfile()
+  con <- gzfile(path, "wt")
+  writeLines(c("Cell ID\tCentroid X um\tCentroid Y um\tDAPI: Mean", "001\t1\t2\t3"), con)
+  close(con)
+  dir <- withr::local_tempdir()
+  upload <- data.frame(name = "sample-A.tsv.gz", datapath = path)
+  staged <- cellspecR:::.cs_app_upload_path(upload, dir)
+  expect_identical(cs_cells(cs_read(staged, format = "qupath"))$cell_id, "001")
+  expect_identical(cs_images(cs_read(staged, format = "qupath"))$image_id, "sample-A")
+  upload$name <- "../escape.tsv.gz"
+  expect_error(cellspecR:::.cs_app_upload_path(upload, dir), class = "cellspec_error_format")
+})

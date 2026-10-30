@@ -34,3 +34,4 @@
 ^man/figures/logo(-dark|-light|-mono|-symbol)?\.(pdf|png|svg)$
 ^man/figures/logo-with-name(-dark|-mono)?\.(pdf|svg)$
 ^man/figures/logo-with-name-mono\.png$
+^MAINTENANCE\.md$

@@ -2,7 +2,6 @@
 
 #' Test for a cellspec object
 #'
-#' @description
 #' @param x Any R object.
 #' @return `TRUE` if `x` inherits from `"cellspec"`, otherwise `FALSE`. The
 #'   object is not validated; use [cs_validate()] for that.

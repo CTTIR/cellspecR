@@ -11,7 +11,7 @@
     if (inherits(value, "error")) {
       .cs_other_abort(
         c("Could not read {.path {basename(path)}} as an RDS table.",
-          "x" = conditionMessage(value)), call = call
+          "x" = "{conditionMessage(value)}"), call = call
       )
     }
     if (!is.data.frame(value)) {

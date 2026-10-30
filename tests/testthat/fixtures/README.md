@@ -12,3 +12,23 @@ small enough for CRAN checks.
 The full fixture in `inst/extdata/` is the bundled example used by runnable
 documentation and the app. The repository contains no microscopy image or
 patient-derived measurement.
+
+## NumPy boundary fixtures
+
+`numpy/` contains arrays written by NumPy 2.0.2 on 2026-10-30, in both
+byte orders. The signed/unsigned integer boundaries are specified in
+`test-io-numpy.R`; `duplicate.npz` intentionally contains two `x.npy` entries.
+They contain synthetic values only. Regeneration is in
+`data-raw/fixtures/make_numpy_boundaries.py`.
+
+| File | SHA-256 |
+| --- | --- |
+| `duplicate.npz` | `96d53eaaebf980dd29f866c04642760bf6b3ebd982f5cf14b8788555297a510b` |
+| `i4-be.npy` | `fecaab7afe18c2efa32c02fbefe60375381ab8c966791b09a45bba6c5a09acfb` |
+| `i4-le.npy` | `bd5c9fe00791fe54c275d8af48527fcbbe1f9cf1778e56b2ab418a3ca458da25` |
+| `i8-be.npy` | `1f32f7e9de2367ba6839c7a91834f6edda9d3b5ec5dff5356dbe8413fb57a923` |
+| `i8-le.npy` | `88a65e53c478ed37a0f92208965825856c448f184e8b723a53fc7ab12d438e78` |
+| `u4-be.npy` | `1d152910f65b9732f7304eac6c042a02208eb2e5ca2d9f43a9023c8ab5ee1780` |
+| `u4-le.npy` | `e479b2cb8d6662b6c979df924a2b8a2b60f001eb9a35e1c023179c7b0cbfb14f` |
+| `u8-be.npy` | `686fec9bd00a78183e0614fbf5178ae0474283192a104a920f6528becd1a7058` |
+| `u8-le.npy` | `81f8ebd52ac020e4a36a1e1a9a905870f4ca669b90aa5bee56c2ca0d81db9e4f` |

@@ -219,7 +219,8 @@ cs_assert_valid <- function(x, level = "structure", call = rlang::caller_env()) 
 }
 
 .cs_key <- function(image_id, cell_id) {
-  paste(image_id, cell_id, sep = "\r")
+  if (!length(image_id) || !length(cell_id)) return(character())
+  paste0(nchar(image_id, type = "chars"), ":", image_id, cell_id)
 }
 
 .cs_key_label <- function(image_id, cell_id) {

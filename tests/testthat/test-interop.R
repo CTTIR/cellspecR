@@ -27,12 +27,10 @@ test_that("AnnData conversion is guarded by anndataR", {
   skip_if_not_installed("anndataR")
   x <- cs_example()
   policy <- cs_signal_policy(cs_markers(x))
-  result <- tryCatch(cs_as_anndata(x, policy), error = identity)
-  if (inherits(result, "error")) {
-    expect_s3_class(result, "cellspec_error")
-  } else {
-    expect_true(inherits(result, "AbstractAnnData") || inherits(result, "AnnData"))
-  }
+  result <- cs_as_anndata(x, policy)
+  expect_true(inherits(result, "AbstractAnnData") || inherits(result, "AnnData"))
+  expect_identical(dim(result), c(80L, 4L))
+  expect_equal(unname(result$X), unname(cs_signal_matrix(x, policy)$signal))
 })
 
 test_that("interop defaults and failure contracts are explicit", {

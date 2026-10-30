@@ -96,7 +96,7 @@ cs_as_spe <- function(x, policy = NULL, assay_name = "intensity") {
     ),
     error = function(error) {
       .cs_interop_abort(
-        c("Could not construct a {.cls SpatialExperiment}.", "x" = conditionMessage(error)),
+        c("Could not construct a {.cls SpatialExperiment}.", "x" = "{conditionMessage(error)}"),
         call = call
       )
     }
@@ -186,8 +186,8 @@ cs_from_spe <- function(spe) {
 #'
 #' @description
 #' Creates an AnnData object with cells in `obs`, selected marker signals in
-#' `X`, and `x`/`y` in `obsm$spatial`. The optional `anndataR` package and its
-#' Python runtime are required.
+#' `X`, and `x`/`y` in `obsm$spatial`. The optional `anndataR` package is
+#' required; its default in-memory implementation does not need Python.
 #'
 #' @param x A `cellspec` object.
 #' @param policy Signal policy used to form `X`. It is required when a marker
@@ -222,7 +222,7 @@ cs_as_anndata <- function(x, policy = NULL) {
                       ))),
     error = function(error) {
       .cs_interop_abort(
-        c("Could not construct AnnData through {.pkg anndataR}.", "x" = conditionMessage(error)),
+        c("Could not construct AnnData through {.pkg anndataR}.", "x" = "{conditionMessage(error)}"),
         call = call
       )
     }

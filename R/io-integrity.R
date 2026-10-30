@@ -14,6 +14,7 @@
   if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
     return(FALSE)
   }
+  if (grepl("[\\\\:\r\n]", path)) return(FALSE)
   if (grepl("^(?:[A-Za-z]:[\\\\/]|[\\\\/]|//)", path, perl = TRUE)) {
     return(FALSE)
   }
@@ -21,11 +22,43 @@
   !any(parts %in% c("", ".", ".."))
 }
 
+.cs_is_link <- function(path) {
+  link <- Sys.readlink(path)
+  !is.na(link) & nzchar(link)
+}
+
+# Do not follow links while hashing, reading control files or listing members.
+.cs_regular_member <- function(dir, member) {
+  parts <- strsplit(member, "/", fixed = TRUE)[[1L]]
+  path <- dir
+  for (part in parts) {
+    path <- file.path(path, part)
+    if (.cs_is_link(path)) return(FALSE)
+  }
+  file.exists(path) && !dir.exists(path)
+}
+
+.cs_directory_members <- function(dir, prefix = "") {
+  entries <- list.files(file.path(dir, prefix), all.files = TRUE, no.. = TRUE)
+  members <- if (nzchar(prefix)) paste(prefix, entries, sep = "/") else entries
+  out <- character()
+  for (member in members) {
+    path <- file.path(dir, member)
+    if (!.cs_is_link(path) && dir.exists(path)) {
+      nested <- .cs_directory_members(dir, member)
+      out <- c(out, if (length(nested)) nested else member)
+    } else {
+      out <- c(out, member)
+    }
+  }
+  out
+}
+
 .cs_manifest_entries <- function(dir, call = rlang::caller_env()) {
   path <- file.path(dir, "MANIFEST.sha256")
-  if (!file.exists(path) || dir.exists(path)) {
+  if (!.cs_regular_member(dir, "MANIFEST.sha256")) {
     .cs_abort(
-      "MANIFEST.sha256 is missing from the cellspec directory.",
+      "MANIFEST.sha256 must be a regular file inside the cellspec directory.",
       class = "cellspec_error_integrity",
       call = call
     )
@@ -76,7 +109,7 @@
   manifest <- file.path(dir, "MANIFEST.sha256")
   observed <- vapply(entries$file, function(file) {
     path <- file.path(dir, file)
-    if (!file.exists(path) || dir.exists(path)) {
+    if (!.cs_regular_member(dir, file)) {
       return(NA_character_)
     }
     tolower(.cs_sha256_file(path))
@@ -85,7 +118,7 @@
   ok <- !is.na(observed) & observed == entries$expected
 
   done_path <- file.path(dir, "DONE")
-  done_observed <- if (file.exists(done_path) && !dir.exists(done_path)) {
+  done_observed <- if (.cs_regular_member(dir, "DONE")) {
     paste(trimws(readLines(done_path, n = 1L, warn = FALSE, encoding = "UTF-8")),
           collapse = "")
   } else {
@@ -95,9 +128,7 @@
   done_ok <- !is.na(done_observed) && identical(done_observed, done_expected)
 
   listed <- c(files, "MANIFEST.sha256", "DONE")
-  actual <- list.files(dir, recursive = TRUE, all.files = FALSE,
-                       include.dirs = FALSE)
-  actual <- gsub("\\\\", "/", actual)
+  actual <- .cs_directory_members(dir)
   extra <- setdiff(actual, listed)
   if (length(extra) > 0L) {
     entries <- rbind(
@@ -135,6 +166,9 @@
 #' Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 #' against the manifest digest. The returned report has one row per declared
 #' file plus DONE; it does not hide a failed digest behind an error.
+#' Hidden files are included. Symbolic-link members are refused, so a verified
+#' directory does not depend on files outside it. Checksums detect changes;
+#' they do not authenticate the producer of a directory.
 #'
 #' @param dir A cellspec directory written by cs_write().
 #' @return A data frame with character columns file, expected and observed,

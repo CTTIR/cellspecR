@@ -4,11 +4,15 @@
                             allow_local_paths, max_plot_points) {
   state <- shiny::reactiveVal(NULL)
   detection <- shiny::reactiveVal(NULL)
+  upload_dir <- tempfile("cellspec-upload-")
+  session$onSessionEnded(function() unlink(upload_dir, recursive = TRUE))
   log <- shiny::reactiveVal(if (is.null(initial_path)) "Ready to read an export." else paste("Initial path:", initial_path))
   append_log <- function(message) log(c(log(), paste(format(Sys.time(), "%H:%M:%S"), message)))
   selected_path <- shiny::reactive({
     upload <- input$f_export
-    if (!is.null(upload) && nrow(upload) > 0L) return(upload$datapath[[1L]])
+    if (!is.null(upload) && nrow(upload) > 0L) {
+      return(.cs_app_upload_path(upload, upload_dir))
+    }
     local_value <- input$local_path
     if (allow_local_paths && !is.null(local_value) && nzchar(local_value)) return(local_value)
     initial_path
@@ -60,8 +64,19 @@
     if (is.null(x) || !requireNamespace("ggplot2", quietly = TRUE)) return(NULL)
     plot(x, type = "map", max_points = max_plot_points)
   })
+  shiny::observeEvent(list(input$f_export, input$local_path, input$format, input$pixel_size), {
+    if (!is.null(state())) append_log("Input changed; read again to refresh the review.")
+    state(NULL)
+    detection(NULL)
+  }, ignoreInit = TRUE, priority = 100)
   shiny::observeEvent(input$btn_read, {
-    path <- selected_path()
+    state(NULL)
+    detection(NULL)
+    path <- tryCatch(selected_path(), error = function(error) error)
+    if (inherits(path, "error")) {
+      append_log(conditionMessage(path))
+      return()
+    }
     if (is.null(path) || !nzchar(path)) {
       append_log("Choose an export or supply a local path.")
       return()
@@ -91,4 +106,18 @@
     state(result)
     append_log(paste("Read", nrow(result$cells), "cells with", result$provenance$reader$adapter, "adapter."))
   }, ignoreInit = TRUE)
+}
+
+.cs_app_upload_path <- function(upload, dir) {
+  name <- upload$name[[1L]]
+  if (!is.character(name) || length(name) != 1L || is.na(name) ||
+      !nzchar(name) || name %in% c(".", "..") || grepl("[/\\\\:\r\n]", name)) {
+    .cs_abort("The uploaded file must have a plain filename.", class = "cellspec_error_format")
+  }
+  if (!dir.exists(dir)) dir.create(dir)
+  path <- file.path(dir, name)
+  if (!file.copy(upload$datapath[[1L]], path, overwrite = TRUE)) {
+    .cs_abort("Could not stage the uploaded export.", class = "cellspec_error_io")
+  }
+  path
 }

@@ -479,6 +479,7 @@
 }
 
 .cs_table_read <- function(path, n_max = NULL, call = rlang::caller_env()) {
+  if (file.exists(path) && !dir.exists(path) && file.size(path) == 0) return(data.frame())
   compressed <- grepl("\\.gz$", path, ignore.case = TRUE)
   args <- list(
     header = TRUE,
@@ -486,6 +487,8 @@
     check.names = FALSE,
     encoding = "UTF-8",
     showProgress = FALSE,
+    keepLeadingZeros = TRUE,
+    integer64 = "character",
     na.strings = c("", "NA")
   )
   if (!is.null(n_max)) args$nrows <- as.integer(n_max)
@@ -495,13 +498,24 @@
     # A partial read only peeks at the columns; it is not verified.
     if (compressed) plain <- .cs_gunzip_tempfile(path, verify = is.null(n_max))
     args$file <- if (compressed) plain else path
-    suppressWarnings(do.call(data.table::fread, args))
+    diagnostics <- character()
+    table <- withCallingHandlers(do.call(data.table::fread, args), warning = function(w) {
+      diagnostics <<- c(diagnostics, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    })
+    if (length(diagnostics)) {
+      .cs_table_abort(
+        c("The delimited table could not be read without parser warnings.",
+          "x" = "{diagnostics}"), call = call
+      )
+    }
+    table
   }, error = function(error) error)
   if (inherits(result, "error")) {
     .cs_table_abort(
       c(
         "Could not read {.path {basename(path)}} as a delimited table.",
-        "x" = conditionMessage(result)
+        "x" = "{conditionMessage(result)}"
       ),
       call = call
     )
@@ -799,6 +813,11 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' downsampled inputs require an explicit external frame transform before
 #' combining with a full-resolution image. This adapter assumes square pixels.
 #' Shape measurements retain source units in the feature dictionary.
+#'
+#' @section Delimited input:
+#' Leading-zero and large integer identifiers are retained as text. Parser
+#' warnings (including dropped malformed rows) cause a format error instead of
+#' returning a partial table. Correct the source export before retrying.
 #'
 #' @section Compressed input:
 #' Input files whose names end in `.gz` are decompressed in R and checked

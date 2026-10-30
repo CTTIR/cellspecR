@@ -137,3 +137,29 @@ test_that("writers refuse what NumPy files cannot hold", {
   expect_error(cs_write_npy(Sys.Date(), path), class = "cellspec_error_argument")
   expect_error(cs_read_npz(withr::local_tempfile(lines = "plain text")), class = "cellspec_error_format")
 })
+
+test_that("NumPy integer boundary fixtures retain exact values in both byte orders", {
+  expected <- list(
+    i4 = c(-2^31, -1, 0, 2^31 - 1),
+    u4 = c(0, 2^31, 2^32 - 1),
+    i8 = c(-2^53, -2^53 + 1, -2^31, 2^31, 2^53 - 1, 2^53),
+    u8 = c(0, 2^31, 2^32, 2^53)
+  )
+  for (dtype in names(expected)) {
+    for (order in c("le", "be")) {
+      path <- test_path("fixtures", "numpy", paste0(dtype, "-", order, ".npy"))
+      expect_identical(cs_read_npy(path), expected[[dtype]])
+    }
+  }
+  expect_error(cs_read_npz(test_path("fixtures", "numpy", "duplicate.npz")),
+    "duplicated", class = "cellspec_error_format")
+})
+
+test_that("rejected NumPy writes preserve a previous export", {
+  path <- withr::local_tempfile(fileext = ".npy")
+  cs_write_npy(c(1.5, 2.5), path)
+  before <- readBin(path, "raw", file.size(path))
+  expect_error(cs_write_npy(list(1), path), class = "cellspec_error_argument")
+  expect_identical(readBin(path, "raw", file.size(path)), before)
+  expect_identical(cs_read_npy(path), c(1.5, 2.5))
+})

@@ -17,8 +17,8 @@ An AnnData object supplied by \code{anndataR}.
 }
 \description{
 Creates an AnnData object with cells in \code{obs}, selected marker signals in
-\code{X}, and \code{x}/\code{y} in \code{obsm$spatial}. The optional \code{anndataR} package and its
-Python runtime are required.
+\code{X}, and \code{x}/\code{y} in \code{obsm$spatial}. The optional \code{anndataR} package is
+required; its default in-memory implementation does not need Python.
 }
 \examples{
 if (requireNamespace("anndataR", quietly = TRUE)) {

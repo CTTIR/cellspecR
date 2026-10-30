@@ -78,6 +78,13 @@ downsampled inputs require an explicit external frame transform before
 combining with a full-resolution image. This adapter assumes square pixels.
 Shape measurements retain source units in the feature dictionary.
 }
+\section{Delimited input}{
+
+Leading-zero and large integer identifiers are retained as text. Parser
+warnings (including dropped malformed rows) cause a format error instead of
+returning a partial table. Correct the source export before retrying.
+}
+
 \section{Compressed input}{
 
 Input files whose names end in \code{.gz} are decompressed in R and checked

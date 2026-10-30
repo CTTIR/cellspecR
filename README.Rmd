@@ -15,7 +15,7 @@ output:
 multiplexed tissue images. It reads tool exports, validates structure and
 semantics, and writes an integrity checked directory for downstream analysis.
 
-> **Status: 1.1.0.** The changes since 1.0.0 are listed in `NEWS.md`.
+> **Status: 1.1.1.9000 development.** Integrity corrections are listed in `NEWS.md`.
 > The `cellspec` 1.0 specification and the package API are stable.
 > Readers that `cs_formats()` marks as experimental may still change with
 > the export formats of their tools. cellspecR is not yet on CRAN.
@@ -74,6 +74,24 @@ identical(cs_cells(x), cs_cells(y))
 The package does not segment images, normalize signals, gate cells or perform
 spatial statistics. It keeps the table contract and provenance at the boundary
 between those tools.
+
+## Review an export
+
+```r
+shiny::runApp(cs_app(), host = "127.0.0.1")
+```
+
+Upload a CSV/TSV, gzip-compressed table or supported RDS export, choose its
+format and pixel size where required, then select **Read**. Results and downloads
+are cleared when inputs change or a read fails. Canonical directories can be
+opened locally with `cs_app(path = "path/to/cellspec-directory")`; a browser
+file upload accepts one file, not a directory.
+
+Canonical integrity checks include hidden files and refuse symbolic-link
+members. Use a directory containing actual files for portable handover.
+Checksums detect changes but do not authenticate who produced the data.
+Writers recheck destination contents before replacement; coordinate simultaneous
+writers externally because this is not a file-locking protocol.
 
 ## Data and reproducibility
 

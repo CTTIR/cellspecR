@@ -18,7 +18,9 @@
 #' (`S`) strings, in either byte order and in C or Fortran order. Object
 #' arrays (`O`, stored with Python's pickle) and structured data types are
 #' refused. 64-bit and unsigned 32-bit integers are returned as doubles; a
-#' value that a double cannot hold exactly is an error.
+#' value outside the exact integer range from -2^53 through 2^53 is an error.
+#' Signed 32-bit arrays containing -2^31 also return doubles because R reserves
+#' that integer bit pattern for a missing value. Duplicate archive names fail.
 #'
 #' @param path Path to a `.npy` file (`cs_read_npy()`, `cs_write_npy()`) or
 #'   a `.npz` archive (`cs_read_npz()`, `cs_write_npz()`).
@@ -75,6 +77,9 @@ cs_read_npz <- function(path, arrays = NULL) {
   }
   members <- listing$Name[grepl("\\.npy$", listing$Name)]
   available <- sub("\\.npy$", "", members)
+  if (anyDuplicated(available)) {
+    .cs_abort("The archive contains duplicated array names.", class = "cellspec_error_format")
+  }
   if (!is.null(arrays)) {
     if (!is.character(arrays) || anyNA(arrays) || anyDuplicated(arrays)) {
       .cs_abort("{.arg arrays} must be distinct array names.", class = "cellspec_error_argument")
@@ -113,9 +118,10 @@ cs_read_npz <- function(path, arrays = NULL) {
 #' @export
 cs_write_npy <- function(x, path) {
   .cs_check_path_arg(path)
+  bytes <- .cs_npy_bytes(x)
   con <- file(path, open = "wb")
   on.exit(close(con), add = TRUE)
-  writeBin(.cs_npy_bytes(x), con)
+  writeBin(bytes, con)
   invisible(path)
 }
 
@@ -176,12 +182,17 @@ cs_write_npz <- function(x, path) {
     bad(paste0("Unknown format version ", major, "."))
   }
   end <- start + header_len - 1
+  if (header_len < 1) bad("Empty header.")
   if (end > length(bytes)) bad("Truncated header.")
   header <- rawToChar(bytes[start:end])
   if (major == 3L) Encoding(header) <- "UTF-8"
   spec <- .cs_npy_header(header, bad)
   type <- .cs_npy_dtype(spec$descr, bad)
   count <- if (length(spec$shape)) prod(spec$shape) else 1
+  if (!is.finite(count) || count > .Machine$integer.max ||
+      any(!is.finite(spec$shape) | spec$shape > .Machine$integer.max)) {
+    bad("Array dimensions exceed the supported R integer range.")
+  }
   data <- if (end < length(bytes)) bytes[(end + 1L):length(bytes)] else raw()
   needed <- count * type$size
   if (length(data) < needed) bad("Array data are shorter than the header declares.")
@@ -267,20 +278,23 @@ cs_write_npz <- function(x, path) {
 
 .cs_npy_int <- function(data, type, n, signed, bad) {
   w <- type$width
-  if (w <= 2L || (w == 4L && signed)) {
+  if (w <= 2L) {
     return(readBin(data, "integer", n = n, size = w, signed = signed || w == 4L, endian = type$endian))
   }
+  # Decode unsigned 32-bit words without passing through R's NA_integer_
+  # sentinel (the valid NumPy bit pattern 0x80000000).
+  bytes <- matrix(as.double(data), nrow = 4L)
+  if (identical(type$endian, "big")) bytes <- bytes[4:1, , drop = FALSE]
+  words <- colSums(bytes * c(1, 256, 65536, 16777216))
   if (w == 4L) {
-    v <- readBin(data, "integer", n = n, size = 4L, endian = type$endian)
-    v <- as.double(v)
-    v[v < 0] <- v[v < 0] + 2^32
-    return(v)
+    if (signed) {
+      words[words >= 2^31] <- words[words >= 2^31] - 2^32
+      if (!any(words == -2^31)) return(as.integer(words))
+    }
+    return(words)
   }
   # 8-byte integers: combine two 32-bit halves in double precision.
-  halves <- readBin(data, "integer", n = 2L * n, size = 4L, endian = type$endian)
-  halves <- as.double(halves)
-  halves[halves < 0] <- halves[halves < 0] + 2^32
-  pair <- matrix(halves, nrow = 2L)
+  pair <- matrix(words, nrow = 2L)
   if (identical(type$endian, "little")) {
     low <- pair[1L, ]
     high <- pair[2L, ]
@@ -289,7 +303,9 @@ cs_write_npz <- function(x, path) {
     high <- pair[1L, ]
   }
   if (signed) high[high >= 2^31] <- high[high >= 2^31] - 2^32
-  if (any(abs(high) >= 2^21)) bad("64-bit integers beyond 2^53 cannot be represented exactly.")
+  if (any(high < -2^21 | high > 2^21 | (high == 2^21 & low != 0))) {
+    bad("64-bit integers beyond the supported exact range +/-2^53 are not supported.")
+  }
   high * 2^32 + low
 }
 
