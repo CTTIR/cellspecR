@@ -55,7 +55,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.1.9000" id="cellspecr-1119000">cellspecR 1.1.1.9000<a class="anchor" aria-label="anchor" href="#cellspecr-1119000"></a></h2>
-<ul><li>Preserve existing NumPy files when input validation fails. Decode signed and unsigned integer boundaries exactly in both byte orders, including int32 minimum and 64-bit integers in the supported range +/-2^53. Reject duplicate archive names and unsupported array dimensions.</li>
+<ul><li>Detect native symbolic links, dangling links and Windows junctions without relying on the Windows <code><a href="https://rdrr.io/r/base/Sys.readlink.html" class="external-link">Sys.readlink()</a></code> stub; retain manifest and overwrite boundaries across platforms.</li>
+<li>Preserve existing NumPy files when input validation fails. Decode signed and unsigned integer boundaries exactly in both byte orders, including int32 minimum and 64-bit integers in the supported range +/-2^53. Reject duplicate archive names and unsupported array dimensions.</li>
 <li>Recheck overwrite permission and destination contents immediately before committing canonical writes; refuse symbolic-link destinations and members. This protects late-arriving unrelated files, but is not a concurrent-writer lock.</li>
 <li>Include hidden files in integrity verification and refuse symlink members and unsafe portable manifest paths. Checksums establish consistency, not authorship.</li>
 <li>Treat external parser diagnostics as literal text so braces cannot be evaluated as formatting expressions and structured error classes survive.</li>
