@@ -1,25 +1,27 @@
 # cellspecR ![cellspecR logo](reference/figures/logo-with-name.png)
 
 - [cellspecR](#cellspecr-)
-  - [Install](#install)
+  - [Installation](#installation)
   - [Quick start](#quick-start)
   - [What the package provides](#what-the-package-provides)
+  - [Review an export](#review-an-export)
   - [Data and reproducibility](#data-and-reproducibility)
   - [Contributing and license](#contributing-and-license)
+  - [Branding](#branding)
 
 `cellspecR` defines the `cellspec` 1.0 table contract for segmented
 cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for
 downstream analysis.
 
-> **Status: 1.0.0.9000, development version.** It follows version 1.0.0;
-> the changes since then are listed in `NEWS.md`. The `cellspec` 1.0
-> specification and the package API are stable. Readers that
+> **Status: 1.1.1.9000 development.** Integrity corrections are listed
+> in `NEWS.md`. The `cellspec` 1.0 specification and the package API are
+> stable. Readers that
 > [`cs_formats()`](https://cttir.github.io/cellspecR/dev/reference/cs_formats.md)
 > marks as experimental may still change with the export formats of
 > their tools. cellspecR is not yet on CRAN.
 
-## Install
+## Installation
 
 ``` r
 
@@ -39,7 +41,7 @@ print(x)
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 1.0.0)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.1.1.9000)
 cs_validate(x)
 #> <cellspec validation> 45 checks: 0 fail, 0 warn, 0 skip, 45 pass
 #> pass 45 other checks
@@ -62,12 +64,12 @@ cs_verify(destination)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
-#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9
-#> 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE
@@ -104,6 +106,27 @@ identical(cs_cells(x), cs_cells(y))
 The package does not segment images, normalize signals, gate cells or
 perform spatial statistics. It keeps the table contract and provenance
 at the boundary between those tools.
+
+## Review an export
+
+``` r
+
+shiny::runApp(cs_app(), host = "127.0.0.1")
+```
+
+Upload a CSV/TSV, gzip-compressed table or supported RDS export, choose
+its format and pixel size where required, then select **Read**. Results
+and downloads are cleared when inputs change or a read fails. Canonical
+directories can be opened locally with
+`cs_app(path = "path/to/cellspec-directory")`; a browser file upload
+accepts one file, not a directory.
+
+Canonical integrity checks include hidden files and refuse symbolic-link
+members. Use a directory containing actual files for portable handover.
+Checksums detect changes but do not authenticate who produced the data.
+Writers recheck destination contents before replacement; coordinate
+simultaneous writers externally because this is not a file-locking
+protocol.
 
 ## Data and reproducibility
 

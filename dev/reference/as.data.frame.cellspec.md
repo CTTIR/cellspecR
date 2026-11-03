@@ -1,7 +1,5 @@
 # Convert a cellspec object to a data frame
 
-**\[experimental\]**
-
 Combines the `cells` columns with selected measurement columns into one
 wide data frame, for example to hand a table to modelling code.
 Measurement columns are named by their feature identifiers.

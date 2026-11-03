@@ -1,7 +1,5 @@
 # Plot cellspec quality-control views
 
-**\[experimental\]**
-
 Draws a centroid map, marker distribution, feature-support heatmap, cell
 area distribution, or an overview of up to four panels. The overview
 leaves out the area panel when the cells table has no `area` column and

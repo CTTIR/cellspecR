@@ -1,7 +1,5 @@
 # Columns and controlled vocabularies of the cellspec format
 
-**\[experimental\]**
-
 Returns the specification tables as data: the columns each component may
 carry, and the allowed values of every controlled vocabulary. The
 validator

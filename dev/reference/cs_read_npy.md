@@ -15,7 +15,10 @@ Supported data types are booleans, signed and unsigned integers, 32- and
 byte (`S`) strings, in either byte order and in C or Fortran order.
 Object arrays (`O`, stored with Python's pickle) and structured data
 types are refused. 64-bit and unsigned 32-bit integers are returned as
-doubles; a value that a double cannot hold exactly is an error.
+doubles; a value outside the exact integer range from -2^53 through 2^53
+is an error. Signed 32-bit arrays containing -2^31 also return doubles
+because R reserves that integer bit pattern for a missing value.
+Duplicate archive names fail.
 
 ## Usage
 

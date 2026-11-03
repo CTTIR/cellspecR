@@ -1,6 +1,38 @@
 # Changelog
 
-## cellspecR (development version)
+## cellspecR 1.1.1.9000
+
+- Preserve existing NumPy files when input validation fails. Decode
+  signed and unsigned integer boundaries exactly in both byte orders,
+  including int32 minimum and 64-bit integers in the supported range
+  +/-2^53. Reject duplicate archive names and unsupported array
+  dimensions.
+- Recheck overwrite permission and destination contents immediately
+  before committing canonical writes; refuse symbolic-link destinations
+  and members. This protects late-arriving unrelated files, but is not a
+  concurrent-writer lock.
+- Include hidden files in integrity verification and refuse symlink
+  members and unsafe portable manifest paths. Checksums establish
+  consistency, not authorship.
+- Treat external parser diagnostics as literal text so braces cannot be
+  evaluated as formatting expressions and structured error classes
+  survive.
+- Reject partial delimited reads with parser warnings, preserve
+  leading-zero and large integer identifiers, and reject lossy sidecar
+  integer conversions. Use unambiguous composite cell keys even when
+  identifiers contain separators.
+- The review app retains upload filenames for RDS/gzip dispatch and
+  image identity, and clears review results when inputs change or a read
+  fails.
+- AnnData documentation and examples use the native R in-memory backend;
+  interoperability tests now require successful conversion when
+  installed.
+
+## cellspecR 1.1.0
+
+- Functions released in 1.0.0 are no longer marked experimental; like
+  the package, they are stable. The NumPy readers and writers added in
+  this version are experimental.
 
 - The MCQuant, segmantR and inForm readers derive image and sample
   identifiers of an RDS table from its file name, as for delimited
@@ -52,8 +84,8 @@
   radian units.
 
 - [`cs_formats()`](https://cttir.github.io/cellspecR/dev/reference/cs_formats.md)
-  reports segmantR 0.1.0.9000, the version the segmantR reader was
-  tested with, instead of the non-existent segmantR 0.5.
+  reports segmantR 0.2.0, the version the segmantR reader was tested
+  with, instead of the non-existent segmantR 0.5.
 
 - `cs_write(overwrite = TRUE)` now replaces only an empty directory or
   earlier

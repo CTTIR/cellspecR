@@ -1,7 +1,5 @@
 # Convert a SpatialExperiment back to cellspec
 
-**\[experimental\]**
-
 Reconstructs the cellspec components stored by
 [`cs_as_spe()`](https://cttir.github.io/cellspecR/dev/reference/cs_as_spe.md).
 

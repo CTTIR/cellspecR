@@ -1,7 +1,5 @@
 # Read a delimited table into a cellspec object
 
-**\[experimental\]**
-
 Reads a delimited cell table using a format-specific adapter or an
 explicit
 [`cs_column_map()`](https://cttir.github.io/cellspecR/dev/reference/cs_column_map.md).
@@ -109,6 +107,12 @@ cs_read(
 ## Value
 
 A validated `cellspec` object.
+
+## Delimited input
+
+Leading-zero and large integer identifiers are retained as text. Parser
+warnings (including dropped malformed rows) cause a format error instead
+of returning a partial table. Correct the source export before retrying.
 
 ## Compressed input
 

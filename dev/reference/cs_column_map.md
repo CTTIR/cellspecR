@@ -1,7 +1,5 @@
 # Validate a table column map
 
-**\[experimental\]**
-
 Creates a validated description of how a generic delimited table maps to
 the cellspec columns. Source names are checked for shape here and
 checked against the input table by

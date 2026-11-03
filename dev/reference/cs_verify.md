@@ -1,11 +1,11 @@
 # Verify a canonical cellspec directory
 
-**\[experimental\]**
-
 Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 against the manifest digest. The returned report has one row per
 declared file plus DONE; it does not hide a failed digest behind an
-error.
+error. Hidden files are included. Symbolic-link members are refused, so
+a verified directory does not depend on files outside it. Checksums
+detect changes; they do not authenticate the producer of a directory.
 
 ## Usage
 
@@ -45,12 +45,12 @@ cs_verify(path)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 3856580801c353e96e9d5188fd34a2da068d2808a0c0d30043f7d81131d84688
-#> 1             a0e97fb6f8a808bb76cdfed4b73fda2d78ce7f89ac56afd633e12c1c0198dcf3
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 3856580801c353e96e9d5188fd34a2da068d2808a0c0d30043f7d81131d84688
-#> 1             a0e97fb6f8a808bb76cdfed4b73fda2d78ce7f89ac56afd633e12c1c0198dcf3
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE

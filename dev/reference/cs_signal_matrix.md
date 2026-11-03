@@ -1,7 +1,5 @@
 # Select one signal per cell and marker
 
-**\[experimental\]**
-
 Applies a `cs_signal_policy` to the intensity measurements in a
 `cellspec` object. A preferred finite value is used when its declared
 domain accepts it; otherwise the configured fallback is tested using its

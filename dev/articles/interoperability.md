@@ -17,23 +17,21 @@ if (requireNamespace("SpatialExperiment", quietly = TRUE)) {
 } else {
   message("Install SpatialExperiment to run this section.")
 }
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 #> [1] TRUE
 ```
 
-AnnData conversion is optional and requires an `anndataR` installation
-with a working Python AnnData runtime.
+AnnData conversion is optional and requires `anndataR`. Its default
+in-memory implementation works in R without a Python runtime.
 
 ``` r
 
 if (requireNamespace("anndataR", quietly = TRUE)) {
-  result <- tryCatch(cs_as_anndata(x, policy), error = function(e) e)
-  if (inherits(result, "error")) message(conditionMessage(result)) else result
+  result <- cs_as_anndata(x, policy)
+  dim(result)
 } else {
   message("Install anndataR to run this section.")
 }
-#> InMemoryAnnData object with n_obs × n_vars = 80 × 4
-#>     obs: 'cell_id', 'image_id', 'sample_id', 'x', 'y', 'area', 'x_px', 'y_px'
-#>     var: 'marker'
-#>     uns: 'cellspec'
-#>     obsm: 'spatial'
+#> [1] 80  4
 ```

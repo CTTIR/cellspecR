@@ -17,7 +17,7 @@ x
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 1.0.0.9000)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.1.1.9000)
 summary(x)
 #> <cellspec summary> 2 images, 80 cells
 #>  image_id sample_id n_cells n_markers n_features pixel_size  x_min  x_max
@@ -110,12 +110,12 @@ cs_verify(destination)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 3856580801c353e96e9d5188fd34a2da068d2808a0c0d30043f7d81131d84688
-#> 1             a0e97fb6f8a808bb76cdfed4b73fda2d78ce7f89ac56afd633e12c1c0198dcf3
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 3856580801c353e96e9d5188fd34a2da068d2808a0c0d30043f7d81131d84688
-#> 1             a0e97fb6f8a808bb76cdfed4b73fda2d78ce7f89ac56afd633e12c1c0198dcf3
+#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
+#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE

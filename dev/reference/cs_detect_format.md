@@ -1,7 +1,5 @@
 # Detect the generic table format
 
-**\[experimental\]**
-
 Reads only the header and at most `n_max` data rows. A generic table is
 deliberately returned as a low-confidence candidate because its
 biological meaning cannot be inferred safely without an explicit column
