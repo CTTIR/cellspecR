@@ -193,7 +193,7 @@
                           dir.exists(file.path(path, entries)) |
                           .cs_is_link(file.path(path, entries))]
   sidecar <- file.path(path, "cellspec.json")
-  doc <- if (file.exists(sidecar) && !dir.exists(sidecar)) {
+  doc <- if (.cs_regular_member(path, "cellspec.json")) {
     tryCatch(jsonlite::fromJSON(sidecar, simplifyVector = FALSE),
              error = function(e) NULL)
   }

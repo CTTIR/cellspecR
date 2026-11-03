@@ -1,5 +1,8 @@
 # cellspecR 1.1.1.9000
 
+* Detect native symbolic links, dangling links and Windows junctions without
+  relying on the Windows `Sys.readlink()` stub; retain manifest and overwrite
+  boundaries across platforms.
 * Preserve existing NumPy files when input validation fails. Decode signed and
   unsigned integer boundaries exactly in both byte orders, including int32
   minimum and 64-bit integers in the supported range +/-2^53. Reject duplicate

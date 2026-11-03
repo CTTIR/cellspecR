@@ -23,8 +23,7 @@
 }
 
 .cs_is_link <- function(path) {
-  link <- Sys.readlink(path)
-  !is.na(link) & nzchar(link)
+  unname(fs::is_link(path))
 }
 
 # Do not follow links while hashing, reading control files or listing members.
@@ -166,9 +165,9 @@
 #' Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 #' against the manifest digest. The returned report has one row per declared
 #' file plus DONE; it does not hide a failed digest behind an error.
-#' Hidden files are included. Symbolic-link members are refused, so a verified
-#' directory does not depend on files outside it. Checksums detect changes;
-#' they do not authenticate the producer of a directory.
+#' Hidden files are included. Symbolic-link and junction members are refused,
+#' so a verified directory does not depend on files outside it. Checksums detect
+#' changes; they do not authenticate the producer of a directory.
 #'
 #' @param dir A cellspec directory written by cs_write().
 #' @return A data frame with character columns file, expected and observed,

@@ -1,3 +1,34 @@
+# Hosted portability follow-up — 3 November 2026
+
+Published baseline: `0046842`. The earlier audit below is historical; its
+publication-status statements predate that main commit.
+
+The Windows job reported four integrity failures because base R's
+`Sys.readlink()` returns empty strings on Windows. Link detection now uses the
+explicit `fs` dependency, so native file/directory links, dangling links and
+junctions cannot be accepted as canonical members or overwrite destinations.
+Overwrite preflight also refuses a linked `cellspec.json` before parsing it.
+
+The new synthetic regressions fail seven assertions against the frozen baseline.
+The complete local suite passed 1,223 assertions with no failures or warnings;
+the native Windows junction case is intentionally reserved for Windows. Local
+coverage is 95.92644%, above the configured 90% floor. Shared house lint and
+workflow validation pass. Full source-package check passed with zero errors,
+zero warnings and one incoming-submission/development-version NOTE.
+Independent source review checked the fs/libuv Windows
+link classification and the no-read sidecar guard. Package-check results and
+exact-head hosted outcomes are retained with the follow-up evidence.
+
+The oldrel-3 row's unavailable optional `anndataR` dependency is a separate
+informational compatibility observation. No R minimum, dependency requirement,
+test, or hosted gate was weakened. Checksums still detect consistency rather
+than producer identity; filesystem races are not an OS sandbox or lock.
+
+Contracts: [R readlink behavior](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Sys.readlink.html)
+and [fs file-type queries](https://fs.r-lib.org/reference/is_file.html).
+
+---
+
 # Maintenance audit — 30 October 2026
 
 Public baseline: `bd940f1baf937cd6a78f8741193ac419d34c712b` (1.1.0).
