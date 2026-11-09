@@ -1,10 +1,10 @@
-# cellspecR 1.1.1.9000
+# cellspecR 1.2.0
 
 * Detect native symbolic links, dangling links and Windows junctions without
   relying on the Windows `Sys.readlink()` stub; retain manifest and overwrite
   boundaries across platforms.
 * Preserve existing NumPy files when input validation fails. Decode signed and
-  unsigned integer boundaries exactly in both byte orders, including int32
+  unsigned integer boundaries exactly in both byte orders, including `int32`
   minimum and 64-bit integers in the supported range +/-2^53. Reject duplicate
   archive names and unsupported array dimensions.
 * Recheck overwrite permission and destination contents immediately before
@@ -21,6 +21,9 @@
   identity, and clears review results when inputs change or a read fails.
 * AnnData documentation and examples use the native R in-memory backend;
   interoperability tests now require successful conversion when installed.
+* Prepare the first CRAN submission: print snapshots no longer embed the
+  package version, and the version is aligned across `DESCRIPTION`,
+  `CITATION.cff`, `.zenodo.json` and the README.
 
 # cellspecR 1.1.0
 

@@ -6,6 +6,7 @@
   - [Review an export](#review-an-export)
   - [Data and reproducibility](#data-and-reproducibility)
   - [Contributing and license](#contributing-and-license)
+  - [Use of LLM tools](#use-of-llm-tools)
   - [Branding](#branding)
 
 # cellspecR <picture class="cttir-readme-logo"><source class="cttir-logo-dark-source" media="(prefers-color-scheme: dark)" srcset="man/figures/logo-with-name-dark.png" /><img src="man/figures/logo-with-name.png" align="right" alt="cellspecR logo" width="120" height="139" /></picture>
@@ -23,11 +24,10 @@ cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for
 downstream analysis.
 
-> **Status: 1.1.1.9000 development.** Integrity corrections are listed
-> in `NEWS.md`. The `cellspec` 1.0 specification and the package API are
-> stable. Readers that `cs_formats()` marks as experimental may still
-> change with the export formats of their tools. cellspecR is not yet on
-> CRAN.
+> **Status: 1.2.0.** Integrity corrections are listed in `NEWS.md`. The
+> `cellspec` 1.0 specification and the package API are stable. Readers
+> that `cs_formats()` marks as experimental may still change with the
+> export formats of their tools. cellspecR is not yet on CRAN.
 
 ## Installation
 
@@ -47,7 +47,7 @@ print(x)
 #>   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3
 #>   pixel     0.5 um/px
 #>   adjacency none
-#>   source    simulate 1.0.0 (cellspecR simulator 1.1.1.9000)
+#>   source    simulate 1.0.0 (cellspecR simulator 1.2.0)
 cs_validate(x)
 #> <cellspec validation> 45 checks: 0 fail, 0 warn, 0 skip, 45 pass
 #> pass 45 other checks
@@ -70,12 +70,12 @@ cs_verify(destination)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
-#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
+#> cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c
+#> 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 789a70c4bc699d8eb2196e50458a9965082d8437a775d7e5e3d384c7d95cd376
-#> 1             8b9e0f45af4252aad714ceb2eaf05ed773de68d616703237b0d1489880577dba
+#> cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c
+#> 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE
@@ -139,20 +139,22 @@ package is released under the MIT license.
 
 ## Use of LLM tools
 
-Where applicable, LLM tools were used for narrowly defined, non-authorial tasks:
-copyediting, prose refinement, Markdown/LaTeX formatting, boilerplate scaffolding
-(such as CI configurations and build scripts), and code refactoring. Tools included
-[Chat AI](https://kisski.gwdg.de/leistungen/2-02-llm-service/), the KISSKI
-(GWDG) service, and self-hosted **Mistral Small (24B, Apache-2.0)** served through
-a local **vLLM architecture** on an Ubuntu Linux workstation with Intel
-processors and NVIDIA GPUs. Self-hosted use also includes models that were
-further trained (fine-tuned) or weight-edited in-house for specific tasks.
-All self-hosted models ran locally, with no data sent to third parties.
+Where applicable, LLM tools were used for narrowly defined,
+non-authorial tasks: copyediting, prose refinement, Markdown/LaTeX
+formatting, boilerplate scaffolding (such as CI configurations and build
+scripts), and code refactoring. Tools included [Chat
+AI](https://kisski.gwdg.de/leistungen/2-02-llm-service/), the KISSKI
+(GWDG) service, and self-hosted **Mistral Small (24B, Apache-2.0)**
+served through a local **vLLM architecture** on an Ubuntu Linux
+workstation with Intel processors and NVIDIA GPUs. Self-hosted use also
+includes models that were further trained (fine-tuned) or weight-edited
+in-house for specific tasks. All self-hosted models ran locally, with no
+data sent to third parties.
 
-All scientific claims, methodological choices, analyses, interpretations and
-conclusions remain the authors' own. Where applicable, LLM-generated material
-must be reviewed and revised before inclusion, and references must be verified
-against their DOI, arXiv ID or ISBN.
+All scientific claims, methodological choices, analyses, interpretations
+and conclusions remain the authors' own. Where applicable, LLM-generated
+material must be reviewed and revised before inclusion, and references
+must be verified against their DOI, arXiv ID or ISBN.
 
 Local software setup: vLLM with Python/PyTorch, plus R and RStudio.
 
