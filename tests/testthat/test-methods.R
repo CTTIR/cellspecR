@@ -4,14 +4,21 @@ test_that("is_cellspec() recognises the class only", {
   expect_false(is_cellspec(NULL))
 })
 
+# The provenance line names the installed package version; keep the snapshot
+# independent of it so that a version bump does not invalidate the output.
+scrub_version <- function(lines) {
+  gsub(as.character(utils::packageVersion("cellspecR")), "<version>", lines,
+       fixed = TRUE)
+}
+
 test_that("print() output is stable and fits in 80 columns", {
   x <- cs_example()
   out <- capture.output(print(x))
   expect_true(all(nchar(out, type = "width") <= 80L))
-  expect_snapshot(print(x))
+  expect_snapshot(print(x), transform = scrub_version)
   capture.output(vis <- withVisible(print(x)))
   expect_false(vis$visible)
-  expect_snapshot(print(sim_object()))
+  expect_snapshot(print(sim_object()), transform = scrub_version)
 })
 
 test_that("print() truncates long marker lists and reports mixed pixel sizes", {
