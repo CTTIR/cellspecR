@@ -108,6 +108,12 @@ cs_read(
 
 A validated `cellspec` object.
 
+## Delimited input
+
+Leading-zero and large integer identifiers are retained as text. Parser
+warnings (including dropped malformed rows) cause a format error instead
+of returning a partial table. Correct the source export before retrying.
+
 ## Compressed input
 
 Input files whose names end in `.gz` are decompressed in R and checked

@@ -1,5 +1,40 @@
 # Changelog
 
+## cellspecR 1.2.0
+
+- Detect native symbolic links, dangling links and Windows junctions
+  without relying on the Windows
+  [`Sys.readlink()`](https://rdrr.io/r/base/Sys.readlink.html) stub;
+  retain manifest and overwrite boundaries across platforms.
+- Preserve existing NumPy files when input validation fails. Decode
+  signed and unsigned integer boundaries exactly in both byte orders,
+  including `int32` minimum and 64-bit integers in the supported range
+  +/-2^53. Reject duplicate archive names and unsupported array
+  dimensions.
+- Recheck overwrite permission and destination contents immediately
+  before committing canonical writes; refuse symbolic-link destinations
+  and members. This protects late-arriving unrelated files, but is not a
+  concurrent-writer lock.
+- Include hidden files in integrity verification and refuse symlink
+  members and unsafe portable manifest paths. Checksums establish
+  consistency, not authorship.
+- Treat external parser diagnostics as literal text so braces cannot be
+  evaluated as formatting expressions and structured error classes
+  survive.
+- Reject partial delimited reads with parser warnings, preserve
+  leading-zero and large integer identifiers, and reject lossy sidecar
+  integer conversions. Use unambiguous composite cell keys even when
+  identifiers contain separators.
+- The review app retains upload filenames for RDS/gzip dispatch and
+  image identity, and clears review results when inputs change or a read
+  fails.
+- AnnData documentation and examples use the native R in-memory backend;
+  interoperability tests now require successful conversion when
+  installed.
+- Prepare the first CRAN submission: print snapshots no longer embed the
+  package version, and the version is aligned across `DESCRIPTION`,
+  `CITATION.cff`, `.zenodo.json` and the README.
+
 ## cellspecR 1.1.0
 
 - Functions released in 1.0.0 are no longer marked experimental; like

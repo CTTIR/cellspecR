@@ -22,6 +22,7 @@
 <meta property="og:description" content="Specification, readers and validation for multiplexed imaging cell tables.">
 <meta property="og:image" content="https://cttir.github.io/cellspecR/logo.svg">
 <meta name="theme-color" content="#1565c0">
+<script defer data-domain="cttir.github.io/cellspecr" src="https://analytics.hellebo.de/js/script.file-downloads.outbound-links.js"></script>
 <!-- Package browser icons -->
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=1c8bf0da44af">
 <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png?v=1c8bf0da44af">
@@ -29,7 +30,6 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1c8bf0da44af">
 <link rel="manifest" href="site.webmanifest?v=1c8bf0da44af">
 <!-- /Package browser icons -->
-<script defer data-domain="cttir.github.io/cellspecr" src="https://analytics.hellebo.de/js/script.file-downloads.outbound-links.js"></script>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -40,7 +40,7 @@
     <!-- Standard logo aliases contain the named v5 light and dark hexes. -->
     <a class="navbar-brand me-2" href="index.html"><img src="logo.svg" alt="" class="themakr-navbar-logo" data-cttir-dark-src="reference/figures/logo-dark.svg">cellspecR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,8 +88,11 @@
 <li><a href="#installation">Installation</a></li>
 <li><a href="#quick-start">Quick start</a></li>
 <li><a href="#what-the-package-provides">What the package provides</a></li>
+<li><a href="#review-an-export">Review an export</a></li>
 <li><a href="#data-and-reproducibility">Data and reproducibility</a></li>
 <li><a href="#contributing-and-license">Contributing and license</a></li>
+<li><a href="#use-of-llm-tools">Use of LLM tools</a></li>
+<li><a href="#branding">Branding</a></li>
 </ul>
 </li>
 </ul>
@@ -102,7 +105,7 @@
 
 <p><code>cellspecR</code> defines the <code>cellspec</code> 1.0 table contract for segmented cells from multiplexed tissue images. It reads tool exports, validates structure and semantics, and writes an integrity checked directory for downstream analysis.</p>
 <blockquote>
-<p><strong>Status: 1.1.0.</strong> The changes since 1.0.0 are listed in <code>NEWS.md</code>. The <code>cellspec</code> 1.0 specification and the package API are stable. Readers that <code><a href="reference/cs_formats.html">cs_formats()</a></code> marks as experimental may still change with the export formats of their tools. cellspecR is not yet on CRAN.</p>
+<p><strong>Status: 1.2.0.</strong> Integrity corrections are listed in <code>NEWS.md</code>. The <code>cellspec</code> 1.0 specification and the package API are stable. Readers that <code><a href="reference/cs_formats.html">cs_formats()</a></code> marks as experimental may still change with the export formats of their tools. cellspecR is not yet on CRAN.</p>
 </blockquote>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -123,7 +126,7 @@
 <span><span class="co">#&gt;   markers   4: DAPI, CD3e, Pan-Cytokeratin, FOXP3</span></span>
 <span><span class="co">#&gt;   pixel     0.5 um/px</span></span>
 <span><span class="co">#&gt;   adjacency none</span></span>
-<span><span class="co">#&gt;   source    simulate 1.0.0 (cellspecR simulator 1.0.0)</span></span>
+<span><span class="co">#&gt;   source    simulate 1.0.0 (cellspecR simulator 1.2.0)</span></span>
 <span><span class="fu"><a href="reference/cs_validate.html">cs_validate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;cellspec validation&gt; 45 checks: 0 fail, 0 warn, 0 skip, 45 pass</span></span>
 <span><span class="co">#&gt; pass 45 other checks</span></span>
@@ -146,12 +149,12 @@
 <span><span class="co">#&gt; 1                      DONE</span></span>
 <span><span class="co">#&gt;                                                                       expected</span></span>
 <span><span class="co">#&gt; cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994</span></span>
-<span><span class="co">#&gt; cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9</span></span>
-<span><span class="co">#&gt; 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de</span></span>
+<span><span class="co">#&gt; cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c</span></span>
+<span><span class="co">#&gt; 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689</span></span>
 <span><span class="co">#&gt;                                                                       observed</span></span>
 <span><span class="co">#&gt; cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994</span></span>
-<span><span class="co">#&gt; cellspec.json 990e5555e66725fefc2bd165df7022ed3aa217ed2a47df2b57e654a33986cdb9</span></span>
-<span><span class="co">#&gt; 1             a6fe4004b01506e040b1f276afdac06d70416451a31a9fbf598536be3509f9de</span></span>
+<span><span class="co">#&gt; cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c</span></span>
+<span><span class="co">#&gt; 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689</span></span>
 <span><span class="co">#&gt;                 ok</span></span>
 <span><span class="co">#&gt; cells.parquet TRUE</span></span>
 <span><span class="co">#&gt; cellspec.json TRUE</span></span>
@@ -177,6 +180,14 @@
 <p>The package does not segment images, normalize signals, gate cells or perform spatial statistics. It keeps the table contract and provenance at the boundary between those tools.</p>
 </div>
 <div class="section level2">
+<h2 id="review-an-export">Review an export<a class="anchor" aria-label="anchor" href="#review-an-export"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/runApp.html" class="external-link">runApp</a></span><span class="op">(</span><span class="fu"><a href="reference/cs_app.html">cs_app</a></span><span class="op">(</span><span class="op">)</span>, host <span class="op">=</span> <span class="st">"127.0.0.1"</span><span class="op">)</span></span></code></pre></div>
+<p>Upload a CSV/TSV, gzip-compressed table or supported RDS export, choose its format and pixel size where required, then select <strong>Read</strong>. Results and downloads are cleared when inputs change or a read fails. Canonical directories can be opened locally with <code>cs_app(path = "path/to/cellspec-directory")</code>; a browser file upload accepts one file, not a directory.</p>
+<p>Canonical integrity checks include hidden files and refuse symbolic-link members. Use a directory containing actual files for portable handover. Checksums detect changes but do not authenticate who produced the data. Writers recheck destination contents before replacement; coordinate simultaneous writers externally because this is not a file-locking protocol.</p>
+</div>
+<div class="section level2">
 <h2 id="data-and-reproducibility">Data and reproducibility<a class="anchor" aria-label="anchor" href="#data-and-reproducibility"></a>
 </h2>
 <p>The bundled export in <code>inst/extdata/</code> is synthetic and contains no patient data. Reader fixtures record their generator, header grammar and SHA-256 in <code>tests/testthat/fixtures/README.md</code>. Examples do not access the network.</p>
@@ -189,7 +200,7 @@
 <div class="section level2">
 <h2 id="use-of-llm-tools">Use of LLM tools<a class="anchor" aria-label="anchor" href="#use-of-llm-tools"></a>
 </h2>
-<p>Where applicable, LLM tools were used for narrowly defined, non-authorial tasks: copyediting, prose refinement, Markdown/LaTeX formatting, boilerplate scaffolding (such as CI configurations and build scripts), and code refactoring. Tools included <a href="https://kisski.gwdg.de/leistungen/2-02-llm-service/" class="external-link">Chat AI</a>, the KISSKI (GWDG) service, and self-hosted <strong>Mistral Small (24B, Apache-2.0)</strong> served through a local <strong>vLLM architecture</strong> on an Ubuntu Linux workstation with Intel processors and NVIDIA GPUs. The self-hosted model ran locally, with no data sent to third parties.</p>
+<p>Where applicable, LLM tools were used for narrowly defined, non-authorial tasks: copyediting, prose refinement, Markdown/LaTeX formatting, boilerplate scaffolding (such as CI configurations and build scripts), and code refactoring. Tools included <a href="https://kisski.gwdg.de/leistungen/2-02-llm-service/" class="external-link">Chat AI</a>, the KISSKI (GWDG) service, and self-hosted <strong>Mistral Small (24B, Apache-2.0)</strong> served through a local <strong>vLLM architecture</strong> on an Ubuntu Linux workstation with Intel processors and NVIDIA GPUs. Self-hosted use also includes models that were further trained (fine-tuned) or weight-edited in-house for specific tasks. All self-hosted models ran locally, with no data sent to third parties.</p>
 <p>All scientific claims, methodological choices, analyses, interpretations and conclusions remain the authors’ own. Where applicable, LLM-generated material must be reviewed and revised before inclusion, and references must be verified against their DOI, arXiv ID or ISBN.</p>
 <p>Local software setup: vLLM with Python/PyTorch, plus R and RStudio.</p>
 </div>

@@ -3,7 +3,10 @@
 Recomputes every digest in MANIFEST.sha256 and checks the DONE marker
 against the manifest digest. The returned report has one row per
 declared file plus DONE; it does not hide a failed digest behind an
-error.
+error. Hidden files are included. Symbolic-link and junction members are
+refused, so a verified directory does not depend on files outside it.
+Checksums detect changes; they do not authenticate the producer of a
+directory.
 
 ## Usage
 
@@ -43,12 +46,12 @@ cs_verify(path)
 #> 1                      DONE
 #>                                                                       expected
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 2621502627126eef19d95160f430f69084db903db7bed152bb9283c9fc0cd685
-#> 1             aea709f5612c5c2a31e1da03012003ef8e5880c556edea4fffe8a35a91905461
+#> cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c
+#> 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689
 #>                                                                       observed
 #> cells.parquet 67ca57b984c08b81087d62183e3602dac68637447b40f3a7bf0697bc98557994
-#> cellspec.json 2621502627126eef19d95160f430f69084db903db7bed152bb9283c9fc0cd685
-#> 1             aea709f5612c5c2a31e1da03012003ef8e5880c556edea4fffe8a35a91905461
+#> cellspec.json 93f725e4846bc2a1c87b068803e6064dbd6587bed5667ef4c34df5c0ac49b03c
+#> 1             b9e0db9c65c1f61c1ad048f5da6bf8e54b46afe1410747d6007d751930474689
 #>                 ok
 #> cells.parquet TRUE
 #> cellspec.json TRUE

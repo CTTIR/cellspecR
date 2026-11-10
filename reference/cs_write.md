@@ -4,7 +4,10 @@ Writes a canonical cellspec directory in a neighbouring staging
 directory, then renames it into place after the data, sidecar, manifest
 and DONE marker are complete. Parquet is the default because it
 preserves doubles exactly; the tsv.gz option is available for
-interoperable text output.
+interoperable text output. Destination permission and contents are
+checked again before replacement. Symbolic links are refused. Coordinate
+concurrent writers externally; these checks do not implement a
+cross-process lock.
 
 ## Usage
 

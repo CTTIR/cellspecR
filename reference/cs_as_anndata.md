@@ -2,7 +2,7 @@
 
 Creates an AnnData object with cells in `obs`, selected marker signals
 in `X`, and `x`/`y` in `obsm$spatial`. The optional `anndataR` package
-and its Python runtime are required.
+is required; its default in-memory implementation does not need Python.
 
 ## Usage
 

@@ -2,7 +2,9 @@
 
 Reads the sidecar and cell table written by cs_write(), verifies the
 manifest and DONE marker by default, and returns a validated object.
-DONE is required even when verification is explicitly disabled.
+DONE is required even when verification is explicitly disabled. Declared
+integer and logical columns are checked before conversion; malformed
+scalar metadata is rejected rather than truncated or silently coerced.
 
 ## Usage
 
