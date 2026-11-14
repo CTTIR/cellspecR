@@ -250,7 +250,18 @@
   moved <- file.rename(stage, target)
   if (!moved) {
     if (!is.null(backup)) {
-      file.rename(backup, target)
+      restored <- file.rename(backup, target)
+      if (!isTRUE(restored)) {
+        .cs_abort(
+          c(
+            "Could not move the completed cellspec directory into {.path {target}}.",
+            "x" = "The original destination could not be restored automatically.",
+            "i" = "Its original files are retained in {.path {backup}}; recover this directory before retrying."
+          ),
+          class = "cellspec_error_format",
+          call = call
+        )
+      }
     }
     .cs_abort(
       "Could not move the completed cellspec directory into {.path {target}}.",
@@ -274,6 +285,9 @@
 #' Destination permission and contents are checked again before replacement.
 #' Symbolic links are refused. Coordinate concurrent writers externally; these
 #' checks do not implement a cross-process lock.
+#' If replacement fails, the original directory is restored when possible.
+#' If restoration also fails, the error identifies the retained backup for
+#' manual recovery; the backup is not deleted.
 #' All table columns, including extra metadata, must be plain character,
 #' double, integer or logical vectors without dimensions. Convert factors,
 #' dates and other classed vectors explicitly so their meaning is not silently

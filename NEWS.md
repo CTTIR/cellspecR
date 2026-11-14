@@ -1,5 +1,7 @@
 # cellspecR 1.2.0
 
+* When replacement and automatic restoration both fail, report the retained
+  original backup directory explicitly so it can be recovered before retrying.
 * Schema columns must be plain vectors of their declared type. Matrix, array,
   factor and other classed columns are rejected before downstream use. The
   canonical writer applies the same rule to extra metadata columns, preventing
