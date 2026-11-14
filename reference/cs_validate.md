@@ -8,6 +8,10 @@ the same checks and aborts when any check fails.
 columns and types, unique keys, finite centroids, dictionary vocabulary,
 alignment of measurements, channels and optional adjacency. A failing
 structure check means other packages cannot rely on the object.
+Specified table columns must be plain, dimensionless vectors of their
+declared type. Matrix or array columns, factors, dates and other classed
+vectors are not canonical columns; convert them explicitly before
+validation.
 
 `level = "semantic"` adds plausibility checks that produce warnings, not
 failures: centroids outside the image, implausible cell areas, negative

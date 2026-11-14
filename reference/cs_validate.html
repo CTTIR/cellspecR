@@ -6,6 +6,9 @@ level = &quot;structure&quot; runs the MUST rules of the specification: required
 columns and types, unique keys, finite centroids, dictionary vocabulary,
 alignment of measurements, channels and optional adjacency. A failing
 structure check means other packages cannot rely on the object.
+Specified table columns must be plain, dimensionless vectors of their
+declared type. Matrix or array columns, factors, dates and other classed
+vectors are not canonical columns; convert them explicitly before validation.
 level = &quot;semantic&quot; adds plausibility checks that produce warnings, not
 failures: centroids outside the image, implausible cell areas, negative
 intensities, features with many missing values, markers without usable
@@ -17,6 +20,9 @@ level = &quot;structure&quot; runs the MUST rules of the specification: required
 columns and types, unique keys, finite centroids, dictionary vocabulary,
 alignment of measurements, channels and optional adjacency. A failing
 structure check means other packages cannot rely on the object.
+Specified table columns must be plain, dimensionless vectors of their
+declared type. Matrix or array columns, factors, dates and other classed
+vectors are not canonical columns; convert them explicitly before validation.
 level = &quot;semantic&quot; adds plausibility checks that produce warnings, not
 failures: centroids outside the image, implausible cell areas, negative
 intensities, features with many missing values, markers without usable
@@ -83,7 +89,10 @@ checks and aborts when any check fails.</p>
 <p><code>level = "structure"</code> runs the MUST rules of the specification: required
 columns and types, unique keys, finite centroids, dictionary vocabulary,
 alignment of measurements, channels and optional adjacency. A failing
-structure check means other packages cannot rely on the object.</p>
+structure check means other packages cannot rely on the object.
+Specified table columns must be plain, dimensionless vectors of their
+declared type. Matrix or array columns, factors, dates and other classed
+vectors are not canonical columns; convert them explicitly before validation.</p>
 <p><code>level = "semantic"</code> adds plausibility checks that produce warnings, not
 failures: centroids outside the image, implausible cell areas, negative
 intensities, features with many missing values, markers without usable
