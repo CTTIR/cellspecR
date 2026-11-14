@@ -7,11 +7,14 @@ preserves doubles exactly; the tsv.gz option is available for
 interoperable text output. Destination permission and contents are
 checked again before replacement. Symbolic links are refused. Coordinate
 concurrent writers externally; these checks do not implement a
-cross-process lock. All table columns, including extra metadata, must be
-plain character, double, integer or logical vectors without dimensions.
-Convert factors, dates and other classed vectors explicitly so their
-meaning is not silently lost during serialization; matrix and array
-columns are not supported.
+cross-process lock. If replacement fails, the original directory is
+restored when possible. If restoration also fails, the error identifies
+the retained backup for manual recovery; the backup is not deleted. All
+table columns, including extra metadata, must be plain character,
+double, integer or logical vectors without dimensions. Convert factors,
+dates and other classed vectors explicitly so their meaning is not
+silently lost during serialization; matrix and array columns are not
+supported.
 
 ## Usage
 
