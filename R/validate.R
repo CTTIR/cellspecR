@@ -75,6 +75,9 @@
 #' columns and types, unique keys, finite centroids, dictionary vocabulary,
 #' alignment of measurements, channels and optional adjacency. A failing
 #' structure check means other packages cannot rely on the object.
+#' Specified table columns must be plain, dimensionless vectors of their
+#' declared type. Matrix or array columns, factors, dates and other classed
+#' vectors are not canonical columns; convert them explicitly before validation.
 #'
 #' `level = "semantic"` adds plausibility checks that produce warnings, not
 #' failures: centroids outside the image, implausible cell areas, negative
@@ -231,6 +234,7 @@ cs_assert_valid <- function(x, level = "structure", call = rlang::caller_env()) 
 }
 
 .cs_type_ok <- function(col, type) {
+  if (!is.null(dim(col)) || is.object(col)) return(FALSE)
   switch(type,
     character = is.character(col),
     double = is.double(col),
@@ -249,8 +253,8 @@ cs_assert_valid <- function(x, level = "structure", call = rlang::caller_env()) 
     bd <- grep("^boundary_distance__", names(df), value = TRUE)
     bad <- c(
       bad,
-      reg[!vapply(reg, function(nm) is.character(df[[nm]]), logical(1))],
-      bd[!vapply(bd, function(nm) is.double(df[[nm]]), logical(1))]
+      reg[!vapply(reg, function(nm) .cs_type_ok(df[[nm]], "character"), logical(1))],
+      bd[!vapply(bd, function(nm) .cs_type_ok(df[[nm]], "double"), logical(1))]
     )
   }
   bad

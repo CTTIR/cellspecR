@@ -1,6 +1,16 @@
 # Canonical cellspec writer.
 
 .cs_io_column_type <- function(x, component, name, call = rlang::caller_env()) {
+  if (!is.null(dim(x)) || is.object(x)) {
+    .cs_abort(
+      c(
+        "Column {.field {name}} of {.field {component}} has an unsupported type.",
+        "x" = "Use plain character, double, integer or logical vectors without dimensions."
+      ),
+      class = "cellspec_error_format",
+      call = call
+    )
+  }
   if (is.character(x)) {
     return("character")
   }
@@ -264,6 +274,10 @@
 #' Destination permission and contents are checked again before replacement.
 #' Symbolic links are refused. Coordinate concurrent writers externally; these
 #' checks do not implement a cross-process lock.
+#' All table columns, including extra metadata, must be plain character,
+#' double, integer or logical vectors without dimensions. Convert factors,
+#' dates and other classed vectors explicitly so their meaning is not silently
+#' lost during serialization; matrix and array columns are not supported.
 #'
 #' @param x A valid cellspec object.
 #' @param dir Destination directory. Its parent is created when needed.

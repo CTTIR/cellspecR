@@ -1,5 +1,9 @@
 # cellspecR 1.2.0
 
+* Schema columns must be plain vectors of their declared type. Matrix, array,
+  factor and other classed columns are rejected before downstream use. The
+  canonical writer applies the same rule to extra metadata columns, preventing
+  matrix columns from being silently truncated during TSV output.
 * Detect native symbolic links, dangling links and Windows junctions without
   relying on the Windows `Sys.readlink()` stub; retain manifest and overwrite
   boundaries across platforms.
