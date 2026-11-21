@@ -17,6 +17,7 @@
 stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24426370.svg)](https://doi.org/10.5281/zenodo.24426370)
 <!-- badges: end -->
 
 `cellspecR` defines the `cellspec` 1.0 table contract for segmented
