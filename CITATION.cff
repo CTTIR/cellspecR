@@ -3,6 +3,7 @@ message: If you use this software, please cite it as below.
 type: software
 title: 'cellspecR: Read, Validate and Store Multiplexed Imaging Cell Tables'
 version: 1.2.0
+doi: 10.5281/zenodo.24426370
 authors:
 - family-names: Heller
   given-names: R.
@@ -10,3 +11,7 @@ authors:
 repository-code: https://github.com/CTTIR/cellspecR
 url: https://cttir.github.io/cellspecR/
 license: MIT
+identifiers:
+- type: doi
+  value: 10.5281/zenodo.24426370
+  description: Zenodo DOI (reserved; resolves once the record is published)
