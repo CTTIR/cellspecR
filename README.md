@@ -1,14 +1,4 @@
 
-- [cellspecR](#cellspecr-)
-  - [Installation](#installation)
-  - [Quick start](#quick-start)
-  - [What the package provides](#what-the-package-provides)
-  - [Review an export](#review-an-export)
-  - [Data and reproducibility](#data-and-reproducibility)
-  - [Contributing and license](#contributing-and-license)
-  - [Use of LLM tools](#use-of-llm-tools)
-  - [Branding](#branding)
-
 # cellspecR <picture class="cttir-readme-logo"><source class="cttir-logo-dark-source" media="(prefers-color-scheme: dark)" srcset="man/figures/logo-with-name-dark.png" /><img src="man/figures/logo-with-name.png" align="right" alt="cellspecR logo" width="120" height="139" /></picture>
 
 <!-- badges: start -->
