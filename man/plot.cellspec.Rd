@@ -45,9 +45,10 @@ A \code{ggplot} object, or a patchwork object for \code{type = "overview"}.
 }
 \description{
 Draws a centroid map, marker distribution, feature-support heatmap, cell
-area distribution, or an overview of up to four panels. The overview leaves
-out the area panel when the cells table has no \code{area} column and the marker
-panel when there are no intensity features or no finite values to draw.
+area distribution, or an overview of up to four panels with their legends
+below. The overview leaves out the area panel when the cells table has no
+\code{area} column and the marker panel when there are no intensity features or
+no finite values to draw.
 
 The map follows the image frame: the origin is at the top left and \code{y}
 increases downwards. The marker plot shows one marker: a violin per

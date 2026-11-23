@@ -126,6 +126,8 @@ utils::globalVariables(".data")
       width = 0.12, position = dodge, fill = "white", outlier.shape = NA, na.rm = TRUE
     ) +
     ggplot2::facet_wrap(~image_id) +
+    # Two label rows keep neighbouring statistics apart in narrow panels.
+    ggplot2::guides(x = ggplot2::guide_axis(n.dodge = 2)) +
     ggplot2::scale_fill_viridis_d(begin = 0.25, end = 0.9) +
     ggplot2::labs(
       title = data$marker[[1L]], x = NULL, y = "Signal (raw units)",
@@ -164,9 +166,10 @@ utils::globalVariables(".data")
 #'
 #' @description
 #' Draws a centroid map, marker distribution, feature-support heatmap, cell
-#' area distribution, or an overview of up to four panels. The overview leaves
-#' out the area panel when the cells table has no `area` column and the marker
-#' panel when there are no intensity features or no finite values to draw.
+#' area distribution, or an overview of up to four panels with their legends
+#' below. The overview leaves out the area panel when the cells table has no
+#' `area` column and the marker panel when there are no intensity features or
+#' no finite values to draw.
 #'
 #' The map follows the image frame: the origin is at the top left and `y`
 #' increases downwards. The marker plot shows one marker: a violin per
@@ -221,6 +224,11 @@ plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "a
   if ("area" %in% names(x$cells)) {
     panels <- c(panels, list(.cs_plot_area(x, call)))
   }
+  # Legends below the panels leave the full width to the data; the marker
+  # panel already places its own.
+  panels <- lapply(panels, function(panel) {
+    panel + ggplot2::theme(legend.position = "bottom")
+  })
   if (any(x$dictionary$kind %in% "intensity")) {
     marker_panel <- .cs_plot_marker(x, marker, policy, max_points, seed, call, empty_ok = TRUE)
     if (!is.null(marker_panel)) {

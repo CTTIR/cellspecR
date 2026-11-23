@@ -42,6 +42,9 @@
   the overview leaves that panel out.
 * The centroid map uses a reversed `y` axis with the original coordinates in
   place of negated values, so axis labels match `cs_cells(x)$y`.
+* The plot overview places legends below its panels, and the getting-started
+  vignette now shows the quality-control plots. ggplot2 3.3.0 or later is
+  needed for plotting.
 * `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
   Zero positions used to select everything, so an empty selection silently
   returned the complete object. Zeros mixed with other positions are ignored.

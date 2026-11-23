@@ -35,7 +35,7 @@ Imports:
 Suggests:
     anndataR,
     bslib,
-    ggplot2,
+    ggplot2 (>= 3.3.0),
     jsonvalidate,
     knitr,
     patchwork,
