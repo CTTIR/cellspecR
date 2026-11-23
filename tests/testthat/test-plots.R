@@ -153,3 +153,33 @@ test_that("the map keeps the image frame with y increasing downwards", {
   transformation <- if (is.null(y_scale$transformation)) y_scale$trans else y_scale$transformation
   expect_identical(transformation$name, "reverse")
 })
+
+test_that("the map and the area histogram draw one panel per image", {
+  skip_if_not_installed("ggplot2")
+  x <- cs_example()
+  images <- unique(x$cells$image_id)
+  for (type in c("map", "area")) {
+    built <- ggplot2::ggplot_build(plot(x, type = type))
+    expect_identical(as.character(built$layout$layout$image_id), images)
+    # Without a colour column there is nothing to explain in a legend.
+    expect_false(any(c("colour", "fill") %in% names(plot(x, type = type)$labels)))
+  }
+  map <- plot(x, type = "map")
+  expect_identical(map$data$image_id, x$cells$image_id)
+  expect_false("colour" %in% names(map$data))
+  coloured <- plot(x, type = "map", colour_by = "image_id")
+  expect_identical(coloured$data$colour, x$cells$image_id)
+  expect_identical(coloured$labels$colour, "image_id")
+  numeric <- plot(x, type = "map", colour_by = "cell:CD3e:mean")
+  expect_identical(numeric$data$colour, unname(x$measurements[, "cell:CD3e:mean"]))
+})
+
+test_that("the support heatmap reads from top to bottom and separates its tiles", {
+  skip_if_not_installed("ggplot2")
+  x <- cs_example()
+  support <- plot(x, type = "support")
+  built <- ggplot2::ggplot_build(support)
+  labels <- built$layout$panel_scales_y[[1L]]$get_limits()
+  expect_identical(labels, rev(sort(unique(support$data$label))))
+  expect_identical(unique(built$data[[1L]]$colour), "white")
+})

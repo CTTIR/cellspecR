@@ -56,7 +56,16 @@
   place of negated values, so axis labels match `cs_cells(x)$y`.
 * The plot overview places legends below its panels, and the getting-started
   vignette now shows the quality-control plots. Plotting needs `ggplot2`
-  3.3.0 or later.
+  3.4.0 or later.
+* The centroid map and the cell area histogram draw one panel per image.
+  Before, all images shared one panel, so the cells of different images lay
+  on top of each other in the map and the histograms hid each other. The map
+  uses one colour unless `colour_by` names a column; it used to colour by
+  `image_id`, which the panels now show.
+* The support heatmap separates its tiles with white borders, lists the
+  features from top to bottom and leaves out axis labels that would overprint
+  their neighbours in a small panel. Discrete map colours stop before the
+  yellow end of the viridis scale, which is hard to see on white.
 * `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
   Zero positions used to select everything, so an empty selection silently
   returned the complete object. Zeros mixed with other positions are ignored.

@@ -21,8 +21,8 @@
 \item{type}{Plot type: \code{"overview"}, \code{"map"}, \code{"marker"}, \code{"support"} or
 \code{"area"}.}
 
-\item{colour_by}{A cells or measurement column used by the map. Defaults
-to \code{image_id}.}
+\item{colour_by}{A cells or measurement column that colours the points of
+the map. Without it all points have the same colour.}
 
 \item{marker}{Marker shown by the marker plot. Defaults to the first
 marker of \code{policy} or, without a policy, the first marker returned by
@@ -51,9 +51,12 @@ below. The overview leaves out the area panel when the cells table has no
 no finite values to draw.
 
 The map follows the image frame: the origin is at the top left and \code{y}
-increases downwards. The marker plot shows one marker: a violin per
-intensity source (statistic on the axis, compartments side by side) and
-one panel per image.
+increases downwards. The map, the marker plot and the area histogram draw
+one panel per image, because every image has its own coordinate frame and
+overlaid images hide each other. The marker plot shows one marker: a violin
+per intensity source (statistic on the axis, compartments side by side).
+The support heatmap lists the features from top to bottom and leaves out
+axis labels that would overprint their neighbours in a small panel.
 Maps and marker plots of large objects use a deterministic subsample of
 \code{max_points} cells; the support heatmap and the area histogram always use
 every cell.
