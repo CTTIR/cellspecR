@@ -54,13 +54,22 @@ cs_write_npz(x, path)
 `cs_read_npy()` returns a vector for one-dimensional arrays, a matrix or
 array with the same shape otherwise, and a length-one vector for
 zero-dimensional arrays. `cs_read_npz()` returns a named list of these,
-in archive order. The writers return `path` invisibly.
+in archive order (or in the order of `arrays`). The writers return
+`path` invisibly.
+
+Errors carry the class `cellspec_error` and one of
+`cellspec_error_argument` (unusable `path`, `arrays` or `x`),
+`cellspec_error_io` (a missing input file, or a destination whose
+directory does not exist) and `cellspec_error_format` (a file that is
+not a supported array or archive).
 
 ## Details
 
 Arrays keep their logical shape: element `[i, j]` in R is element
 `[i - 1, j - 1]` in NumPy, whatever the storage order. Trailing NUL
-characters of fixed-width strings are dropped, as NumPy does.
+characters of fixed-width strings are dropped, as NumPy does; a string
+with a NUL character before its end cannot be represented in R and is an
+error.
 
 `cs_write_npz()` stores the members uncompressed (as `numpy.savez()`
 does) and needs no external `zip` program. Character data are written as

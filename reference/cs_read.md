@@ -1,7 +1,7 @@
-# Read a delimited table into a cellspec object
+# Read a cell table export into a cellspec object
 
-Reads a delimited cell table using a format-specific adapter or an
-explicit
+Reads a cell table exported by an image-analysis tool using a
+format-specific adapter, or any delimited table through an explicit
 [`cs_column_map()`](https://cttir.github.io/cellspecR/reference/cs_column_map.md).
 See
 [`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md)
@@ -39,12 +39,18 @@ cs_read(
 
 - path:
 
-  One delimited table file.
+  One delimited table file; an RDS file holding a data frame for the
+  `mcquant`, `segmantr` and `inform` readers; or a directory of tile
+  tables for `format = "qupath_tiled"`.
 
 - format:
 
-  Reader format. Use `"table"` for this adapter or `"auto"` to request
-  conservative detection.
+  Reader format, one of `cs_formats()$format`, or `"auto"` (the default)
+  for conservative detection: the format is taken from
+  [`cs_detect_format()`](https://cttir.github.io/cellspecR/reference/cs_detect_format.md)
+  only when one candidate is decisive, otherwise an error of class
+  `cellspec_error_ambiguous_format` lists the candidates. `"table"` is
+  never selected automatically because it needs `column_map`.
 
 - pixel_size:
 
@@ -63,7 +69,13 @@ cs_read(
 
 - marker_map:
 
-  Reserved for future adapters; not used by the table adapter.
+  Optional marker-name mapping created by
+  [`cs_marker_map()`](https://cttir.github.io/cellspecR/reference/cs_marker_map.md).
+  The `qupath`, `qupath_tiled`, `mcquant`, `segmantr` and `inform`
+  readers rename markers with it and keep the original name of each
+  renamed marker in `dictionary$marker_source` and
+  `channels$channel_name`; the table adapter does not use it (name the
+  markers in `column_map` instead).
 
 - column_map:
 

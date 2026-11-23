@@ -1,9 +1,13 @@
-# Detect the generic table format
+# Detect the format of a cell table
 
-Reads only the header and at most `n_max` data rows. A generic table is
-deliberately returned as a low-confidence candidate because its
-biological meaning cannot be inferred safely without an explicit column
-map.
+Reads only the header and at most `n_max` data rows and scores the input
+against the reader grammars listed by
+[`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md).
+A generic table is deliberately returned as a low-confidence candidate
+because its biological meaning cannot be inferred safely without an
+explicit column map. `cs_read(format = "auto")` selects a format only
+when exactly one candidate scores at least 0.9 and no other candidate
+comes within 0.1 of it.
 
 ## Usage
 
@@ -15,7 +19,8 @@ cs_detect_format(path, n_max = 50L)
 
 - path:
 
-  A delimited table file.
+  A delimited table file, an RDS file holding a data frame, or a
+  directory of tiled tables.
 
 - n_max:
 
@@ -23,7 +28,10 @@ cs_detect_format(path, n_max = 50L)
 
 ## Value
 
-A data frame with `format`, `score` and `evidence` columns.
+A data frame with one row per candidate format (specialised readers
+first, the generic table last) and the columns `format` (character),
+`score` (double between 0 and 1) and `evidence` (character, what
+matched).
 
 ## See also
 

@@ -54,11 +54,14 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+<li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
     <li><a class="dropdown-item" href="../articles/interoperability.html">Interoperability with SpatialExperiment and AnnData</a></li>
-    <li><a class="dropdown-item" href="../articles/performance.html">Performance measurements</a></li>
-    <li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/specification.html">The cellspec 1.0 format</a></li>
+    <li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -116,28 +119,68 @@ reader grammars. Each adapter preserves the source column name in
 <code>dictionary$source_name</code> and records its adapter and version
 in provenance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cs_formats.html">cs_formats</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         format adapter_version</span></span>
-<span><span class="co">#&gt; 1        table           1.0.0</span></span>
-<span><span class="co">#&gt; 2       qupath           1.0.1</span></span>
-<span><span class="co">#&gt; 3 qupath_tiled           1.0.1</span></span>
-<span><span class="co">#&gt; 4      mcquant           1.0.0</span></span>
-<span><span class="co">#&gt; 5     segmantr           1.0.1</span></span>
-<span><span class="co">#&gt; 6       inform           1.0.0</span></span>
-<span><span class="co">#&gt;                                            description</span></span>
-<span><span class="co">#&gt; 1 Generic delimited table with an explicit column map.</span></span>
-<span><span class="co">#&gt; 2            QuPath colon-delimited measurement export</span></span>
-<span><span class="co">#&gt; 3          Tiled QuPath tables with centroid ownership</span></span>
-<span><span class="co">#&gt; 4                   MCMICRO MCQuant measurement export</span></span>
-<span><span class="co">#&gt; 5                               segmantR feature table</span></span>
-<span><span class="co">#&gt; 6                        inForm cell segmentation data</span></span>
-<span><span class="co">#&gt;                                    tested_with       status</span></span>
-<span><span class="co">#&gt; 1 CSV, TSV and gzip-compressed delimited files       stable</span></span>
-<span><span class="co">#&gt; 2                       QuPath 0.6.0 and 0.7.0 experimental</span></span>
-<span><span class="co">#&gt; 3                                 QuPath 0.7.0 experimental</span></span>
-<span><span class="co">#&gt; 4                              MCMICRO/MCQuant experimental</span></span>
-<span><span class="co">#&gt; 5                               segmantR 0.2.0 experimental</span></span>
-<span><span class="co">#&gt; 6                              inForm/phenoptr experimental</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cs_formats.html">cs_formats</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="9%">
+<col width="11%">
+<col width="37%">
+<col width="32%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">format</th>
+<th align="left">adapter_version</th>
+<th align="left">description</th>
+<th align="left">tested_with</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">table</td>
+<td align="left">1.0.0</td>
+<td align="left">Generic delimited table with an explicit column
+map.</td>
+<td align="left">CSV, TSV and gzip-compressed delimited files</td>
+<td align="left">stable</td>
+</tr>
+<tr class="even">
+<td align="left">qupath</td>
+<td align="left">1.0.1</td>
+<td align="left">QuPath colon-delimited measurement export</td>
+<td align="left">QuPath 0.6.0 and 0.7.0</td>
+<td align="left">experimental</td>
+</tr>
+<tr class="odd">
+<td align="left">qupath_tiled</td>
+<td align="left">1.0.1</td>
+<td align="left">Tiled QuPath tables with centroid ownership</td>
+<td align="left">QuPath 0.7.0</td>
+<td align="left">experimental</td>
+</tr>
+<tr class="even">
+<td align="left">mcquant</td>
+<td align="left">1.0.0</td>
+<td align="left">MCMICRO MCQuant measurement export</td>
+<td align="left">MCMICRO/MCQuant</td>
+<td align="left">experimental</td>
+</tr>
+<tr class="odd">
+<td align="left">segmantr</td>
+<td align="left">1.0.1</td>
+<td align="left">segmantR feature table</td>
+<td align="left">segmantR 0.2.0</td>
+<td align="left">experimental</td>
+</tr>
+<tr class="even">
+<td align="left">inform</td>
+<td align="left">1.0.0</td>
+<td align="left">inForm cell segmentation data</td>
+<td align="left">inForm/phenoptr</td>
+<td align="left">experimental</td>
+</tr>
+</tbody>
+</table>
 <p>The QuPath adapter accepts both channel-first headers such as
 <code>DAPI: Mean</code> and compartment-first headers such as
 <code>Nucleus: CD3e: Mean</code>. The tiled adapter adds an ownership

@@ -36,11 +36,14 @@ unchanged."><meta property="og:image" content="https://cttir.github.io/cellspecR
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
     <li><a class="dropdown-item" href="../articles/interoperability.html">Interoperability with SpatialExperiment and AnnData</a></li>
-    <li><a class="dropdown-item" href="../articles/performance.html">Performance measurements</a></li>
-    <li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/specification.html">The cellspec 1.0 format</a></li>
+    <li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/CTTIR/cellspecR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -86,13 +89,14 @@ unchanged.</p>
 
 <dt id="arg-i">i<a class="anchor" aria-label="anchor" href="#arg-i"></a></dt>
 <dd><p>Cells to keep: a logical vector with one value per cell, or
-positive or negative integer positions. Missing means all cells.</p></dd>
+positive or negative integer positions. Missing means all cells. As in
+base R, zeros select nothing, so <code>x[0, ]</code> keeps no cells.</p></dd>
 
 
 <dt id="arg-j">j<a class="anchor" aria-label="anchor" href="#arg-j"></a></dt>
 <dd><p>Features to keep: a character vector of feature identifiers, a
 logical vector with one value per feature, or integer positions. Missing
-means all features.</p></dd>
+means all features; <code>x[, 0]</code> keeps no features.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

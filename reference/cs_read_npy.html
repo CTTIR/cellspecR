@@ -54,11 +54,14 @@ that integer bit pattern for a missing value. Duplicate archive names fail."><me
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
     <li><a class="dropdown-item" href="../articles/interoperability.html">Interoperability with SpatialExperiment and AnnData</a></li>
-    <li><a class="dropdown-item" href="../articles/performance.html">Performance measurements</a></li>
-    <li><a class="dropdown-item" href="../articles/reading-exports.html">Reading cell measurement exports</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/specification.html">The cellspec 1.0 format</a></li>
+    <li><a class="dropdown-item" href="../articles/adapters-reference.html">Adapter reference</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/CTTIR/cellspecR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -133,13 +136,21 @@ objects.</p></dd>
     <p><code>cs_read_npy()</code> returns a vector for one-dimensional arrays, a
 matrix or array with the same shape otherwise, and a length-one vector
 for zero-dimensional arrays. <code>cs_read_npz()</code> returns a named list of
-these, in archive order. The writers return <code>path</code> invisibly.</p>
+these, in archive order (or in the order of <code>arrays</code>). The writers
+return <code>path</code> invisibly.</p>
+<p>Errors carry the class <code>cellspec_error</code> and one of
+<code>cellspec_error_argument</code> (unusable <code>path</code>, <code>arrays</code> or <code>x</code>),
+<code>cellspec_error_io</code> (a missing input file, or a destination whose
+directory does not exist) and <code>cellspec_error_format</code> (a file that is
+not a supported array or archive).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Arrays keep their logical shape: element <code>[i, j]</code> in R is element
 <code>[i - 1, j - 1]</code> in NumPy, whatever the storage order. Trailing NUL
-characters of fixed-width strings are dropped, as NumPy does.</p>
+characters of fixed-width strings are dropped, as NumPy does; a string
+with a NUL character before its end cannot be represented in R and is an
+error.</p>
 <p><code>cs_write_npz()</code> stores the members uncompressed (as <code>numpy.savez()</code>
 does) and needs no external <code>zip</code> program. Character data are written as
 little-endian <code>U</code> strings, doubles as <code>&lt;f8</code>, integers as <code>&lt;i4</code> and logical

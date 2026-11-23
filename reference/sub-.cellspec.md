@@ -22,13 +22,14 @@ x[i, j, ..., drop = FALSE]
 - i:
 
   Cells to keep: a logical vector with one value per cell, or positive
-  or negative integer positions. Missing means all cells.
+  or negative integer positions. Missing means all cells. As in base R,
+  zeros select nothing, so `x[0, ]` keeps no cells.
 
 - j:
 
   Features to keep: a character vector of feature identifiers, a logical
   vector with one value per feature, or integer positions. Missing means
-  all features.
+  all features; `x[, 0]` keeps no features.
 
 - ...:
 

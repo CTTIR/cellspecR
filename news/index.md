@@ -2,6 +2,136 @@
 
 ## cellspecR 1.2.0
 
+- [`cs_read_npy()`](https://cttir.github.io/cellspecR/reference/cs_read_npy.md)
+  and
+  [`cs_read_npz()`](https://cttir.github.io/cellspecR/reference/cs_read_npy.md)
+  refuse a fixed-width string with a NUL character before its end as
+  `cellspec_error_format`. Before, R stopped with the error
+  `embedded nul in string` for ASCII strings. For Unicode strings with
+  non-ASCII characters the NUL was dropped silently and the remaining
+  characters were returned (`"\0ä"` was read as `"ä"`); such a file is
+  now refused, which is a change in behaviour.
+- [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/reference/cs_read_cellspec.md)
+  returns text with double quotes unchanged from `tsv.gz` directories. A
+  value such as `x"y` in a character column (or a column name with a
+  quote) came back as `x""y`, because the quote doubling of the writer
+  was not undone; the checksums could not notice, since the file itself
+  was intact. Existing directories are read correctly without being
+  rewritten. Parquet storage was not affected.
+- Numeric identifiers passed to
+  [`cs_new()`](https://cttir.github.io/cellspecR/reference/cs_new.md)
+  are no longer padded with decimals when one of them is fractional:
+  `c(1, 2, 3.5)` gives `"1"`, `"2"`, `"3.5"` instead of `"1.0"`,
+  `"2.0"`, `"3.5"`.
+- Readers that apply a `marker_map` now record the marker name used in
+  the export: `dictionary$marker_source` holds it for every renamed
+  marker and `channels$channel_name` keeps it, while `marker` carries
+  the mapped name, as the specification describes. Both used to hold
+  only the mapped name. A map entry that maps a marker to itself renames
+  nothing and records nothing.
+  [`cs_column_map()`](https://cttir.github.io/cellspecR/reference/cs_column_map.md)
+  accepts an optional `marker_source` column in `measurements` for the
+  same purpose.
+- The review app opens a directory written by
+  [`cs_write()`](https://cttir.github.io/cellspecR/reference/cs_write.md),
+  as the README describes: `cs_app(path = <directory>)` reads it with
+  [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/reference/cs_read_cellspec.md)
+  and reports a failed integrity verification. Before, such a directory
+  was rejected as a tiled export without tile tables.
+- [`cs_write_npy()`](https://cttir.github.io/cellspecR/reference/cs_read_npy.md)
+  and
+  [`cs_write_npz()`](https://cttir.github.io/cellspecR/reference/cs_read_npy.md)
+  report a destination whose directory does not exist, or that is itself
+  a directory, as `cellspec_error_io` before writing; before, the base R
+  error “cannot open the connection” and a warning surfaced.
+- [`cs_read_signal_policy()`](https://cttir.github.io/cellspecR/reference/cs_read_signal_policy.md)
+  reads CSV policies as text. Marker names that look like numbers or
+  logical values (`"1"`, `"007"`, `"TRUE"`) no longer fail with “invalid
+  column types”, and `min_value` is restored exactly; values such as
+  `1e-20` could come back one unit in the last place off. Hand-written
+  files keep working: a blank `fallback_compartment` field means no
+  fallback, also when other rows name one (such a mixed file used to
+  fail), and a semicolon-separated file with decimal commas (`0,5`), as
+  a spreadsheet saves it in some locales, is read as before. `min_value`
+  must be written as a decimal number; other notations such as `0x10`
+  are a `cellspec_error_format`.
+- [`cs_as_spe()`](https://cttir.github.io/cellspecR/reference/cs_as_spe.md)
+  keeps `cells` column names that are not syntactic R names, such as the
+  `Cell Type` column kept by the QuPath reader. They were turned into
+  `Cell.Type`, and
+  [`cs_from_spe()`](https://cttir.github.io/cellspecR/reference/cs_from_spe.md)
+  then failed with “undefined columns selected”.
+  [`cs_from_spe()`](https://cttir.github.io/cellspecR/reference/cs_from_spe.md)
+  also restores such names in objects converted by earlier versions and
+  reports a missing column as `cellspec_error_format`.
+- [`cs_as_spe()`](https://cttir.github.io/cellspecR/reference/cs_as_spe.md)
+  and
+  [`cs_as_anndata()`](https://cttir.github.io/cellspecR/reference/cs_as_anndata.md)
+  convert objects without cells.
+- [`cs_read()`](https://cttir.github.io/cellspecR/reference/cs_read.md)
+  with the default `format = "auto"` now selects the QuPath reader for a
+  complete QuPath export. Its detection score, the sum of the weights
+  0.05, 0.25, 0.35 and 0.25, came out as 0.8999999999999999 in floating
+  point and never reached the decisive 0.9, so automatic detection (also
+  in the review app) failed with an ambiguity error that named a single
+  candidate. The score is rounded and the threshold tolerates rounding.
+- `plot(x, type = "marker")` and the marker panel of the overview drew
+  wrong data: every value was repeated once per cell and attributed to
+  the wrong compartment and statistic, and memory use grew with the
+  square of the number of cells. The plot now shows one marker with one
+  violin per compartment and statistic, subsamples to `max_points` cells
+  and names the marker in its title. Without `marker` it shows the first
+  marker; before, all markers were pooled, which is the bug-fix change
+  of that default.
+- A marker plot without finite values to draw fails with a
+  `cellspec_error_invalid` error instead of a `ggplot2` error at print
+  time, and the overview leaves that panel out.
+- The centroid map uses a reversed `y` axis with the original
+  coordinates in place of negated values, so axis labels match
+  `cs_cells(x)$y`.
+- The plot overview places legends below its panels, and the
+  getting-started vignette now shows the quality-control plots. Plotting
+  needs `ggplot2` 3.4.0 or later;
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) says so when
+  an older version is installed.
+- The centroid map and the cell area histogram draw one panel per image.
+  Before, all images shared one panel, so the cells of different images
+  lay on top of each other in the map and the histograms hid each other.
+  The map uses one colour unless `colour_by` names a column; it used to
+  colour by `image_id`, which the panels now show. The panels of the
+  map, the marker plot and the area histogram follow the order of the
+  images table (`img2` before `img10`) and share one axis range.
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) gains
+  `max_panels` (default 12). With more images the panels are too small
+  to read at the default device size, so the map, the marker plot and
+  the area histogram pool all images in one panel and say so in the
+  subtitle; the overview, where each view has half the width, pools
+  above half that number. For the marker plot this changes the default
+  for objects with more than 12 images, which used to get one unreadable
+  panel per image; `max_panels` restores the panels on a larger device.
+  Panels get fewer axis breaks, tick labels that would overprint are
+  left out on both axes, and long image names get smaller strip labels.
+- The marker plot draws an image and source with a single cell as a
+  point instead of warning that a violin could not be computed.
+- The support heatmap separates its tiles with white borders, lists the
+  features from top to bottom and leaves out axis labels that would
+  overprint their neighbours in a small panel. Discrete map colours stop
+  before the yellow end of the viridis scale, which is hard to see on
+  white.
+- The examples of
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) now draw
+  every plot on the reference page; only the last one was shown. The
+  adapter article lists the readers as a table, and the performance
+  article shows the recorded measurements instead of a placeholder. The
+  README starts with its title; the table of contents above it is gone.
+- Review app: the package name stands next to the logo in the title bar,
+  the map is drawn larger and at 96 dpi with a text alternative, and the
+  About panel no longer puts spaces before its full stops. The app needs
+  `shiny` 1.6.0 or later.
+- `x[0, ]` and `x[, 0]` now select no cells and no features, as in
+  base R. Zero positions used to select everything, so an empty
+  selection silently returned the complete object. Zeros mixed with
+  other positions are ignored.
 - When replacement and automatic restoration both fail, report the
   retained original backup directory explicitly so it can be recovered
   before retrying.

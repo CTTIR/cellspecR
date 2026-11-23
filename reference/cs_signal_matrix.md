@@ -34,7 +34,10 @@ cs_signal_matrix(x, policy, image_id = NULL)
 A list with `signal`, a cells by markers numeric matrix, `source`, a
 character matrix describing the selected source, and `policy`, the
 validated policy. Source values are `"<compartment>:<statistic>"`,
-`"fallback:<compartment>:<statistic>"` or `"unavailable"`.
+`"fallback:<compartment>:<statistic>"` or `"unavailable"`. Rows are in
+the order of `cs_cells(x)`; their names are the cell identifiers, which
+are unique within an image only, so match rows by position when `x`
+holds several images.
 
 ## See also
 

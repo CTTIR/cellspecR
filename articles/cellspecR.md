@@ -96,6 +96,34 @@ head(selected$signal)
 #> 6  26.5155  10.2301
 ```
 
+Quality-control plots show where the cells lie, which features carry
+signal and how the cell areas and one marker are distributed. They need
+the suggested package `ggplot2`, and `patchwork` for the overview. The
+map follows the image frame, with the origin at the top left, and every
+image has its own panel.
+
+``` r
+
+plot(x)
+```
+
+![Four panels for the example object: a map of the cell centroids of
+each image, a heatmap of the fraction of zero values per feature and
+image, a histogram of the cell areas of each image, and violins of the
+DAPI signal per compartment and
+statistic.](cellspecR_files/figure-html/qc-overview-1.png)
+
+A single view is selected with `type`. With a policy, the marker plot
+shows the signal that the policy selects.
+
+``` r
+
+plot(x, type = "marker", marker = "FOXP3", policy = policy)
+```
+
+![Violins of the selected FOXP3 signal, one panel per
+image.](cellspecR_files/figure-html/qc-marker-1.png)
+
 Finally, write an integrity checked directory and verify it before
 handing the object to another analysis package.
 

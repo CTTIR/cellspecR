@@ -24,7 +24,12 @@ cs_app(
 - path:
 
   Optional initial file or directory path. The user can also select a
-  file in the application.
+  file in the application. A directory written by
+  [`cs_write()`](https://cttir.github.io/cellspecR/reference/cs_write.md)
+  is read with
+  [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/reference/cs_read_cellspec.md),
+  including its integrity verification; any other path is read with
+  [`cs_read()`](https://cttir.github.io/cellspecR/reference/cs_read.md).
 
 - max_upload_mb:
 

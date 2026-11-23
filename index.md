@@ -1,15 +1,5 @@
 # cellspecR ![cellspecR logo](reference/figures/logo-with-name.png)
 
-- [cellspecR](#cellspecr-)
-  - [Installation](#installation)
-  - [Quick start](#quick-start)
-  - [What the package provides](#what-the-package-provides)
-  - [Review an export](#review-an-export)
-  - [Data and reproducibility](#data-and-reproducibility)
-  - [Contributing and license](#contributing-and-license)
-  - [Use of LLM tools](#use-of-llm-tools)
-  - [Branding](#branding)
-
 `cellspecR` defines the `cellspec` 1.0 table contract for segmented
 cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for

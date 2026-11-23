@@ -2,12 +2,16 @@
 
 ## Specification
 
+Version, columns and controlled vocabularies of the cellspec format.
+
 - [`cs_spec_version()`](https://cttir.github.io/cellspecR/reference/cs_spec_version.md)
   : Version of the cellspec specification
 - [`cs_vocabulary()`](https://cttir.github.io/cellspecR/reference/cs_vocabulary.md)
   : Columns and controlled vocabularies of the cellspec format
 
 ## Object
+
+Build a cellspec object and access its components, features and markers.
 
 - [`cs_new()`](https://cttir.github.io/cellspecR/reference/cs_new.md) :
   Create a cellspec object
@@ -27,6 +31,8 @@
 
 ## Validation
 
+Check an object against the specification and summarise signal support.
+
 - [`cs_validate()`](https://cttir.github.io/cellspecR/reference/cs_validate.md)
   [`cs_assert_valid()`](https://cttir.github.io/cellspecR/reference/cs_validate.md)
   : Validate a cellspec object
@@ -35,14 +41,17 @@
 
 ## Readers and storage
 
+Read tool exports, combine objects, and write, read and verify cellspec
+directories.
+
 - [`cs_formats()`](https://cttir.github.io/cellspecR/reference/cs_formats.md)
   : List the available cellspec readers
 - [`cs_detect_format()`](https://cttir.github.io/cellspecR/reference/cs_detect_format.md)
-  : Detect the generic table format
+  : Detect the format of a cell table
 - [`cs_column_map()`](https://cttir.github.io/cellspecR/reference/cs_column_map.md)
   : Validate a table column map
 - [`cs_read()`](https://cttir.github.io/cellspecR/reference/cs_read.md)
-  : Read a delimited table into a cellspec object
+  : Read a cell table export into a cellspec object
 - [`cs_read_cellspec()`](https://cttir.github.io/cellspecR/reference/cs_read_cellspec.md)
   : Read a canonical cellspec directory
 - [`cs_verify()`](https://cttir.github.io/cellspecR/reference/cs_verify.md)
@@ -61,6 +70,9 @@
 
 ## Signals
 
+Select one signal per marker through an explicit policy and map marker
+names.
+
 - [`cs_signal_policy()`](https://cttir.github.io/cellspecR/reference/cs_signal_policy.md)
   : Create a signal selection policy
 - [`cs_signal_matrix()`](https://cttir.github.io/cellspecR/reference/cs_signal_matrix.md)
@@ -74,6 +86,9 @@
 
 ## Interoperability and app
 
+Convert to and from SpatialExperiment and AnnData, and review exports in
+a local app.
+
 - [`cs_as_spe()`](https://cttir.github.io/cellspecR/reference/cs_as_spe.md)
   : Convert a cellspec object to SpatialExperiment
 - [`cs_from_spe()`](https://cttir.github.io/cellspecR/reference/cs_from_spe.md)
@@ -84,6 +99,8 @@
   **\[stable\]** : Create the cellspec review application
 
 ## Methods
+
+Print, summarise, subset, convert and plot cellspec objects.
 
 - [`print(`*`<cellspec>`*`)`](https://cttir.github.io/cellspecR/reference/cellspec-methods.md)
   [`summary(`*`<cellspec>`*`)`](https://cttir.github.io/cellspecR/reference/cellspec-methods.md)
@@ -100,10 +117,14 @@
 
 ## Examples
 
+A small synthetic object for examples and tests.
+
 - [`cs_example()`](https://cttir.github.io/cellspecR/reference/cs_example.md)
   : A small synthetic cellspec object
 
 ## Package
+
+Package overview.
 
 - [`cellspecR`](https://cttir.github.io/cellspecR/reference/cellspecR-package.md)
   [`cellspecR-package`](https://cttir.github.io/cellspecR/reference/cellspecR-package.md)

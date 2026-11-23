@@ -57,6 +57,9 @@ cs_column_map(
   of kind `other` get `other:` identifiers as described for `keep_other`
   in
   [`cs_read()`](https://cttir.github.io/cellspecR/reference/cs_read.md).
+  An optional `marker_source` column gives, for an intensity feature
+  whose marker was renamed, the marker name used in the export (`NA`
+  otherwise); it is stored in the dictionary and as the channel name.
 
 ## Value
 

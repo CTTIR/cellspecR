@@ -3,7 +3,8 @@
 Reads and validates a policy written by
 [`cs_write_signal_policy()`](https://cttir.github.io/cellspecR/reference/cs_write_signal_policy.md).
 The format is inferred from the `.json` or `.csv` extension unless
-`format` is supplied explicitly.
+`format` is supplied explicitly. Values of `min_value` are restored
+exactly from both formats, and marker names are always read as text.
 
 ## Usage
 
