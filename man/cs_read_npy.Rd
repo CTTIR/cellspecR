@@ -60,7 +60,9 @@ that integer bit pattern for a missing value. Duplicate archive names fail.
 \details{
 Arrays keep their logical shape: element \verb{[i, j]} in R is element
 \verb{[i - 1, j - 1]} in NumPy, whatever the storage order. Trailing NUL
-characters of fixed-width strings are dropped, as NumPy does.
+characters of fixed-width strings are dropped, as NumPy does; a string
+with a NUL character before its end cannot be represented in R and is an
+error.
 
 \code{cs_write_npz()} stores the members uncompressed (as \code{numpy.savez()}
 does) and needs no external \code{zip} program. Character data are written as

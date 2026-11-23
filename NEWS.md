@@ -1,5 +1,8 @@
 # cellspecR 1.2.0
 
+* `cs_read_npy()` and `cs_read_npz()` refuse a fixed-width string with a NUL
+  character before its end as `cellspec_error_format`; before, R stopped with
+  "embedded nul in string".
 * `cs_read_cellspec()` returns text with double quotes unchanged from
   `tsv.gz` directories. A value such as `x"y` in a character column (or a
   column name with a quote) came back as `x""y`, because the quote doubling of

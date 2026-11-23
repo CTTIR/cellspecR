@@ -45,7 +45,9 @@
 #' @details
 #' Arrays keep their logical shape: element `[i, j]` in R is element
 #' `[i - 1, j - 1]` in NumPy, whatever the storage order. Trailing NUL
-#' characters of fixed-width strings are dropped, as NumPy does.
+#' characters of fixed-width strings are dropped, as NumPy does; a string
+#' with a NUL character before its end cannot be represented in R and is an
+#' error.
 #'
 #' `cs_write_npz()` stores the members uncompressed (as `numpy.savez()`
 #' does) and needs no external `zip` program. Character data are written as
@@ -300,9 +302,9 @@ cs_write_npz <- function(x, path) {
     u = .cs_npy_int(data, type, n, signed = FALSE, bad),
     f = readBin(data, "double", n = n, size = type$width, endian = type$endian),
     c = readBin(data, "complex", n = n, size = 16L, endian = type$endian),
-    U = .cs_npy_unicode(data, type, n),
+    U = .cs_npy_unicode(data, type, n, bad),
     S = ,
-    a = .cs_npy_bytes_strings(data, type$width, n)
+    a = .cs_npy_bytes_strings(data, type$width, n, bad)
   )
 }
 
@@ -339,7 +341,17 @@ cs_write_npz <- function(x, path) {
   high * 2^32 + low
 }
 
-.cs_npy_unicode <- function(data, type, n) {
+# R strings cannot hold a NUL character, so a string with one before its last
+# character is refused instead of being cut short.
+.cs_npy_check_nul <- function(nonzero, lengths, bad) {
+  # Without an embedded NUL, every position up to the last character is set.
+  if (any(colSums(nonzero) != lengths)) {
+    bad("Strings with embedded NUL characters are not supported.")
+  }
+  invisible(NULL)
+}
+
+.cs_npy_unicode <- function(data, type, n, bad) {
   w <- type$width
   if (w == 0L) {
     return(rep("", n))
@@ -352,6 +364,7 @@ cs_write_npz <- function(x, path) {
   }
   cp <- matrix(cp, nrow = w)
   lengths <- .cs_trimmed_lengths(cp != 0)
+  .cs_npy_check_nul(cp != 0, lengths, bad)
   if (all(cp < 128)) {
     bytes <- matrix(as.raw(cp), nrow = w)
     out <- vapply(seq_len(n), function(i) rawToChar(bytes[seq_len(lengths[[i]]), i]), character(1))
@@ -362,12 +375,13 @@ cs_write_npz <- function(x, path) {
   out
 }
 
-.cs_npy_bytes_strings <- function(data, width, n) {
+.cs_npy_bytes_strings <- function(data, width, n, bad) {
   if (width == 0L) {
     return(rep("", n))
   }
   bytes <- matrix(data, nrow = width)
   lengths <- .cs_trimmed_lengths(bytes != as.raw(0L))
+  .cs_npy_check_nul(bytes != as.raw(0L), lengths, bad)
   vapply(seq_len(n), function(i) rawToChar(bytes[seq_len(lengths[[i]]), i]), character(1))
 }
 

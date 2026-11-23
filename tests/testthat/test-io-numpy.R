@@ -198,3 +198,31 @@ test_that("empty and edge-shaped arrays round trip", {
   expect_identical(cs_read_npz(archive, arrays = character()), stats::setNames(list(), character()))
   expect_identical(names(cs_read_npz(archive, arrays = c("b", "a"))), c("b", "a"))
 })
+
+test_that("strings with an embedded NUL character are refused", {
+  npy <- function(descr, payload) {
+    header <- paste0("{'descr': '", descr, "', 'fortran_order': False, 'shape': (2,), }")
+    total <- 10L + nchar(header) + 1L
+    header <- paste0(header, strrep(" ", (64L - total %% 64L) %% 64L), "\n")
+    c(
+      as.raw(c(0x93, 0x4e, 0x55, 0x4d, 0x50, 0x59, 1L, 0L)),
+      as.raw(c(nchar(header) %% 256L, nchar(header) %/% 256L)),
+      charToRaw(header), payload
+    )
+  }
+  path <- tempfile(fileext = ".npy")
+  on.exit(unlink(path), add = TRUE)
+  # "a\0b" and "cd\0": only the first has a NUL before its last character.
+  code_points <- c(97L, 0L, 98L, 99L, 100L, 0L)
+  writeBin(npy("<U3", as.raw(as.vector(rbind(code_points, 0L, 0L, 0L)))), path)
+  expect_error(cs_read_npy(path), class = "cellspec_error_format")
+  writeBin(npy("|S3", as.raw(code_points)), path)
+  expect_error(cs_read_npy(path), class = "cellspec_error_format")
+
+  # Trailing NUL padding is still dropped.
+  padded <- c(97L, 98L, 0L, 99L, 0L, 0L)
+  writeBin(npy("<U3", as.raw(as.vector(rbind(padded, 0L, 0L, 0L)))), path)
+  expect_identical(cs_read_npy(path), c("ab", "c"))
+  writeBin(npy("|S3", as.raw(padded)), path)
+  expect_identical(cs_read_npy(path), c("ab", "c"))
+})
