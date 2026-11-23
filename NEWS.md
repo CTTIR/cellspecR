@@ -1,8 +1,11 @@
 # cellspecR 1.2.0
 
 * `cs_read_npy()` and `cs_read_npz()` refuse a fixed-width string with a NUL
-  character before its end as `cellspec_error_format`; before, R stopped with
-  the error `embedded nul in string`.
+  character before its end as `cellspec_error_format`. Before, R stopped with
+  the error `embedded nul in string` for ASCII strings. For Unicode strings
+  with non-ASCII characters the NUL was dropped silently and the remaining
+  characters were returned (`"\0ä"` was read as `"ä"`); such a file is now
+  refused, which is a change in behaviour.
 * `cs_read_cellspec()` returns text with double quotes unchanged from
   `tsv.gz` directories. A value such as `x"y` in a character column (or a
   column name with a quote) came back as `x""y`, because the quote doubling of
@@ -15,7 +18,8 @@
 * Readers that apply a `marker_map` now record the marker name used in the
   export: `dictionary$marker_source` holds it for every renamed marker and
   `channels$channel_name` keeps it, while `marker` carries the mapped name, as
-  the specification describes. Both used to hold only the mapped name.
+  the specification describes. Both used to hold only the mapped name. A map
+  entry that maps a marker to itself renames nothing and records nothing.
   `cs_column_map()` accepts an optional `marker_source` column in
   `measurements` for the same purpose.
 * The review app opens a directory written by `cs_write()`, as the README
@@ -29,7 +33,13 @@
 * `cs_read_signal_policy()` reads CSV policies as text. Marker names that look
   like numbers or logical values (`"1"`, `"007"`, `"TRUE"`) no longer fail
   with "invalid column types", and `min_value` is restored exactly; values
-  such as `1e-20` could come back one unit in the last place off.
+  such as `1e-20` could come back one unit in the last place off. Hand-written
+  files keep working: a blank `fallback_compartment` field means no fallback,
+  also when other rows name one (such a mixed file used to fail), and a
+  semicolon-separated file with decimal commas (`0,5`), as a spreadsheet saves
+  it in some locales, is read as before. `min_value` must be written as a
+  decimal number; other notations such as `0x10` are a
+  `cellspec_error_format`.
 * `cs_as_spe()` keeps `cells` column names that are not syntactic R names,
   such as the `Cell Type` column kept by the QuPath reader. They were turned
   into `Cell.Type`, and `cs_from_spe()` then failed with "undefined columns
@@ -56,12 +66,25 @@
   place of negated values, so axis labels match `cs_cells(x)$y`.
 * The plot overview places legends below its panels, and the getting-started
   vignette now shows the quality-control plots. Plotting needs `ggplot2`
-  3.4.0 or later.
+  3.4.0 or later; `plot()` says so when an older version is installed.
 * The centroid map and the cell area histogram draw one panel per image.
   Before, all images shared one panel, so the cells of different images lay
   on top of each other in the map and the histograms hid each other. The map
   uses one colour unless `colour_by` names a column; it used to colour by
-  `image_id`, which the panels now show.
+  `image_id`, which the panels now show. The panels of the map, the marker
+  plot and the area histogram follow the order of the images table (`img2`
+  before `img10`) and share one axis range.
+* `plot()` gains `max_panels` (default 12). With more images the panels are
+  too small to read at the default device size, so the map, the marker plot
+  and the area histogram pool all images in one panel and say so in the
+  subtitle; the overview, where each view has half the width, pools above
+  half that number. For the marker plot this changes the default for objects
+  with more than 12 images, which used to get one unreadable panel per image;
+  `max_panels` restores the panels on a larger device. Panels get fewer axis
+  breaks, tick labels that would overprint are left out on both axes, and
+  long image names get smaller strip labels.
+* The marker plot draws an image and source with a single cell as a point
+  instead of warning that a violin could not be computed.
 * The support heatmap separates its tiles with white borders, lists the
   features from top to bottom and leaves out axis labels that would overprint
   their neighbours in a small panel. Discrete map colours stop before the
