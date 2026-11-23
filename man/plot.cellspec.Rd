@@ -12,6 +12,7 @@
   policy = NULL,
   max_points = 50000L,
   seed = 1L,
+  max_panels = 12L,
   ...
 )
 }
@@ -38,6 +39,11 @@ plot.}
 \item{seed}{Seed used for deterministic subsampling. The random number
 generator state of the session is left untouched.}
 
+\item{max_panels}{Largest number of images drawn as separate panels by
+the map, the marker plot and the area histogram; the overview uses half
+of it, rounded up. With more images, all images share one panel. Subset
+the object or raise the value for a larger device.}
+
 \item{...}{Reserved for future plot-specific parameters.}
 }
 \value{
@@ -52,8 +58,13 @@ no finite values to draw.
 
 The map follows the image frame: the origin is at the top left and \code{y}
 increases downwards. The map, the marker plot and the area histogram draw
-one panel per image, because every image has its own coordinate frame and
-overlaid images hide each other. The marker plot shows one marker: a violin
+one panel per image, because overlaid images hide each other. The panels
+follow the order of the images table and share one common axis range, so an
+image with a different extent or offset fills only part of its panel. With
+more than \code{max_panels} images the panels would be too small to read: the
+images are then pooled in one panel and the subtitle says so. The overview
+gives each view half the width and pools above half that number. The
+marker plot shows one marker: a violin
 per intensity source (statistic on the axis, compartments side by side).
 The support heatmap lists the features from top to bottom and leaves out
 axis labels that would overprint their neighbours in a small panel.
