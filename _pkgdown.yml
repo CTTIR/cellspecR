@@ -16,11 +16,13 @@ home:
 
 reference:
   - title: Specification
+    desc: Version, columns and controlled vocabularies of the cellspec format.
     contents:
       - cs_spec_version
       - cs_vocabulary
 
   - title: Object
+    desc: Build a cellspec object and access its components, features and markers.
     contents:
       - cs_new
       - cs_accessors
@@ -29,11 +31,13 @@ reference:
       - is_cellspec
 
   - title: Validation
+    desc: Check an object against the specification and summarise signal support.
     contents:
       - cs_validate
       - cs_feature_support
 
   - title: Readers and storage
+    desc: Read tool exports, combine objects, and write, read and verify cellspec directories.
     contents:
       - cs_formats
       - cs_detect_format
@@ -47,6 +51,7 @@ reference:
       - cs_read_npy
 
   - title: Signals
+    desc: Select one signal per marker through an explicit policy and map marker names.
     contents:
       - cs_signal_policy
       - cs_signal_matrix
@@ -55,6 +60,7 @@ reference:
       - cs_write_signal_policy
 
   - title: Interoperability and app
+    desc: Convert to and from SpatialExperiment and AnnData, and review exports in a local app.
     contents:
       - cs_as_spe
       - cs_from_spe
@@ -62,6 +68,7 @@ reference:
       - cs_app
 
   - title: Methods
+    desc: Print, summarise, subset, convert and plot cellspec objects.
     contents:
       - cellspec-methods
       - as.data.frame.cellspec
@@ -69,9 +76,31 @@ reference:
       - plot.cellspec
 
   - title: Examples
+    desc: A small synthetic object for examples and tests.
     contents:
       - cs_example
 
   - title: Package
+    desc: Package overview.
     contents:
       - cellspecR-package
+
+articles:
+  - title: Get started
+    navbar: ~
+    contents:
+      - cellspecR
+      - reading-exports
+      - interoperability
+
+  - title: Reference
+    desc: The format and the reader grammars in detail.
+    navbar: Reference
+    contents:
+      - specification
+      - adapters-reference
+
+  - title: Performance
+    desc: Timings recorded for the readers and the storage functions.
+    contents:
+      - articles/performance
