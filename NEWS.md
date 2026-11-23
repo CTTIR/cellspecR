@@ -1,5 +1,9 @@
 # cellspecR 1.2.0
 
+* `cs_read_signal_policy()` reads CSV policies as text. Marker names that look
+  like numbers or logical values (`"1"`, `"007"`, `"TRUE"`) no longer fail
+  with "invalid column types", and `min_value` is restored exactly; values
+  such as `1e-20` could come back one unit in the last place off.
 * `cs_as_spe()` keeps `cells` column names that are not syntactic R names,
   such as the `Cell Type` column kept by the QuPath reader. They were turned
   into `Cell.Type`, and `cs_from_spe()` then failed with "undefined columns

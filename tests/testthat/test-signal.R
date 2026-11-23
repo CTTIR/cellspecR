@@ -361,3 +361,37 @@ testthat::test_that("a destination lost after validation yields structured write
     testthat::expect_identical(policy, before)
   }
 })
+
+testthat::test_that("CSV policies keep number-like marker names and exact minimum values", {
+  policy <- cellspecR::cs_signal_policy(
+    marker = c("1", "007", "TRUE", "NA", "CD3e"),
+    fallback_compartment = c("nucleus", NA, NA, NA, "nucleus"),
+    # 1e-20 is written as 9.9999999999999995e-21, which a fast decimal parser
+    # reads back one unit in the last place too high.
+    min_value = c(1e-20, 0.1, 1 / 3, 0, 123456.78901234567)
+  )
+  for (extension in c(".csv", ".json")) {
+    path <- tempfile("signal-policy-", fileext = extension)
+    cellspecR::cs_write_signal_policy(policy, path)
+    testthat::expect_identical(cellspecR::cs_read_signal_policy(path), policy)
+  }
+
+  handwritten <- tempfile("signal-policy-", fileext = ".csv")
+  writeLines(c(
+    "marker,compartment,statistic,fallback_compartment,min_value",
+    "A,cell,mean,NA,.5",
+    "B,nucleus,median,cell,2"
+  ), handwritten)
+  read <- cellspecR::cs_read_signal_policy(handwritten)
+  testthat::expect_identical(read$min_value, c(0.5, 2))
+  testthat::expect_identical(read$fallback_compartment, c(NA_character_, "cell"))
+
+  writeLines(c(
+    "marker,compartment,statistic,fallback_compartment,min_value",
+    "A,cell,mean,NA,high"
+  ), handwritten)
+  testthat::expect_error(
+    cellspecR::cs_read_signal_policy(handwritten),
+    class = "cellspec_error_format"
+  )
+})

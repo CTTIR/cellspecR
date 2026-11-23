@@ -520,12 +520,44 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
   invisible(policy)
 }
 
+# CSV policies are read as text. Marker names that look like numbers or
+# logical values stay names, and `min_value` is parsed with the exact decimal
+# parser of the canonical reader: data.table::fread() can return a value one
+# unit in the last place away from the 17-digit decimal that
+# cs_write_signal_policy() writes.
+.cs_read_signal_policy_csv <- function(path) {
+  raw <- data.table::fread(
+    path, data.table = FALSE, encoding = "UTF-8", colClasses = "character",
+    na.strings = "NA", showProgress = FALSE
+  )
+  if ("min_value" %in% names(raw)) {
+    raw$min_value <- .cs_signal_policy_number(raw$min_value)
+  }
+  raw
+}
+
+.cs_signal_policy_number <- function(x) {
+  out <- rep(NA_real_, length(x))
+  present <- !is.na(x)
+  strict <- present &
+    grepl("^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?$", x)
+  out[strict] <- .cs_parse_io_double(x[strict])
+  # Hand-written forms such as ".5" or "1." go through R's own parser.
+  loose <- present & !strict
+  out[loose] <- suppressWarnings(as.numeric(x[loose]))
+  if (any(loose & is.na(out))) {
+    stop("Column `min_value` contains text that is not a number.", call. = FALSE)
+  }
+  out
+}
+
 #' Read a signal policy from JSON or CSV
 #'
 #' @description
 #' Reads and validates a policy written by [cs_write_signal_policy()]. The
 #' format is inferred from the `.json` or `.csv` extension unless `format` is
-#' supplied explicitly.
+#' supplied explicitly. Values of `min_value` are restored exactly from both
+#' formats, and marker names are always read as text.
 #'
 #' @param path Source file path.
 #' @param format Either `"json"` or `"csv"`; by default inferred from
@@ -546,7 +578,7 @@ cs_read_signal_policy <- function(path, format = NULL) {
     if (format == "json") {
       jsonlite::fromJSON(path, simplifyDataFrame = TRUE)
     } else {
-      data.table::fread(path, data.table = FALSE, encoding = "UTF-8")
+      .cs_read_signal_policy_csv(path)
     },
     error = function(e) {
       detail <- conditionMessage(e)
