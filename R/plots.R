@@ -119,7 +119,10 @@ utils::globalVariables(".data")
   # Statistics on the axis and compartments side by side keep the labels
   # short enough for the overview panel.
   dodge <- ggplot2::position_dodge(width = 0.85)
-  ggplot2::ggplot(data, ggplot2::aes(x = .data$statistic, y = .data$value, fill = .data$compartment)) +
+  ggplot2::ggplot(
+    data,
+    ggplot2::aes(x = .data$statistic, y = .data$value, fill = .data$compartment)
+  ) +
     ggplot2::geom_violin(scale = "width", position = dodge, alpha = 0.85, na.rm = TRUE) +
     ggplot2::geom_boxplot(
       ggplot2::aes(group = .data$source),

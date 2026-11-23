@@ -172,6 +172,13 @@ test_that("column maps accept and check an optional marker_source column", {
   expect_identical(x$channels$channel_name, "CD3e")
   expect_identical(x$channels$marker, "CD3")
 
+  unset <- measurements
+  unset$marker_source <- NA
+  expect_identical(
+    cellspecR::cs_column_map("id", "x", "y", measurements = unset)$measurements$marker_source,
+    c(NA_character_, NA_character_)
+  )
+
   bad <- measurements
   bad$marker_source <- c("CD3e", "Area")
   expect_error(

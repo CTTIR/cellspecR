@@ -194,7 +194,10 @@
     }
     if (!is.character(source) || any(!is.na(source) & (!nzchar(source) | !is_intensity))) {
       .cs_table_abort(
-        "Metadata column {.field marker_source} must hold marker names for intensity features and `NA` otherwise.",
+        c(
+          "Metadata column {.field marker_source} is invalid.",
+          "x" = "It must hold marker names for intensity features and `NA` otherwise."
+        ),
         call = call
       )
     }
