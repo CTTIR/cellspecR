@@ -123,8 +123,9 @@
     if (nrow(out) == 0L) {
       con <- gzfile(path, open = "wt", encoding = "UTF-8")
       on.exit(close(con), add = TRUE)
+      # Double embedded quotes as fwrite() does, so one reader rule applies.
       utils::write.table(out, con, sep = "\t", quote = TRUE,
-                         row.names = FALSE, na = "NA")
+                         qmethod = "double", row.names = FALSE, na = "NA")
     } else {
       data.table::fwrite(
         out,

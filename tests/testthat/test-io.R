@@ -80,3 +80,38 @@ test_that("existing destinations require explicit overwrite", {
   expect_invisible(cs_write(min_object(), path, overwrite = TRUE))
   expect_true(all(cs_verify(path)$ok))
 })
+
+test_that("both storage formats return text with quotes and separators unchanged", {
+  x <- sim_object()
+  n <- nrow(x$cells)
+  text <- c(
+    "x\"y", "\"", "\"\"", "\"abc", "abc\"", "a\\b", "x\\\"y", "a\"\"b",
+    "tab\there", "line\nbreak", "", NA, "NA", " \"q\" ", "\\",
+    "he said \"hi\", twice", "'single'", "a,b", " lead ", "ünï"
+  )
+  x$cells$note <- rep(text, length.out = n)
+  # A column name with a quote must come back as it was, too.
+  x$cells[["cell \"type\""]] <- rep(c("T \"reg\"", "B"), length.out = n)
+  x$cells$flag <- rep(c(TRUE, FALSE, NA), length.out = n)
+  x$images$platform <- c("scanner \"A\"", "NA")
+  x$adjacency$method[] <- "mask_touching"
+  for (format in c("parquet", "tsv.gz")) {
+    dir <- tempfile("cellspec-text-")
+    cs_write(x, dir, format = format)
+    y <- cs_read_cellspec(dir)
+    for (component in c("cells", "measurements", "dictionary", "images",
+                        "channels", "adjacency")) {
+      expect_identical(y[[component]], x[[component]],
+                       info = paste(format, component))
+    }
+    unlink(dir, recursive = TRUE)
+  }
+
+  # A table without rows keeps a quoted column name as well.
+  empty <- x[0, ]
+  dir <- tempfile("cellspec-text-")
+  on.exit(unlink(dir, recursive = TRUE), add = TRUE)
+  cs_write(empty, dir, format = "tsv.gz")
+  expect_identical(cs_read_cellspec(dir)$cells, empty$cells)
+  expect_identical(cellspecR:::.cs_tsv_unquote(c("a\"\"b", NA, "")), c("a\"b", NA, ""))
+})

@@ -1,5 +1,11 @@
 # cellspecR 1.2.0
 
+* `cs_read_cellspec()` returns text with double quotes unchanged from
+  `tsv.gz` directories. A value such as `x"y` in a character column (or a
+  column name with a quote) came back as `x""y`, because the quote doubling of
+  the writer was not undone; the checksums could not notice, since the file
+  itself was intact. Existing directories are read correctly without being
+  rewritten. Parquet storage was not affected.
 * Numeric identifiers passed to `cs_new()` are no longer padded with decimals
   when one of them is fractional: `c(1, 2, 3.5)` gives `"1"`, `"2"`, `"3.5"`
   instead of `"1.0"`, `"2.0"`, `"3.5"`.

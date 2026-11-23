@@ -213,6 +213,13 @@
   df
 }
 
+# Inverse of the quote doubling of data.table::fwrite(): a field that holds a
+# double quote is always written quoted with each quote doubled, so every
+# doubled quote read back stands for one original quote.
+.cs_tsv_unquote <- function(x) {
+  gsub("\"\"", "\"", x, fixed = TRUE)
+}
+
 .cs_read_table <- function(path, format, payload, component,
                            call = rlang::caller_env()) {
   if (!file.exists(path) || dir.exists(path)) {
@@ -261,6 +268,12 @@
         call = call
       )
     }
+    # The writer doubles every double quote inside a quoted field and fread()
+    # returns the doubled form. Restore the original text in column names and
+    # in the columns declared as character.
+    names(result) <- .cs_tsv_unquote(names(result))
+    text <- names(result) %in% names(types)[types == "character"]
+    result[text] <- lapply(result[text], .cs_tsv_unquote)
     result
   }
   .cs_coerce_io_table(as.data.frame(df, stringsAsFactors = FALSE),
