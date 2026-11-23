@@ -41,7 +41,7 @@ Each adapter preserves the source column name in `dictionary$source_name` and
 records its adapter and version in provenance.
 
 ```{r}
-cs_formats()
+knitr::kable(cs_formats())
 ```
 
 The QuPath adapter accepts both channel-first headers such as `DAPI: Mean` and

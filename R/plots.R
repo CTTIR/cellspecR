@@ -250,12 +250,11 @@ utils::globalVariables(".data")
 #' @return A `ggplot` object, or a patchwork object for `type = "overview"`.
 #' @family methods
 #' @export
-#' @examples
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   x <- cs_example()
-#'   plot(x, type = "map")
-#'   plot(x, type = "marker", marker = "CD3e")
-#' }
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
+#' x <- cs_example()
+#' plot(x, type = "map")
+#' plot(x, type = "marker", marker = "CD3e")
+#' plot(x, type = "support")
 plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "area"),
                           colour_by = NULL, marker = NULL, policy = NULL,
                           max_points = 50000L, seed = 1L, ...) {

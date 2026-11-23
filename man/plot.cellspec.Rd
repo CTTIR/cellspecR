@@ -62,11 +62,12 @@ Maps and marker plots of large objects use a deterministic subsample of
 every cell.
 }
 \examples{
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  x <- cs_example()
-  plot(x, type = "map")
-  plot(x, type = "marker", marker = "CD3e")
-}
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+x <- cs_example()
+plot(x, type = "map")
+plot(x, type = "marker", marker = "CD3e")
+plot(x, type = "support")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other methods:

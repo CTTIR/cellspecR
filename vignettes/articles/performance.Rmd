@@ -36,10 +36,31 @@ cellspecR. It is a pkgdown article and is excluded from the CRAN vignette
 build because the benchmark data size is intentionally configurable.
 
 ```{r, echo=FALSE, results='asis'}
-path <- file.path("data-raw", "benchmarks", "performance.md")
-if (file.exists(path)) {
-  cat(paste(readLines(path, warn = FALSE), collapse = "\n"))
-} else {
+# The record lives in the repository, two levels above this article; the
+# second candidate serves a render from the package root.
+candidates <- file.path(c(file.path("..", ".."), "."), "data-raw", "benchmarks", "performance.md")
+path <- candidates[file.exists(candidates)][1L]
+if (is.na(path)) {
   cat("Run `Rscript data-raw/benchmarks/performance.R` to generate the local measurements.")
+} else {
+  lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
+  # The article has its own title; printed tables are shown as code.
+  lines <- lines[!grepl("^# cellspecR performance measurements", lines)]
+  table_start <- grepl("^# A tibble", lines)
+  blank <- !nzchar(trimws(lines))
+  in_table <- FALSE
+  out <- character()
+  for (i in seq_along(lines)) {
+    if (table_start[[i]]) {
+      out <- c(out, "```")
+      in_table <- TRUE
+    } else if (in_table && blank[[i]]) {
+      out <- c(out, "```")
+      in_table <- FALSE
+    }
+    out <- c(out, lines[[i]])
+  }
+  if (in_table) out <- c(out, "```")
+  cat(paste(out, collapse = "\n"))
 }
 ```
