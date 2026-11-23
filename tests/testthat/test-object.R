@@ -196,3 +196,11 @@ test_that("cs_example() works when no seed exists yet", {
   expect_false(exists(".Random.seed", envir = globalenv()))
   expect_s3_class(x, "cellspec")
 })
+
+test_that("cs_markers() ignores dictionary rows with a missing kind", {
+  x <- cs_example()
+  x$dictionary$kind[[1L]] <- NA_character_
+  expect_false(anyNA(cs_markers(x)))
+  expect_identical(cs_markers(x), cs_markers(cs_example()))
+  expect_output(print(x), "markers   4: DAPI")
+})

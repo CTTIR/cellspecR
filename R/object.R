@@ -503,6 +503,7 @@ cs_features <- function(x, kind = NULL, marker = NULL, compartment = NULL,
 cs_markers <- function(x) {
   .cs_check_cellspec(x)
   dict <- x$dictionary
-  m <- dict$marker[dict$kind == "intensity" & !is.na(dict$marker)]
+  # `%in%` keeps a missing `kind` (an invalid object) from yielding `NA`.
+  m <- dict$marker[dict$kind %in% "intensity" & !is.na(dict$marker)]
   unique(m)
 }
