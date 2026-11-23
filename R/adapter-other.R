@@ -90,8 +90,7 @@
     .cs_other_abort("{.arg marker_map} must be created with {.fn cs_marker_map}.", call = call)
   }
   if (!is.null(metadata) && nrow(metadata) > 0L) {
-    hit <- match(metadata$marker, marker_map$from)
-    metadata$marker[!is.na(hit)] <- marker_map$to[hit[!is.na(hit)]]
+    metadata <- .cs_apply_marker_map(metadata, marker_map)
   }
   metadata
 }

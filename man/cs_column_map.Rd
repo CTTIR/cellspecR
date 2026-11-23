@@ -34,7 +34,10 @@ pixels.}
 \item{measurements}{Optional data frame with \code{source_name}, \code{kind},
 \code{marker}, \code{compartment}, \code{statistic} and \code{unit} metadata columns.
 Measurements of kind \code{other} get \verb{other:} identifiers as described for
-\code{keep_other} in \code{\link[=cs_read]{cs_read()}}.}
+\code{keep_other} in \code{\link[=cs_read]{cs_read()}}. An optional \code{marker_source} column gives,
+for an intensity feature whose marker was renamed, the marker name used
+in the export (\code{NA} otherwise); it is stored in the dictionary and as
+the channel name.}
 }
 \value{
 An object of class \code{cs_column_map}, a named list with the mapped

@@ -452,6 +452,7 @@ test_that("other adapters parse source conventions and defensive cases", {
     cellspecR::cs_marker_map("A", "B"), rlang::caller_env()
   )
   expect_identical(mapped$marker, "B")
+  expect_identical(mapped$marker_source, "A")
 
   rds <- tempfile(fileext = ".rds")
   on.exit(unlink(rds), add = TRUE)

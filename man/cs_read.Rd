@@ -42,8 +42,10 @@ column; otherwise the mapped column or image identifier is used.}
 
 \item{marker_map}{Optional marker-name mapping created by
 \code{\link[=cs_marker_map]{cs_marker_map()}}. The \code{qupath}, \code{qupath_tiled}, \code{mcquant}, \code{segmantr}
-and \code{inform} readers rename markers with it; the table adapter does not
-use it (name the markers in \code{column_map} instead).}
+and \code{inform} readers rename markers with it and keep the original name
+of each renamed marker in \code{dictionary$marker_source} and
+\code{channels$channel_name}; the table adapter does not use it (name the
+markers in \code{column_map} instead).}
 
 \item{column_map}{A validated object returned by \code{\link[=cs_column_map]{cs_column_map()}}.}
 

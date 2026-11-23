@@ -1,5 +1,11 @@
 # cellspecR 1.2.0
 
+* Readers that apply a `marker_map` now record the marker name used in the
+  export: `dictionary$marker_source` holds it for every renamed marker and
+  `channels$channel_name` keeps it, while `marker` carries the mapped name, as
+  the specification describes. Both used to hold only the mapped name.
+  `cs_column_map()` accepts an optional `marker_source` column in
+  `measurements` for the same purpose.
 * The review app opens a directory written by `cs_write()`, as the README
   describes: `cs_app(path = <directory>)` reads it with `cs_read_cellspec()`
   and reports a failed integrity verification. Before, such a directory was

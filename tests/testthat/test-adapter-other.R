@@ -137,3 +137,26 @@ test_that("pixel based other readers require calibration and IDs", {
     class = "cellspec_error_format"
   )
 })
+
+test_that("MCQuant marker maps keep the exported marker name", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  data <- data.frame(
+    cell_id = c(1L, 2L), CD3e_mean = c(3, 4), DAPI_mean = c(9, 8),
+    eccentricity = c(0.2, 0.3), stringsAsFactors = FALSE
+  )
+  data[[paste0("centroid_", "row")]] <- c(4L, 8L)
+  data[[paste0("centroid_", "col")]] <- c(2L, 6L)
+  data.table::fwrite(data, path)
+  x <- cellspecR::cs_read(
+    path, format = "mcquant", pixel_size = 0.5,
+    marker_map = cellspecR::cs_marker_map("CD3e", "CD3")
+  )
+  dict <- x$dictionary
+  expect_identical(dict$marker[dict$source_name == "CD3e_mean"], "CD3")
+  expect_identical(dict$marker_source[dict$source_name == "CD3e_mean"], "CD3e")
+  expect_true(all(is.na(dict$marker_source[dict$source_name != "CD3e_mean"])))
+  expect_identical(x$channels$channel_name[x$channels$marker == "CD3"], "CD3e")
+  expect_identical(x$channels$channel_name[x$channels$marker == "DAPI"], "DAPI")
+  expect_true(all(cellspecR::cs_validate(x)$status == "pass"))
+})

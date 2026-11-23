@@ -123,9 +123,71 @@ test_that("QuPath marker maps are applied without losing source names", {
 
   x <- cellspecR:::cs_read(path, format = "qupath", marker_map = map)
   expect_true("nucleus:CD3:mean" %in% colnames(x$measurements))
-  expect_identical(x$dictionary$marker_source, c(NA_character_, NA_character_))
+  # The marker name before mapping is kept for the renamed marker only.
+  expect_identical(x$dictionary$marker_source, c(NA_character_, "CD3e"))
   expect_identical(x$dictionary$source_name[[2L]], "Nucleus: CD3e: Mean")
   expect_identical(x$dictionary$marker[[2L]], "CD3")
+  expect_identical(x$channels$marker, c("DAPI", "CD3"))
+  expect_identical(x$channels$channel_name, c("DAPI", "CD3e"))
+  expect_identical(
+    names(x$dictionary),
+    names(cellspecR:::cs_read(path, format = "qupath")$dictionary)
+  )
+
+  unmapped <- cellspecR:::cs_read(path, format = "qupath")
+  expect_identical(unmapped$dictionary$marker_source, c(NA_character_, NA_character_))
+  expect_identical(unmapped$channels$channel_name, unmapped$channels$marker)
+
+  # The provenance survives storage.
+  dir <- tempfile("cellspec-")
+  on.exit(unlink(dir, recursive = TRUE), add = TRUE)
+  cellspecR::cs_write(x, dir)
+  stored <- cellspecR::cs_read_cellspec(dir)
+  expect_identical(stored$dictionary, x$dictionary)
+  expect_identical(stored$channels, x$channels)
+})
+
+test_that("column maps accept and check an optional marker_source column", {
+  measurements <- data.frame(
+    source_name = c("CD3e Mean", "Area"), kind = c("intensity", "shape"),
+    marker = c("CD3", NA), compartment = "cell",
+    statistic = c("mean", "area"), unit = c("a.u.", "um2"),
+    marker_source = c("CD3e", NA), stringsAsFactors = FALSE
+  )
+  map <- cellspecR::cs_column_map("id", "x", "y", measurements = measurements)
+  expect_identical(map$measurements$marker_source, c("CD3e", NA_character_))
+
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  utils::write.csv(
+    data.frame(id = c("a", "b"), x = 1:2, y = 3:4, `CD3e Mean` = c(5, 6),
+               Area = c(20, 30), extra = c(0.1, 0.2), check.names = FALSE),
+    path, row.names = FALSE
+  )
+  x <- cellspecR::cs_read(path, format = "table", column_map = map)
+  expect_identical(
+    x$dictionary$marker_source,
+    c("CD3e", NA_character_, NA_character_)
+  )
+  expect_identical(x$channels$channel_name, "CD3e")
+  expect_identical(x$channels$marker, "CD3")
+
+  bad <- measurements
+  bad$marker_source <- c("CD3e", "Area")
+  expect_error(
+    cellspecR::cs_column_map("id", "x", "y", measurements = bad),
+    class = "cellspec_error_format"
+  )
+  bad$marker_source <- c("", NA)
+  expect_error(
+    cellspecR::cs_column_map("id", "x", "y", measurements = bad),
+    class = "cellspec_error_format"
+  )
+  bad$marker_source <- c(1, NA)
+  expect_error(
+    cellspecR::cs_column_map("id", "x", "y", measurements = bad),
+    class = "cellspec_error_format"
+  )
 })
 
 test_that("QuPath pixel coordinates require and use calibration", {

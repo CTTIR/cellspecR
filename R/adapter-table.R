@@ -185,7 +185,38 @@
       call = call
     )
   }
-  metadata[.cs_table_metadata_names]
+  out <- metadata[.cs_table_metadata_names]
+  if ("marker_source" %in% names(metadata)) {
+    # Optional: the marker name before a marker map renamed it.
+    source <- metadata$marker_source
+    if (is.factor(source) || (is.logical(source) && all(is.na(source)))) {
+      source <- as.character(source)
+    }
+    if (!is.character(source) || any(!is.na(source) & (!nzchar(source) | !is_intensity))) {
+      .cs_table_abort(
+        "Metadata column {.field marker_source} must hold marker names for intensity features and `NA` otherwise.",
+        call = call
+      )
+    }
+    out$marker_source <- source
+  }
+  out
+}
+
+# Rename markers with a marker map and record the original name of every
+# renamed marker in `marker_source`, as the specification describes.
+.cs_apply_marker_map <- function(metadata, marker_map) {
+  hit <- match(metadata$marker, marker_map$from)
+  mapped <- !is.na(hit)
+  source <- if ("marker_source" %in% names(metadata)) {
+    metadata$marker_source
+  } else {
+    rep(NA_character_, nrow(metadata))
+  }
+  source[mapped] <- metadata$marker[mapped]
+  metadata$marker[mapped] <- marker_map$to[hit[mapped]]
+  metadata$marker_source <- source
+  metadata
 }
 
 # Decompresses a gzip file into a temporary file with R's own zlib support,
@@ -744,7 +775,10 @@ cs_detect_format <- function(path, n_max = 50L) {
 #' @param measurements Optional data frame with `source_name`, `kind`,
 #'   `marker`, `compartment`, `statistic` and `unit` metadata columns.
 #'   Measurements of kind `other` get `other:` identifiers as described for
-#'   `keep_other` in [cs_read()].
+#'   `keep_other` in [cs_read()]. An optional `marker_source` column gives,
+#'   for an intensity feature whose marker was renamed, the marker name used
+#'   in the export (`NA` otherwise); it is stored in the dictionary and as
+#'   the channel name.
 #' @return An object of class `cs_column_map`, a named list with the mapped
 #'   source names, coordinate unit and validated measurement metadata.
 #' @family adapters
@@ -854,8 +888,10 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #'   column; otherwise the mapped column or image identifier is used.
 #' @param marker_map Optional marker-name mapping created by
 #'   [cs_marker_map()]. The `qupath`, `qupath_tiled`, `mcquant`, `segmantr`
-#'   and `inform` readers rename markers with it; the table adapter does not
-#'   use it (name the markers in `column_map` instead).
+#'   and `inform` readers rename markers with it and keep the original name
+#'   of each renamed marker in `dictionary$marker_source` and
+#'   `channels$channel_name`; the table adapter does not use it (name the
+#'   markers in `column_map` instead).
 #' @param column_map A validated object returned by [cs_column_map()].
 #' @param tile_bounds Optional tile-bound data frame for `format =
 #'   "qupath_tiled"`, with `tile_id`, `xmin`, `xmax`, `ymin` and `ymax` in
@@ -1112,6 +1148,9 @@ cs_read <- function(path, format = "auto", pixel_size = NULL, image_id = NULL,
   } else {
     .cs_table_metadata_other(character())
   }
+  if (!is.null(metadata) && "marker_source" %in% names(metadata)) {
+    other_metadata$marker_source <- rep(NA_character_, nrow(other_metadata))
+  }
   metadata <- if (is.null(metadata)) {
     other_metadata
   } else if (isTRUE(keep_other) && nrow(other_metadata) > 0L) {
@@ -1197,13 +1236,20 @@ cs_read <- function(path, format = "auto", pixel_size = NULL, image_id = NULL,
     unique(metadata$marker[metadata$kind == "intensity"])
   }
   marker_values <- marker_values[!is.na(marker_values)]
+  # A channel keeps the name it had in the export; `marker` is the name after
+  # a marker map.
+  channel_names <- marker_values
+  if (length(marker_values) > 0L && "marker_source" %in% names(metadata)) {
+    renamed <- metadata$marker_source[match(marker_values, metadata$marker)]
+    channel_names[!is.na(renamed)] <- renamed[!is.na(renamed)]
+  }
   channels <- if (length(marker_values) == 0L || nrow(images) == 0L) {
     .cs_empty_df("channels")
   } else {
     data.frame(
       image_id = rep(images$image_id, each = length(marker_values)),
       channel_index = rep(seq_along(marker_values), times = nrow(images)),
-      channel_name = rep(marker_values, times = nrow(images)),
+      channel_name = rep(channel_names, times = nrow(images)),
       marker = rep(marker_values, times = nrow(images)),
       stringsAsFactors = FALSE
     )
@@ -1219,6 +1265,11 @@ cs_read <- function(path, format = "auto", pixel_size = NULL, image_id = NULL,
       statistic = metadata$statistic,
       unit = metadata$unit,
       source_name = metadata$source_name,
+      marker_source = if ("marker_source" %in% names(metadata)) {
+        metadata$marker_source
+      } else {
+        rep(NA_character_, nrow(metadata))
+      },
       stringsAsFactors = FALSE
     )
   }
