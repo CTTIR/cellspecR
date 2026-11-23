@@ -41,7 +41,7 @@ Suggests:
     patchwork,
     rmarkdown,
     S4Vectors,
-    shiny,
+    shiny (>= 1.6.0),
     SingleCellExperiment,
     SpatialExperiment,
     SummarizedExperiment,

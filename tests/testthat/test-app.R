@@ -33,7 +33,8 @@ test_that("the app About panel reports release metadata", {
   rendered <- paste(capture.output(about), collapse = " ")
   expect_match(rendered, "About cellspecR")
   version <- gsub(".", "\\.", as.character(utils::packageVersion("cellspecR")), fixed = TRUE)
-  expect_match(rendered, paste0("Version\\s+", version, "\\s"))
+  # The full stop follows the version without a space.
+  expect_match(rendered, paste0("Version\\s+", version, "\\. Specification"))
   expect_match(rendered, "Specification\\s+1\\.0\\.0")
 })
 

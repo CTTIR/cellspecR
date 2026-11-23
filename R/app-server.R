@@ -59,11 +59,12 @@
     if (is.null(x)) return(NULL)
     x$images
   })
+  # 96 dpi gives axis text the size of the surrounding page text.
   output$overview <- shiny::renderPlot({
     x <- state()
     if (is.null(x) || !requireNamespace("ggplot2", quietly = TRUE)) return(NULL)
     plot(x, type = "map", max_points = max_plot_points)
-  })
+  }, res = 96, alt = "Map of the cell centroids, one panel per image")
   shiny::observeEvent(list(input$f_export, input$local_path, input$format, input$pixel_size), {
     if (!is.null(state())) append_log("Input changed; read again to refresh the review.")
     state(NULL)

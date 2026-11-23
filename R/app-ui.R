@@ -28,13 +28,18 @@
       .cs_app_table("dictionary", "Dictionary table")
     ),
     shiny::tabPanel("Images", .cs_app_table("images", "Images table")),
-    shiny::tabPanel("Plot", shiny::plotOutput("overview")),
+    shiny::tabPanel("Plot", shiny::plotOutput("overview", height = "520px")),
     shiny::tabPanel("About", .cs_app_about())
   )
   if (requireNamespace("bslib", quietly = TRUE)) {
     bslib::page_sidebar(
     window_title = "cellspecR",
-      title = shiny::tagList(.cttir_brand_logo(), "cellspecR"),
+      # One heading element keeps the name next to the logo; separate
+      # children are pushed to opposite ends of the title bar.
+      title = shiny::tags$h1(
+        class = "bslib-page-title navbar-brand",
+        .cttir_brand_logo(), "cellspecR"
+      ),
       sidebar = bslib::sidebar(controls),
       body
     )

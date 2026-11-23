@@ -66,6 +66,15 @@
   features from top to bottom and leaves out axis labels that would overprint
   their neighbours in a small panel. Discrete map colours stop before the
   yellow end of the viridis scale, which is hard to see on white.
+* The examples of `plot()` now draw every plot on the reference page; only
+  the last one was shown. The adapter article lists the readers as a table,
+  and the performance article shows the recorded measurements instead of a
+  placeholder. The README starts with its title; the table of contents above
+  it is gone.
+* Review app: the package name stands next to the logo in the title bar, the
+  map is drawn larger and at 96 dpi with a text alternative, and the About
+  panel no longer puts spaces before its full stops. The app needs `shiny`
+  1.6.0 or later.
 * `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
   Zero positions used to select everything, so an empty selection silently
   returned the complete object. Zeros mixed with other positions are ignored.
