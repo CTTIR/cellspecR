@@ -1,5 +1,8 @@
 # cellspecR 1.2.0
 
+* `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
+  Zero positions used to select everything, so an empty selection silently
+  returned the complete object. Zeros mixed with other positions are ignored.
 * When replacement and automatic restoration both fail, report the retained
   original backup directory explicitly so it can be recovered before retrying.
 * Schema columns must be plain vectors of their declared type. Matrix, array,

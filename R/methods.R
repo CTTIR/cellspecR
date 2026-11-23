@@ -205,10 +205,11 @@ dim.cellspec <- function(x) {
 #'
 #' @param x A `cellspec` object.
 #' @param i Cells to keep: a logical vector with one value per cell, or
-#'   positive or negative integer positions. Missing means all cells.
+#'   positive or negative integer positions. Missing means all cells. As in
+#'   base R, zeros select nothing, so `x[0, ]` keeps no cells.
 #' @param j Features to keep: a character vector of feature identifiers, a
 #'   logical vector with one value per feature, or integer positions. Missing
-#'   means all features.
+#'   means all features; `x[, 0]` keeps no features.
 #' @param ... Not used; must be empty.
 #' @param drop Not used; subsetting always returns a `cellspec` object.
 #' @return A `cellspec` object.
@@ -289,7 +290,10 @@ dim.cellspec <- function(x) {
       "x" = "Got {.obj_type_friendly {idx}}."
     ), call = call)
   }
-  if (length(idx) > 0L && all(idx <= 0)) {
+  # Zeros select nothing, as in base R: `x[0, ]` keeps no cells and
+  # `x[c(0, -1), ]` drops the first one.
+  idx <- idx[idx != 0]
+  if (length(idx) > 0L && all(idx < 0)) {
     if (any(idx < -n)) {
       .cs_abort("Negative {.arg {arg}} is out of range (there are {n} {what}).", call = call)
     }
@@ -297,7 +301,6 @@ dim.cellspec <- function(x) {
   } else if (any(idx < 0)) {
     .cs_abort("{.arg {arg}} cannot mix positive and negative positions.", call = call)
   } else {
-    idx <- idx[idx != 0]
     if (any(idx > n)) {
       .cs_abort("{.arg {arg}} selects positions beyond the {n} {what}.", call = call)
     }

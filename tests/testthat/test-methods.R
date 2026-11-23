@@ -141,6 +141,22 @@ test_that("[ rejects ambiguous or invalid indices", {
   expect_error(x[1, , foo = 1])
 })
 
+test_that("[ treats zero positions as selecting nothing", {
+  x <- sim_object()
+  none <- x[0, ]
+  expect_identical(dim(none), c(0L, ncol(x)))
+  expect_identical(none, x[integer(), ])
+  expect_identical(nrow(cs_adjacency(none)), 0L)
+  expect_true(all(cs_validate(none)$status == "pass"))
+  expect_identical(dim(x[c(0, 0), ]), c(0L, ncol(x)))
+  expect_identical(dim(x[, 0]), c(nrow(x), 0L))
+  expect_identical(cs_dictionary(x[, 0])$feature_id, character())
+  expect_identical(x[c(0, 2, 3), ], x[2:3, ])
+  expect_identical(x[c(0, -1), ], x[-1, ])
+  expect_identical(x[, c(0, 2)], x[, 2])
+  expect_identical(dim(x[0, 0]), c(0L, 0L))
+})
+
 test_that("[ accepts drop without changing the result", {
   x <- sim_object()
   expect_identical(x[1:2, , drop = TRUE], x[1:2, ])
