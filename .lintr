@@ -8,5 +8,5 @@ exclusions: list(
     "vignettes",
     "tests/testthat/apps",
     "data-raw",
-    "R/methods.R" = list(object_name_linter = 337:338)
+    "R/methods.R" = list(object_name_linter = 339:340)
   )

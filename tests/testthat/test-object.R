@@ -190,7 +190,7 @@ test_that("cs_example() works when no seed exists yet", {
   if (had) {
     old <- get(".Random.seed", envir = globalenv())
     rm(".Random.seed", envir = globalenv())
-    on.exit(assign(".Random.seed", old, envir = globalenv()), add = TRUE)
+    on.exit(assign(".Random.seed", old, envir = globalenv()), add = TRUE) # nolint: object_name_linter.
   }
   x <- cs_example()
   expect_false(exists(".Random.seed", envir = globalenv()))

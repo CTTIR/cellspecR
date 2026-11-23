@@ -21,7 +21,7 @@ invalid_objects <- function() {
 
   cases <- list()
   add <- function(check, obj) {
-    cases[[length(cases) + 1L]] <<- list(check = check, object = obj)
+    cases[[length(cases) + 1L]] <<- list(check = check, object = obj) # nolint: assignment_linter.
   }
 
   add("object_class", unclass(base))

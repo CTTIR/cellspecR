@@ -125,15 +125,17 @@
       on.exit(close(con), add = TRUE)
       utils::write.table(out, con, sep = "\t", quote = TRUE,
                          row.names = FALSE, na = "NA")
-    } else data.table::fwrite(
-      out,
-      file = path,
-      sep = "\t",
-      na = "NA",
-      quote = "auto",
-      compress = "gzip",
-      bom = FALSE
-    ),
+    } else {
+      data.table::fwrite(
+        out,
+        file = path,
+        sep = "\t",
+        na = "NA",
+        quote = "auto",
+        compress = "gzip",
+        bom = FALSE
+      )
+    },
     error = function(e) {
       .cs_abort(
         c(

@@ -546,7 +546,10 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
   loose <- present & !strict
   out[loose] <- suppressWarnings(as.numeric(x[loose]))
   if (any(loose & is.na(out))) {
-    stop("Column `min_value` contains text that is not a number.", call. = FALSE)
+    .cs_abort(
+      "Column {.field min_value} contains text that is not a number.",
+      class = "cellspec_error_format", call = NULL
+    )
   }
   out
 }
