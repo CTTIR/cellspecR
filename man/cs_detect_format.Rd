@@ -2,22 +2,29 @@
 % Please edit documentation in R/adapter-table.R
 \name{cs_detect_format}
 \alias{cs_detect_format}
-\title{Detect the generic table format}
+\title{Detect the format of a cell table}
 \usage{
 cs_detect_format(path, n_max = 50L)
 }
 \arguments{
-\item{path}{A delimited table file.}
+\item{path}{A delimited table file, an RDS file holding a data frame, or a
+directory of tiled tables.}
 
 \item{n_max}{Maximum number of data rows to inspect after the header.}
 }
 \value{
-A data frame with \code{format}, \code{score} and \code{evidence} columns.
+A data frame with one row per candidate format (specialised
+readers first, the generic table last) and the columns \code{format}
+(character), \code{score} (double between 0 and 1) and \code{evidence} (character,
+what matched).
 }
 \description{
-Reads only the header and at most \code{n_max} data rows. A generic table is
+Reads only the header and at most \code{n_max} data rows and scores the input
+against the reader grammars listed by \code{\link[=cs_formats]{cs_formats()}}. A generic table is
 deliberately returned as a low-confidence candidate because its biological
 meaning cannot be inferred safely without an explicit column map.
+\code{cs_read(format = "auto")} selects a format only when exactly one candidate
+scores at least 0.9 and no other candidate comes within 0.1 of it.
 }
 \examples{
 path <- tempfile(fileext = ".csv")

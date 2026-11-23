@@ -2,7 +2,7 @@
 % Please edit documentation in R/adapter-table.R
 \name{cs_read}
 \alias{cs_read}
-\title{Read a delimited table into a cellspec object}
+\title{Read a cell table export into a cellspec object}
 \usage{
 cs_read(
   path,
@@ -20,10 +20,16 @@ cs_read(
 )
 }
 \arguments{
-\item{path}{One delimited table file.}
+\item{path}{One delimited table file; an RDS file holding a data frame
+for the \code{mcquant}, \code{segmantr} and \code{inform} readers; or a directory of
+tile tables for \code{format = "qupath_tiled"}.}
 
-\item{format}{Reader format. Use \code{"table"} for this adapter or \code{"auto"}
-to request conservative detection.}
+\item{format}{Reader format, one of \code{cs_formats()$format}, or \code{"auto"}
+(the default) for conservative detection: the format is taken from
+\code{\link[=cs_detect_format]{cs_detect_format()}} only when one candidate is decisive, otherwise an
+error of class \code{cellspec_error_ambiguous_format} lists the candidates.
+\code{"table"} is never selected automatically because it needs
+\code{column_map}.}
 
 \item{pixel_size}{Micrometres per pixel. Required for pixel coordinates;
 micrometre-coordinate tables use \code{1} when no calibration is supplied.}
@@ -34,8 +40,10 @@ column; otherwise the mapped column or file basename is used.}
 \item{sample_id}{Optional scalar sample identifier overriding the mapped
 column; otherwise the mapped column or image identifier is used.}
 
-\item{marker_map}{Reserved for future adapters; not used by the table
-adapter.}
+\item{marker_map}{Optional marker-name mapping created by
+\code{\link[=cs_marker_map]{cs_marker_map()}}. The \code{qupath}, \code{qupath_tiled}, \code{mcquant}, \code{segmantr}
+and \code{inform} readers rename markers with it; the table adapter does not
+use it (name the markers in \code{column_map} instead).}
 
 \item{column_map}{A validated object returned by \code{\link[=cs_column_map]{cs_column_map()}}.}
 
@@ -67,7 +75,8 @@ informational warning about dropped columns when \code{keep_other = FALSE}.}
 A validated \code{cellspec} object.
 }
 \description{
-Reads a delimited cell table using a format-specific adapter or an explicit
+Reads a cell table exported by an image-analysis tool using a
+format-specific adapter, or any delimited table through an explicit
 \code{\link[=cs_column_map]{cs_column_map()}}. See \code{\link[=cs_formats]{cs_formats()}} for supported formats.
 
 The \code{segmantr} adapter expects the one-based row and column centroid

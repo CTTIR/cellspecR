@@ -30,7 +30,14 @@ objects.}
 \code{cs_read_npy()} returns a vector for one-dimensional arrays, a
 matrix or array with the same shape otherwise, and a length-one vector
 for zero-dimensional arrays. \code{cs_read_npz()} returns a named list of
-these, in archive order. The writers return \code{path} invisibly.
+these, in archive order (or in the order of \code{arrays}). The writers
+return \code{path} invisibly.
+
+Errors carry the class \code{cellspec_error} and one of
+\code{cellspec_error_argument} (unusable \code{path}, \code{arrays} or \code{x}),
+\code{cellspec_error_io} (a missing input file, or a destination whose
+directory does not exist) and \code{cellspec_error_format} (a file that is
+not a supported array or archive).
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}

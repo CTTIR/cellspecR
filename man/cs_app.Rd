@@ -14,7 +14,9 @@ cs_app(
 }
 \arguments{
 \item{path}{Optional initial file or directory path. The user can also
-select a file in the application.}
+select a file in the application. A directory written by \code{\link[=cs_write]{cs_write()}} is
+read with \code{\link[=cs_read_cellspec]{cs_read_cellspec()}}, including its integrity verification;
+any other path is read with \code{\link[=cs_read]{cs_read()}}.}
 
 \item{max_upload_mb}{Maximum upload size in MB. It is applied as the
 \code{shiny.maxRequestSize} option while the application runs and the previous

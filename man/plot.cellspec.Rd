@@ -21,15 +21,22 @@
 \item{type}{Plot type: \code{"overview"}, \code{"map"}, \code{"marker"}, \code{"support"} or
 \code{"area"}.}
 
-\item{colour_by}{A cells or measurement column used by the map.}
+\item{colour_by}{A cells or measurement column used by the map. Defaults
+to \code{image_id}.}
 
-\item{marker}{Marker used by the marker plot.}
+\item{marker}{Marker shown by the marker plot. Defaults to the first
+marker of \code{policy} or, without a policy, the first marker returned by
+\code{\link[=cs_markers]{cs_markers()}}.}
 
-\item{policy}{Optional signal policy for the marker plot.}
+\item{policy}{Optional signal policy for the marker plot. When it covers
+\code{marker}, the plot shows the signal selected by \code{\link[=cs_signal_matrix]{cs_signal_matrix()}}
+instead of the individual sources.}
 
-\item{max_points}{Maximum number of cells used by a plot.}
+\item{max_points}{Maximum number of cells drawn by the map and the marker
+plot.}
 
-\item{seed}{Seed used for deterministic subsampling.}
+\item{seed}{Seed used for deterministic subsampling. The random number
+generator state of the session is left untouched.}
 
 \item{...}{Reserved for future plot-specific parameters.}
 }
@@ -40,12 +47,21 @@ A \code{ggplot} object, or a patchwork object for \code{type = "overview"}.
 Draws a centroid map, marker distribution, feature-support heatmap, cell
 area distribution, or an overview of up to four panels. The overview leaves
 out the area panel when the cells table has no \code{area} column and the marker
-panel when there are no intensity features. Large objects are subsampled
-deterministically for plotting.
+panel when there are no intensity features or no finite values to draw.
+
+The map follows the image frame: the origin is at the top left and \code{y}
+increases downwards. The marker plot shows one marker: a violin per
+intensity source (statistic on the axis, compartments side by side) and
+one panel per image.
+Maps and marker plots of large objects use a deterministic subsample of
+\code{max_points} cells; the support heatmap and the area histogram always use
+every cell.
 }
 \examples{
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  plot(cs_example(), type = "map")
+  x <- cs_example()
+  plot(x, type = "map")
+  plot(x, type = "marker", marker = "CD3e")
 }
 }
 \seealso{

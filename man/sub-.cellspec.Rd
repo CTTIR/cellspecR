@@ -10,11 +10,12 @@
 \item{x}{A \code{cellspec} object.}
 
 \item{i}{Cells to keep: a logical vector with one value per cell, or
-positive or negative integer positions. Missing means all cells.}
+positive or negative integer positions. Missing means all cells. As in
+base R, zeros select nothing, so \code{x[0, ]} keeps no cells.}
 
 \item{j}{Features to keep: a character vector of feature identifiers, a
 logical vector with one value per feature, or integer positions. Missing
-means all features.}
+means all features; \code{x[, 0]} keeps no features.}
 
 \item{...}{Not used; must be empty.}
 

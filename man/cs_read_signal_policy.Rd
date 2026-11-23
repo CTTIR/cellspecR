@@ -18,7 +18,8 @@ A validated data frame with class \code{cs_signal_policy}.
 \description{
 Reads and validates a policy written by \code{\link[=cs_write_signal_policy]{cs_write_signal_policy()}}. The
 format is inferred from the \code{.json} or \code{.csv} extension unless \code{format} is
-supplied explicitly.
+supplied explicitly. Values of \code{min_value} are restored exactly from both
+formats, and marker names are always read as text.
 }
 \examples{
 path <- tempfile(fileext = ".json")
