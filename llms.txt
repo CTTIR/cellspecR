@@ -94,7 +94,7 @@ identical(cs_cells(x), cs_cells(y))
 - Optional conversion to `SpatialExperiment` and AnnData,
   quality-control plots and a local Shiny review app.
 
-The package does not segment images, normalize signals, gate cells or
+The package does not segment images, normalise signals, gate cells or
 perform spatial statistics. It keeps the table contract and provenance
 at the boundary between those tools.
 
@@ -126,11 +126,11 @@ patient data. Reader fixtures record their generator, header grammar and
 SHA-256 in `tests/testthat/fixtures/README.md`. Examples do not access
 the network.
 
-## Contributing and license
+## Contributing and licence
 
 Contributions follow the [CTTIR contributing
 guide](https://github.com/CTTIR/.github/blob/main/CONTRIBUTING.md). The
-package is released under the MIT license.
+package is released under the MIT licence.
 
 ## Use of LLM tools
 
