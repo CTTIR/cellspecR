@@ -12,7 +12,7 @@
   rejected as a tiled export without tile tables.
 * `cs_write_npy()` and `cs_write_npz()` report a destination whose directory
   does not exist, or that is itself a directory, as `cellspec_error_io`
-  before writing; before, R's "cannot open the connection" error and a
+  before writing; before, the base R error "cannot open the connection" and a
   warning surfaced.
 * `cs_read_signal_policy()` reads CSV policies as text. Marker names that look
   like numbers or logical values (`"1"`, `"007"`, `"TRUE"`) no longer fail
@@ -38,13 +38,13 @@
   title. Without `marker` it shows the first marker; before, all markers were
   pooled, which is the bug-fix change of that default.
 * A marker plot without finite values to draw fails with a
-  `cellspec_error_invalid` error instead of a ggplot2 error at print time, and
+  `cellspec_error_invalid` error instead of a `ggplot2` error at print time, and
   the overview leaves that panel out.
 * The centroid map uses a reversed `y` axis with the original coordinates in
   place of negated values, so axis labels match `cs_cells(x)$y`.
 * The plot overview places legends below its panels, and the getting-started
-  vignette now shows the quality-control plots. ggplot2 3.3.0 or later is
-  needed for plotting.
+  vignette now shows the quality-control plots. Plotting needs `ggplot2`
+  3.3.0 or later.
 * `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
   Zero positions used to select everything, so an empty selection silently
   returned the complete object. Zeros mixed with other positions are ignored.

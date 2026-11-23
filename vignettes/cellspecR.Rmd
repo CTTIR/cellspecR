@@ -69,7 +69,7 @@ head(selected$signal)
 
 Quality-control plots show where the cells lie, which features carry signal
 and how the cell areas and one marker are distributed. They need the suggested
-ggplot2 package, and patchwork for the overview. The map follows the image
+package `ggplot2`, and `patchwork` for the overview. The map follows the image
 frame, with the origin at the top left.
 
 ```{r qc-overview, eval = requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("patchwork", quietly = TRUE), fig.width = 8, fig.height = 7, dpi = 96, out.width = "100%", fig.alt = "Four panels for the example object: a map of cell centroids coloured by image, a heatmap of the fraction of zero values per feature and image, a histogram of cell areas per image, and violins of the DAPI signal per compartment and statistic."}
