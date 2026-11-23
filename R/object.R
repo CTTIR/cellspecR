@@ -221,11 +221,14 @@ cs_new <- function(cells,
 }
 
 # Identifiers from numeric columns: whole numbers without scientific notation.
+# `drop0trailing` keeps "1" as "1" when another identifier has decimals;
+# format() would otherwise pad every value to a common number of decimals.
 .cs_format_id <- function(x) {
   out <- rep(NA_character_, length(x))
   ok <- !is.na(x)
   if (is.numeric(x)) {
-    out[ok] <- format(x[ok], scientific = FALSE, trim = TRUE, digits = 15)
+    out[ok] <- format(x[ok], scientific = FALSE, trim = TRUE, digits = 15,
+                      drop0trailing = TRUE)
   }
   out
 }

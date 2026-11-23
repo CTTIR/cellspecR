@@ -190,7 +190,10 @@ test_that("cs_example() works when no seed exists yet", {
   if (had) {
     old <- get(".Random.seed", envir = globalenv())
     rm(".Random.seed", envir = globalenv())
-    on.exit(assign(".Random.seed", old, envir = globalenv()), add = TRUE) # nolint: object_name_linter.
+    on.exit(
+      assign(".Random.seed", old, envir = globalenv()), # nolint: object_name_linter.
+      add = TRUE
+    )
   }
   x <- cs_example()
   expect_false(exists(".Random.seed", envir = globalenv()))
@@ -203,4 +206,15 @@ test_that("cs_markers() ignores dictionary rows with a missing kind", {
   expect_false(anyNA(cs_markers(x)))
   expect_identical(cs_markers(x), cs_markers(cs_example()))
   expect_output(print(x), "markers   4: DAPI")
+})
+
+test_that("numeric identifiers keep whole numbers free of padded decimals", {
+  parts <- min_parts()
+  parts$cells$cell_id <- c(1, 2, 3.5)
+  x <- cs_new(parts$cells, parts$measurements, parts$dictionary, parts$images, parts$channels)
+  # A fractional identifier used to turn its neighbours into "1.0" and "2.0".
+  expect_identical(x$cells$cell_id, c("1", "2", "3.5"))
+  expect_identical(cellspecR:::.cs_format_id(c(1e15, 200000, NA, 3)),
+                   c("1000000000000000", "200000", NA, "3"))
+  expect_identical(cellspecR:::.cs_format_id(c(10, 100, 1000)), c("10", "100", "1000"))
 })

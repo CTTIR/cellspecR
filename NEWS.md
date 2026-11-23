@@ -1,5 +1,8 @@
 # cellspecR 1.2.0
 
+* Numeric identifiers passed to `cs_new()` are no longer padded with decimals
+  when one of them is fractional: `c(1, 2, 3.5)` gives `"1"`, `"2"`, `"3.5"`
+  instead of `"1.0"`, `"2.0"`, `"3.5"`.
 * Readers that apply a `marker_map` now record the marker name used in the
   export: `dictionary$marker_source` holds it for every renamed marker and
   `channels$channel_name` keeps it, while `marker` carries the mapped name, as
