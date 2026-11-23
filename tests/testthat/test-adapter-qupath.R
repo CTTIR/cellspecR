@@ -147,6 +147,36 @@ test_that("QuPath marker maps are applied without losing source names", {
   expect_identical(stored$channels, x$channels)
 })
 
+test_that("marker map entries that rename nothing leave no marker source", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  qupath_fixture(path)
+  plain <- cellspecR:::cs_read(path, format = "qupath")
+
+  identity <- cellspecR:::cs_read(
+    path, format = "qupath",
+    marker_map = cellspecR::cs_marker_map(c("CD3e", "DAPI"), c("CD3e", "DAPI"))
+  )
+  expect_identical(identity$dictionary, plain$dictionary)
+  expect_identical(identity$channels, plain$channels)
+
+  mixed <- cellspecR:::cs_read(
+    path, format = "qupath",
+    marker_map = cellspecR::cs_marker_map(c("CD3e", "DAPI"), c("CD3", "DAPI"))
+  )
+  expect_identical(mixed$dictionary$marker, c("DAPI", "CD3"))
+  expect_identical(mixed$dictionary$marker_source, c(NA_character_, "CD3e"))
+  expect_identical(mixed$channels$channel_name, c("DAPI", "CD3e"))
+
+  # An identity map does not make two reads of the same export incompatible.
+  first <- cellspecR:::cs_read(
+    path, format = "qupath", image_id = "A",
+    marker_map = cellspecR::cs_marker_map(c("CD3e", "DAPI"), c("CD3e", "DAPI"))
+  )
+  second <- cellspecR:::cs_read(path, format = "qupath", image_id = "B")
+  expect_identical(nrow(cellspecR::cs_bind(first, second)$cells), 4L)
+})
+
 test_that("column maps accept and check an optional marker_source column", {
   measurements <- data.frame(
     source_name = c("CD3e Mean", "Area"), kind = c("intensity", "shape"),

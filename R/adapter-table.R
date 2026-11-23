@@ -207,10 +207,12 @@
 }
 
 # Rename markers with a marker map and record the original name of every
-# renamed marker in `marker_source`, as the specification describes.
+# renamed marker in `marker_source`, as the specification describes. An entry
+# that maps a marker to itself renames nothing and leaves no record.
 .cs_apply_marker_map <- function(metadata, marker_map) {
   hit <- match(metadata$marker, marker_map$from)
   mapped <- !is.na(hit)
+  mapped[mapped] <- marker_map$to[hit[mapped]] != metadata$marker[mapped]
   source <- if ("marker_source" %in% names(metadata)) {
     metadata$marker_source
   } else {
