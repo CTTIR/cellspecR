@@ -18,42 +18,47 @@ utils::globalVariables(".data")
   .cs_with_seed(seed, sample.int(nrow(x), max_points))
 }
 
-.cs_plot_signal_long <- function(x, marker = NULL, policy = NULL, call) {
-  dict <- x$dictionary[x$dictionary$kind == "intensity", , drop = FALSE]
-  if (!is.null(marker)) {
-    .cs_check_string(marker, arg = "marker", call = call)
-    dict <- dict[dict$marker == marker, , drop = FALSE]
+# Long table of the intensity values of one marker: one row per cell and
+# source (compartment and statistic). Without `marker` the first marker of the
+# policy, or else of the dictionary, is used. `rows` restricts the cells.
+.cs_plot_signal_long <- function(x, marker = NULL, policy = NULL, rows = NULL, call) {
+  dict <- x$dictionary[x$dictionary$kind %in% "intensity", , drop = FALSE]
+  if (!is.null(policy)) {
+    .cs_validate_signal_policy(policy, call = call)
   }
+  if (is.null(marker)) {
+    marker <- if (is.null(policy)) dict$marker[!is.na(dict$marker)][1L] else policy$marker[[1L]]
+  } else {
+    .cs_check_string(marker, arg = "marker", call = call)
+  }
+  dict <- dict[dict$marker %in% marker, , drop = FALSE]
   if (nrow(dict) == 0L) {
     .cs_abort("No intensity features match {.arg marker}.", class = "cellspec_error_invalid", call = call)
   }
-  rows <- rep(seq_len(nrow(x$cells)), times = nrow(dict))
-  feature <- rep(dict$feature_id, each = nrow(x$cells))
-  dictionary_rows <- dict[match(feature, dict$feature_id), , drop = FALSE]
+  if (is.null(rows)) {
+    rows <- seq_len(nrow(x$cells))
+  }
+  n <- length(rows)
   result <- data.frame(
-    value = as.vector(x$measurements[, feature, drop = FALSE]),
-    image_id = x$cells$image_id[rows],
-    marker = dictionary_rows$marker,
-    compartment = dictionary_rows$compartment,
-    statistic = dictionary_rows$statistic,
+    value = as.vector(x$measurements[rows, dict$feature_id, drop = FALSE]),
+    image_id = rep(x$cells$image_id[rows], times = nrow(dict)),
+    marker = rep(dict$marker, each = n),
+    compartment = rep(dict$compartment, each = n),
+    statistic = rep(dict$statistic, each = n),
     stringsAsFactors = FALSE
   )
-  if (!is.null(policy)) {
-    .cs_validate_signal_policy(policy, call = call)
+  if (!is.null(policy) && marker %in% policy$marker) {
     selected <- cs_signal_matrix(x, policy)$signal
-    selected_marker <- if (is.null(marker)) policy$marker[[1L]] else marker
-    if (selected_marker %in% colnames(selected)) {
-      result <- data.frame(
-        value = selected[, selected_marker],
-        image_id = x$cells$image_id,
-        marker = selected_marker,
-        compartment = "selected",
-        statistic = "selected",
-        stringsAsFactors = FALSE
-      )
-    }
+    result <- data.frame(
+      value = unname(selected[rows, marker]),
+      image_id = x$cells$image_id[rows],
+      marker = rep(marker, n),
+      compartment = rep("selected", n),
+      statistic = rep("selected", n),
+      stringsAsFactors = FALSE
+    )
   }
-  result[is.finite(result$value) & !is.na(result$value), , drop = FALSE]
+  result[is.finite(result$value), , drop = FALSE]
 }
 
 .cs_plot_map <- function(x, colour_by, max_points, seed, call) {
@@ -75,13 +80,15 @@ utils::globalVariables(".data")
   }
   keep <- .cs_plot_subsample(cells, max_points, seed, call)
   data <- data.frame(
-    x = cells$x[keep], y = -cells$y[keep], colour = colour[keep],
+    x = cells$x[keep], y = cells$y[keep], colour = colour[keep],
     stringsAsFactors = FALSE
   )
+  # Image coordinates start at the top left, so the y axis runs downwards.
   p <- ggplot2::ggplot(data, ggplot2::aes(x = .data$x, y = .data$y, colour = .data$colour)) +
     ggplot2::geom_point(size = 0.7, alpha = 0.75) +
+    ggplot2::scale_y_reverse() +
     ggplot2::coord_fixed() +
-    ggplot2::labs(x = "x (\u00b5m)", y = "-y (\u00b5m; image origin at top)", colour = colour_by) +
+    ggplot2::labs(x = "x (\u00b5m)", y = "y (\u00b5m)", colour = colour_by) +
     ggplot2::theme_minimal()
   if (is.numeric(data$colour)) {
     p + ggplot2::scale_colour_viridis_c(na.value = "grey70")
@@ -90,16 +97,44 @@ utils::globalVariables(".data")
   }
 }
 
-.cs_plot_marker <- function(x, marker, policy, call) {
-  data <- .cs_plot_signal_long(x, marker = marker, policy = policy, call = call)
-  ggplot2::ggplot(data, ggplot2::aes(x = .data$compartment, y = .data$value, fill = .data$compartment)) +
-    ggplot2::geom_violin(scale = "width", na.rm = TRUE) +
-    ggplot2::geom_boxplot(width = 0.12, outlier.shape = NA, na.rm = TRUE) +
+# Violins of one marker per source (compartment and statistic), one panel per
+# image. With `empty_ok`, an object without finite values of the marker gives
+# `NULL` instead of an error, so the overview can leave the panel out.
+.cs_plot_marker <- function(x, marker, policy, max_points, seed, call, empty_ok = FALSE) {
+  keep <- .cs_plot_subsample(x$cells, max_points, seed, call)
+  data <- .cs_plot_signal_long(x, marker = marker, policy = policy, rows = keep, call = call)
+  if (nrow(data) == 0L) {
+    if (empty_ok) {
+      return(NULL)
+    }
+    .cs_abort(
+      "There are no finite intensity values to plot for {.arg marker}.",
+      class = "cellspec_error_invalid", call = call
+    )
+  }
+  data$source <- ifelse(
+    data$compartment == "selected", "selected",
+    paste(data$compartment, data$statistic, sep = ":")
+  )
+  # Statistics on the axis and compartments side by side keep the labels
+  # short enough for the overview panel.
+  dodge <- ggplot2::position_dodge(width = 0.85)
+  ggplot2::ggplot(data, ggplot2::aes(x = .data$statistic, y = .data$value, fill = .data$compartment)) +
+    ggplot2::geom_violin(scale = "width", position = dodge, alpha = 0.85, na.rm = TRUE) +
+    ggplot2::geom_boxplot(
+      ggplot2::aes(group = .data$source),
+      width = 0.12, position = dodge, fill = "white", outlier.shape = NA, na.rm = TRUE
+    ) +
     ggplot2::facet_wrap(~image_id) +
-    ggplot2::scale_fill_viridis_d() +
-    ggplot2::labs(x = NULL, y = "Signal (raw units)") +
+    ggplot2::scale_fill_viridis_d(begin = 0.25, end = 0.9) +
+    ggplot2::labs(
+      title = data$marker[[1L]], x = NULL, y = "Signal (raw units)",
+      fill = "Compartment"
+    ) +
     ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "none")
+    ggplot2::theme(
+      legend.position = if (length(unique(data$compartment)) > 1L) "bottom" else "none"
+    )
 }
 
 .cs_plot_support <- function(x, call) {
@@ -121,7 +156,7 @@ utils::globalVariables(".data")
   ggplot2::ggplot(data, ggplot2::aes(x = .data$area, fill = .data$image_id)) +
     ggplot2::geom_histogram(bins = 30, alpha = 0.75, position = "identity") +
     ggplot2::scale_fill_viridis_d() +
-    ggplot2::labs(x = "Cell area (\u00b5m^2)", y = "Cells", fill = "Image") +
+    ggplot2::labs(x = "Cell area (\u00b5m\u00b2)", y = "Cells", fill = "Image") +
     ggplot2::theme_minimal()
 }
 
@@ -131,24 +166,40 @@ utils::globalVariables(".data")
 #' Draws a centroid map, marker distribution, feature-support heatmap, cell
 #' area distribution, or an overview of up to four panels. The overview leaves
 #' out the area panel when the cells table has no `area` column and the marker
-#' panel when there are no intensity features. Large objects are subsampled
-#' deterministically for plotting.
+#' panel when there are no intensity features or no finite values to draw.
+#'
+#' The map follows the image frame: the origin is at the top left and `y`
+#' increases downwards. The marker plot shows one marker: a violin per
+#' intensity source (statistic on the axis, compartments side by side) and
+#' one panel per image.
+#' Maps and marker plots of large objects use a deterministic subsample of
+#' `max_points` cells; the support heatmap and the area histogram always use
+#' every cell.
 #'
 #' @param x A `cellspec` object.
 #' @param type Plot type: `"overview"`, `"map"`, `"marker"`, `"support"` or
 #'   `"area"`.
-#' @param colour_by A cells or measurement column used by the map.
-#' @param marker Marker used by the marker plot.
-#' @param policy Optional signal policy for the marker plot.
-#' @param max_points Maximum number of cells used by a plot.
-#' @param seed Seed used for deterministic subsampling.
+#' @param colour_by A cells or measurement column used by the map. Defaults
+#'   to `image_id`.
+#' @param marker Marker shown by the marker plot. Defaults to the first
+#'   marker of `policy` or, without a policy, the first marker returned by
+#'   [cs_markers()].
+#' @param policy Optional signal policy for the marker plot. When it covers
+#'   `marker`, the plot shows the signal selected by [cs_signal_matrix()]
+#'   instead of the individual sources.
+#' @param max_points Maximum number of cells drawn by the map and the marker
+#'   plot.
+#' @param seed Seed used for deterministic subsampling. The random number
+#'   generator state of the session is left untouched.
 #' @param ... Reserved for future plot-specific parameters.
 #' @return A `ggplot` object, or a patchwork object for `type = "overview"`.
 #' @family methods
 #' @export
 #' @examples
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   plot(cs_example(), type = "map")
+#'   x <- cs_example()
+#'   plot(x, type = "map")
+#'   plot(x, type = "marker", marker = "CD3e")
 #' }
 plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "area"),
                           colour_by = NULL, marker = NULL, policy = NULL,
@@ -159,7 +210,7 @@ plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "a
   type <- rlang::arg_match(type)
   .cs_check_count(seed, min = 0L, arg = "seed", call = call)
   if (type == "map") return(.cs_plot_map(x, colour_by, max_points, seed, call))
-  if (type == "marker") return(.cs_plot_marker(x, marker, policy, call))
+  if (type == "marker") return(.cs_plot_marker(x, marker, policy, max_points, seed, call))
   if (type == "support") return(.cs_plot_support(x, call))
   if (type == "area") return(.cs_plot_area(x, call))
   .cs_plot_require("patchwork", call = call)
@@ -170,8 +221,11 @@ plot.cellspec <- function(x, type = c("overview", "map", "marker", "support", "a
   if ("area" %in% names(x$cells)) {
     panels <- c(panels, list(.cs_plot_area(x, call)))
   }
-  if (any(x$dictionary$kind == "intensity")) {
-    panels <- c(panels, list(.cs_plot_marker(x, marker, policy, call)))
+  if (any(x$dictionary$kind %in% "intensity")) {
+    marker_panel <- .cs_plot_marker(x, marker, policy, max_points, seed, call, empty_ok = TRUE)
+    if (!is.null(marker_panel)) {
+      panels <- c(panels, list(marker_panel))
+    }
   }
   patchwork::wrap_plots(panels, ncol = 2)
 }

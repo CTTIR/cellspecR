@@ -1,5 +1,17 @@
 # cellspecR 1.2.0
 
+* `plot(x, type = "marker")` and the marker panel of the overview drew wrong
+  data: every value was repeated once per cell and attributed to the wrong
+  compartment and statistic, and memory use grew with the square of the number
+  of cells. The plot now shows one marker with one violin per compartment and
+  statistic, subsamples to `max_points` cells and names the marker in its
+  title. Without `marker` it shows the first marker; before, all markers were
+  pooled, which is the bug-fix change of that default.
+* A marker plot without finite values to draw fails with a
+  `cellspec_error_invalid` error instead of a ggplot2 error at print time, and
+  the overview leaves that panel out.
+* The centroid map uses a reversed `y` axis with the original coordinates in
+  place of negated values, so axis labels match `cs_cells(x)$y`.
 * `x[0, ]` and `x[, 0]` now select no cells and no features, as in base R.
   Zero positions used to select everything, so an empty selection silently
   returned the complete object. Zeros mixed with other positions are ignored.
