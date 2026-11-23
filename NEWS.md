@@ -131,6 +131,8 @@
 * Prepare the first CRAN submission: print snapshots no longer embed the
   package version, and the version is aligned across `DESCRIPTION`,
   `CITATION.cff`, `.zenodo.json` and the README.
+* The README and the help page of `cs_write()` use British spelling
+  ("licence", "normalise", "serialisation"), in line with `Language: en-GB`.
 
 # cellspecR 1.1.0
 

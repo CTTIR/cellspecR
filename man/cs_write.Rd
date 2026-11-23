@@ -37,7 +37,7 @@ manual recovery; the backup is not deleted.
 All table columns, including extra metadata, must be plain character,
 double, integer or logical vectors without dimensions. Convert factors,
 dates and other classed vectors explicitly so their meaning is not silently
-lost during serialization; matrix and array columns are not supported.
+lost during serialisation; matrix and array columns are not supported.
 }
 \examples{
 path <- tempfile("cellspec-")
