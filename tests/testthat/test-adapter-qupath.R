@@ -161,3 +161,41 @@ test_that("QuPath reader refuses missing identifiers and missing coordinate unit
     class = "cellspec_error_units"
   )
 })
+
+test_that("automatic detection selects a complete QuPath export", {
+  path <- system.file("extdata", "qupath-0.7.0-instanseg.tsv", package = "cellspecR")
+  detected <- cellspecR::cs_detect_format(path)
+  # The weights 0.05 + 0.25 + 0.35 + 0.25 add up to 0.8999999999999999 in
+  # floating point; the score must still reach the decisive 0.9.
+  expect_identical(detected$score[detected$format == "qupath"], 0.9)
+  x <- cellspecR::cs_read(path)
+  expect_identical(x$provenance$reader$adapter, "qupath")
+  expect_identical(
+    cellspecR::cs_cells(x),
+    cellspecR::cs_cells(cellspecR::cs_read(path, format = "qupath"))
+  )
+
+  pixels <- tempfile(fileext = ".csv")
+  on.exit(unlink(pixels), add = TRUE)
+  qupath_fixture(pixels, units = "px")
+  expect_identical(
+    cellspecR::cs_read(pixels, pixel_size = 0.5)$provenance$reader$adapter,
+    "qupath"
+  )
+})
+
+test_that("automatic detection stays ambiguous for incomplete QuPath evidence", {
+  path <- tempfile(fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+  utils::write.csv(
+    data.frame(`Cell ID` = c("a", "b"), `Centroid X um` = 1:2,
+               `Centroid Y um` = 3:4, check.names = FALSE),
+    path, row.names = FALSE
+  )
+  detected <- cellspecR::cs_detect_format(path)
+  expect_identical(detected$score[detected$format == "qupath"], 0.65)
+  expect_error(
+    cellspecR::cs_read(path),
+    class = "cellspec_error_ambiguous_format"
+  )
+})

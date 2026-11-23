@@ -221,7 +221,10 @@
     !is.null(.cs_qupath_coordinate(names(table), "y", "px"))
   has_measurements <- any(vapply(names(table), function(name) !is.null(.cs_qupath_measurement(name)), logical(1)))
   if (!has_id || (!has_um && !has_px && !has_measurements)) return(NULL)
-  score <- 0.05 + 0.25 * has_id + 0.35 * (has_um || has_px) + 0.25 * has_measurements
+  # Rounded because the weights do not add up exactly in floating point: the
+  # complete grammar would otherwise score 0.8999999999999999 and miss the 0.9
+  # that cs_read(format = "auto") requires.
+  score <- round(0.05 + 0.25 * has_id + 0.35 * (has_um || has_px) + 0.25 * has_measurements, 2)
   data.frame(
     format = "qupath",
     score = min(score, 1),

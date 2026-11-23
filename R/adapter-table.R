@@ -646,16 +646,23 @@ cs_formats <- function() {
   do.call(rbind, rows)
 }
 
-#' Detect the generic table format
+#' Detect the format of a cell table
 #'
 #' @description
-#' Reads only the header and at most `n_max` data rows. A generic table is
+#' Reads only the header and at most `n_max` data rows and scores the input
+#' against the reader grammars listed by [cs_formats()]. A generic table is
 #' deliberately returned as a low-confidence candidate because its biological
 #' meaning cannot be inferred safely without an explicit column map.
+#' `cs_read(format = "auto")` selects a format only when exactly one candidate
+#' scores at least 0.9 and no other candidate comes within 0.1 of it.
 #'
-#' @param path A delimited table file.
+#' @param path A delimited table file, an RDS file holding a data frame, or a
+#'   directory of tiled tables.
 #' @param n_max Maximum number of data rows to inspect after the header.
-#' @return A data frame with `format`, `score` and `evidence` columns.
+#' @return A data frame with one row per candidate format (specialised
+#'   readers first, the generic table last) and the columns `format`
+#'   (character), `score` (double between 0 and 1) and `evidence` (character,
+#'   what matched).
 #' @family adapters
 #' @seealso [cs_column_map()], [cs_read()]
 #' @export
@@ -800,10 +807,11 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
   structure(mapped, class = c("cs_column_map", "list"))
 }
 
-#' Read a delimited table into a cellspec object
+#' Read a cell table export into a cellspec object
 #'
 #' @description
-#' Reads a delimited cell table using a format-specific adapter or an explicit
+#' Reads a cell table exported by an image-analysis tool using a
+#' format-specific adapter, or any delimited table through an explicit
 #' [cs_column_map()]. See [cs_formats()] for supported formats.
 #'
 #' The `segmantr` adapter expects the one-based row and column centroid
@@ -829,17 +837,25 @@ cs_column_map <- function(cell_id, x, y, image_id = NULL, sample_id = NULL,
 #' concatenated `.gz` files, can be checked only in their last member; they
 #' are read with a warning of class `cellspec_warning_integrity`.
 #'
-#' @param path One delimited table file.
-#' @param format Reader format. Use `"table"` for this adapter or `"auto"`
-#'   to request conservative detection.
+#' @param path One delimited table file; an RDS file holding a data frame
+#'   for the `mcquant`, `segmantr` and `inform` readers; or a directory of
+#'   tile tables for `format = "qupath_tiled"`.
+#' @param format Reader format, one of `cs_formats()$format`, or `"auto"`
+#'   (the default) for conservative detection: the format is taken from
+#'   [cs_detect_format()] only when one candidate is decisive, otherwise an
+#'   error of class `cellspec_error_ambiguous_format` lists the candidates.
+#'   `"table"` is never selected automatically because it needs
+#'   `column_map`.
 #' @param pixel_size Micrometres per pixel. Required for pixel coordinates;
 #'   micrometre-coordinate tables use `1` when no calibration is supplied.
 #' @param image_id Optional scalar image identifier overriding the mapped
 #'   column; otherwise the mapped column or file basename is used.
 #' @param sample_id Optional scalar sample identifier overriding the mapped
 #'   column; otherwise the mapped column or image identifier is used.
-#' @param marker_map Reserved for future adapters; not used by the table
-#'   adapter.
+#' @param marker_map Optional marker-name mapping created by
+#'   [cs_marker_map()]. The `qupath`, `qupath_tiled`, `mcquant`, `segmantr`
+#'   and `inform` readers rename markers with it; the table adapter does not
+#'   use it (name the markers in `column_map` instead).
 #' @param column_map A validated object returned by [cs_column_map()].
 #' @param tile_bounds Optional tile-bound data frame for `format =
 #'   "qupath_tiled"`, with `tile_id`, `xmin`, `xmax`, `ymin` and `ymax` in
@@ -909,7 +925,9 @@ cs_read <- function(path, format = "auto", pixel_size = NULL, image_id = NULL,
     candidates <- cs_detect_format(path)
     top <- max(candidates$score)
     close <- which(candidates$score >= top - 0.1)
-    decisive <- top >= 0.9 && length(close) == 1L
+    # A decisive candidate scores at least 0.9; the tolerance absorbs
+    # floating-point rounding of scores built from decimal weights.
+    decisive <- top >= 0.9 - 1e-9 && length(close) == 1L
     if (!decisive) {
       .cs_abort(
         c(

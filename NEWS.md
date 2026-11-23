@@ -1,5 +1,11 @@
 # cellspecR 1.2.0
 
+* `cs_read()` with the default `format = "auto"` now selects the QuPath
+  reader for a complete QuPath export. Its detection score, the sum of the
+  weights 0.05, 0.25, 0.35 and 0.25, came out as 0.8999999999999999 in
+  floating point and never reached the decisive 0.9, so automatic detection
+  (also in the review app) failed with an ambiguity error that named a single
+  candidate. The score is rounded and the threshold tolerates rounding.
 * `plot(x, type = "marker")` and the marker panel of the overview drew wrong
   data: every value was repeated once per cell and attributed to the wrong
   compartment and statistic, and memory use grew with the square of the number
