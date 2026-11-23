@@ -37,4 +37,5 @@ This is a new submission (cellspecR 1.2.0).
 ## Downstream dependencies
 
 There are currently no downstream dependencies on CRAN. The suite packages
-'phenoscapR' and 'gatekeepR' (not on CRAN) suggest cellspecR.
+'phenoscapR', 'gatekeepR' and 'bloodspottR' (not on CRAN) suggest cellspecR,
+and 'phenoloom' (not on CRAN) imports it.

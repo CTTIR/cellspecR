@@ -18,7 +18,10 @@ that image are returned.}
 A list with \code{signal}, a cells by markers numeric matrix, \code{source}, a
 character matrix describing the selected source, and \code{policy}, the
 validated policy. Source values are \code{"<compartment>:<statistic>"},
-\code{"fallback:<compartment>:<statistic>"} or \code{"unavailable"}.
+\code{"fallback:<compartment>:<statistic>"} or \code{"unavailable"}. Rows are in
+the order of \code{cs_cells(x)}; their names are the cell identifiers, which
+are unique within an image only, so match rows by position when \code{x}
+holds several images.
 }
 \description{
 Applies a \code{cs_signal_policy} to the intensity measurements in a
