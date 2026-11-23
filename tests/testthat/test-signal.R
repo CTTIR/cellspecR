@@ -395,3 +395,45 @@ testthat::test_that("CSV policies keep number-like marker names and exact minimu
     class = "cellspec_error_format"
   )
 })
+
+testthat::test_that("hand-written CSV policies accept blank fields and decimal commas", {
+  header <- "marker,compartment,statistic,fallback_compartment,min_value"
+  path <- tempfile("signal-policy-", fileext = ".csv")
+  on.exit(unlink(path), add = TRUE)
+
+  # A fallback column that is blank in every row means "no fallback".
+  writeLines(c(header, "CD3e,cell,mean,,0.5"), path)
+  read <- cellspecR::cs_read_signal_policy(path)
+  testthat::expect_identical(read$fallback_compartment, NA_character_)
+  testthat::expect_identical(read$min_value, 0.5)
+
+  # Blank in some rows and filled in others.
+  writeLines(c(header, "CD3e,cell,mean,,0", "FOXP3,nucleus,mean,cell,0.5"), path)
+  read <- cellspecR::cs_read_signal_policy(path)
+  testthat::expect_identical(read$fallback_compartment, c(NA_character_, "cell"))
+  testthat::expect_identical(read$min_value, c(0, 0.5))
+
+  # A spreadsheet in a locale with decimal commas separates fields with
+  # semicolons.
+  writeLines(c(
+    gsub(",", ";", header, fixed = TRUE),
+    "CD3e;cell;mean;;0,5", "FOXP3;nucleus;mean;cell;1,25", "DAPI;cell;mean;NA;2"
+  ), path)
+  read <- cellspecR::cs_read_signal_policy(path)
+  testthat::expect_identical(read$fallback_compartment, c(NA_character_, "cell", NA_character_))
+  testthat::expect_identical(read$min_value, c(0.5, 1.25, 2))
+
+  # A missing minimum value and non-decimal notation stay errors.
+  for (value in c("", "0x10", "1,5,2", "Inf")) {
+    writeLines(c(gsub(",", ";", header, fixed = TRUE), paste0("CD3e;cell;mean;NA;", value)), path)
+    testthat::expect_error(cellspecR::cs_read_signal_policy(path), class = "cellspec_error")
+  }
+  testthat::expect_identical(
+    cellspecR:::.cs_signal_policy_number(c("+0.5", "1.", ".5", "1e2", NA)),
+    c(0.5, 1, 0.5, 100, NA)
+  )
+  testthat::expect_error(
+    cellspecR:::.cs_signal_policy_number("0x10"),
+    class = "cellspec_error_format"
+  )
+})

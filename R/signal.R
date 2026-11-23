@@ -527,12 +527,16 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
 # logical values stay names, and `min_value` is parsed with the exact decimal
 # parser of the canonical reader: data.table::fread() can return a value one
 # unit in the last place away from the 17-digit decimal that
-# cs_write_signal_policy() writes.
+# cs_write_signal_policy() writes. A blank field means "not set", as in a
+# hand-written file that leaves the fallback compartment empty.
 .cs_read_signal_policy_csv <- function(path) {
   raw <- data.table::fread(
     path, data.table = FALSE, encoding = "UTF-8", colClasses = "character",
     na.strings = "NA", showProgress = FALSE
   )
+  for (column in intersect(c("fallback_compartment", "min_value"), names(raw))) {
+    raw[[column]][!is.na(raw[[column]]) & !nzchar(trimws(raw[[column]]))] <- NA_character_
+  }
   if ("min_value" %in% names(raw)) {
     raw$min_value <- .cs_signal_policy_number(raw$min_value)
   }
@@ -542,13 +546,20 @@ cs_write_signal_policy <- function(policy, path, format = NULL) {
 .cs_signal_policy_number <- function(x) {
   out <- rep(NA_real_, length(x))
   present <- !is.na(x)
+  # A spreadsheet in a locale with decimal commas saves `0,5`; such a file
+  # separates its fields with semicolons, so the comma can only be the
+  # decimal mark.
+  comma <- present & grepl("^[+-]?[0-9]*,[0-9]+([eE][+-]?[0-9]+)?$", x)
+  x[comma] <- sub(",", ".", x[comma], fixed = TRUE)
   strict <- present &
     grepl("^-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?$", x)
   out[strict] <- .cs_parse_io_double(x[strict])
-  # Hand-written forms such as ".5" or "1." go through R's own parser.
-  loose <- present & !strict
-  out[loose] <- suppressWarnings(as.numeric(x[loose]))
-  if (any(loose & is.na(out))) {
+  # Hand-written decimal forms such as ".5", "1." or "+0.5" go through R's own
+  # parser; anything else, such as hexadecimal notation, is not a number here.
+  loose <- present & !strict &
+    grepl("^[+-]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE][+-]?[0-9]+)?$", x)
+  out[loose] <- as.numeric(x[loose])
+  if (any(present & is.na(out))) {
     .cs_abort(
       "Column {.field min_value} contains text that is not a number.",
       class = "cellspec_error_format", call = NULL
