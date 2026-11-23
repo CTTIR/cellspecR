@@ -163,3 +163,38 @@ test_that("rejected NumPy writes preserve a previous export", {
   expect_identical(readBin(path, "raw", file.size(path)), before)
   expect_identical(cs_read_npy(path), c(1.5, 2.5))
 })
+
+test_that("writers report an unusable destination as a classed error", {
+  missing_dir <- file.path(tempfile("no-such-dir-"), "values.npy")
+  expect_error(cs_write_npy(1:3, missing_dir), class = "cellspec_error_io")
+  expect_error(
+    cs_write_npz(list(a = 1:3), sub("npy$", "npz", missing_dir)),
+    class = "cellspec_error_io"
+  )
+  expect_false(dir.exists(dirname(missing_dir)))
+
+  folder <- tempfile("npy-folder-")
+  dir.create(folder)
+  on.exit(unlink(folder, recursive = TRUE), add = TRUE)
+  expect_error(cs_write_npy(1:3, folder), class = "cellspec_error_io")
+  expect_error(cs_write_npz(list(a = 1:3), folder), class = "cellspec_error_io")
+  expect_identical(list.files(folder), character())
+  # No warning about a failed connection accompanies the error.
+  expect_no_warning(try(cs_write_npy(1:3, missing_dir), silent = TRUE))
+})
+
+test_that("empty and edge-shaped arrays round trip", {
+  path <- tempfile(fileext = ".npy")
+  on.exit(unlink(path), add = TRUE)
+  for (value in list(double(), integer(), logical(), character(), c("", "a"),
+                     matrix(double(), 0L, 3L), array(1:24, c(2L, 3L, 4L)),
+                     c(1, Inf, -Inf))) {
+    cs_write_npy(value, path)
+    expect_identical(cs_read_npy(path), value)
+  }
+  archive <- tempfile(fileext = ".npz")
+  on.exit(unlink(archive), add = TRUE)
+  cs_write_npz(list(a = 1:2, b = c("x", "y")), archive)
+  expect_identical(cs_read_npz(archive, arrays = character()), stats::setNames(list(), character()))
+  expect_identical(names(cs_read_npz(archive, arrays = c("b", "a"))), c("b", "a"))
+})

@@ -1,5 +1,9 @@
 # cellspecR 1.2.0
 
+* `cs_write_npy()` and `cs_write_npz()` report a destination whose directory
+  does not exist, or that is itself a directory, as `cellspec_error_io`
+  before writing; before, R's "cannot open the connection" error and a
+  warning surfaced.
 * `cs_read_signal_policy()` reads CSV policies as text. Marker names that look
   like numbers or logical values (`"1"`, `"007"`, `"TRUE"`) no longer fail
   with "invalid column types", and `min_value` is restored exactly; values

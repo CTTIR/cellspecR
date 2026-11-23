@@ -33,7 +33,14 @@
 #' @return `cs_read_npy()` returns a vector for one-dimensional arrays, a
 #'   matrix or array with the same shape otherwise, and a length-one vector
 #'   for zero-dimensional arrays. `cs_read_npz()` returns a named list of
-#'   these, in archive order. The writers return `path` invisibly.
+#'   these, in archive order (or in the order of `arrays`). The writers
+#'   return `path` invisibly.
+#'
+#'   Errors carry the class `cellspec_error` and one of
+#'   `cellspec_error_argument` (unusable `path`, `arrays` or `x`),
+#'   `cellspec_error_io` (a missing input file, or a destination whose
+#'   directory does not exist) and `cellspec_error_format` (a file that is
+#'   not a supported array or archive).
 #'
 #' @details
 #' Arrays keep their logical shape: element `[i, j]` in R is element
@@ -117,7 +124,7 @@ cs_read_npz <- function(path, arrays = NULL) {
 #' @rdname cs_read_npy
 #' @export
 cs_write_npy <- function(x, path) {
-  .cs_check_path_arg(path)
+  .cs_check_destination(path)
   bytes <- .cs_npy_bytes(x)
   con <- file(path, open = "wb")
   on.exit(close(con), add = TRUE)
@@ -128,7 +135,7 @@ cs_write_npy <- function(x, path) {
 #' @rdname cs_read_npy
 #' @export
 cs_write_npz <- function(x, path) {
-  .cs_check_path_arg(path)
+  .cs_check_destination(path)
   if (!is.list(x) || is.data.frame(x) || !length(x) || is.null(names(x)) ||
     anyNA(names(x)) || !all(nzchar(names(x))) || anyDuplicated(names(x))) {
     .cs_abort(
@@ -151,6 +158,29 @@ cs_write_npz <- function(x, path) {
   if (!file.exists(path) || dir.exists(path)) {
     .cs_abort("File {.file {path}} does not exist.", class = "cellspec_error_io", call = call)
   }
+}
+
+# A file can be written at `path`: its directory exists and `path` itself is
+# not a directory. Checked before any byte is produced, so a mistyped folder
+# is reported as a classed error instead of a connection failure.
+.cs_check_destination <- function(path, call = rlang::caller_env()) {
+  .cs_check_path_arg(path, call = call)
+  if (dir.exists(path)) {
+    .cs_abort(
+      "{.arg path} must name a file, but {.file {path}} is a directory.",
+      class = "cellspec_error_io", call = call
+    )
+  }
+  if (!dir.exists(dirname(path))) {
+    .cs_abort(
+      c(
+        "Cannot write {.file {path}}.",
+        "x" = "The directory {.file {dirname(path)}} does not exist."
+      ),
+      class = "cellspec_error_io", call = call
+    )
+  }
+  invisible(path)
 }
 
 .cs_check_path_arg <- function(path, call = rlang::caller_env()) {
