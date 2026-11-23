@@ -5,10 +5,10 @@
 
 [![R-CMD-check](https://github.com/CTTIR/cellspecR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CTTIR/cellspecR/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/CTTIR/cellspecR/actions/workflows/pkgdown.yaml/badge.svg)](https://cttir.github.io/cellspecR/)
-[![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24426370.svg)](https://doi.org/10.5281/zenodo.24426370)
 <!-- badges: end -->
 
