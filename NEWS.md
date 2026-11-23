@@ -1,5 +1,11 @@
 # cellspecR 1.2.0
 
+* `cs_as_spe()` keeps `cells` column names that are not syntactic R names,
+  such as the `Cell Type` column kept by the QuPath reader. They were turned
+  into `Cell.Type`, and `cs_from_spe()` then failed with "undefined columns
+  selected". `cs_from_spe()` also restores such names in objects converted by
+  earlier versions and reports a missing column as `cellspec_error_format`.
+* `cs_as_spe()` and `cs_as_anndata()` convert objects without cells.
 * `cs_read()` with the default `format = "auto"` now selects the QuPath
   reader for a complete QuPath export. Its detection score, the sum of the
   weights 0.05, 0.25, 0.35 and 0.25, came out as 0.8999999999999999 in

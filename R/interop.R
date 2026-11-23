@@ -85,8 +85,11 @@ cs_as_spe <- function(x, policy = NULL, assay_name = "intensity") {
   assay_matrix <- t(selected)
   rownames(assay_matrix) <- policy$marker
   coldata <- x$cells[, setdiff(names(x$cells), c("x", "y")), drop = FALSE]
-  coldata <- S4Vectors::DataFrame(coldata, row.names = cell_keys)
-  coords <- as.matrix(x$cells[c("x", "y")])
+  # `check.names = FALSE` keeps column names such as "Cell Type" as they are.
+  coldata <- S4Vectors::DataFrame(coldata, row.names = cell_keys, check.names = FALSE)
+  # cbind() keeps a double matrix for zero cells; as.matrix() on a data frame
+  # without rows returns a logical one, which SpatialExperiment rejects.
+  coords <- cbind(x = x$cells$x, y = x$cells$y)
   rownames(coords) <- cell_keys
   spe <- tryCatch(
     SpatialExperiment::SpatialExperiment(
@@ -106,9 +109,11 @@ cs_as_spe <- function(x, policy = NULL, assay_name = "intensity") {
   colnames(raw) <- cell_keys
   raw_exp <- SingleCellExperiment::SingleCellExperiment(
     assays = list(measurements = raw),
-    rowData = S4Vectors::DataFrame(x$dictionary, row.names = x$dictionary$feature_id)
+    rowData = S4Vectors::DataFrame(x$dictionary, row.names = x$dictionary$feature_id,
+                                   check.names = FALSE)
   )
-  SingleCellExperiment::altExp(spe, "measurements") <- raw_exp
+  # Without cells there are no column names to compare.
+  SingleCellExperiment::altExp(spe, "measurements", withDimnames = nrow(x$cells) > 0L) <- raw_exp
   S4Vectors::metadata(spe)$cellspec <- list(
     spec_version = x$spec_version,
     images = x$images,
@@ -148,14 +153,32 @@ cs_from_spe <- function(spe) {
   if (!is.list(meta) || is.null(meta$images) || is.null(meta$channels) || is.null(meta$provenance)) {
     .cs_interop_abort("{.arg spe} has no cellspec conversion metadata.", call = call)
   }
-  cells <- as.data.frame(SummarizedExperiment::colData(spe), stringsAsFactors = FALSE)
+  # `optional = TRUE` keeps column names such as "Cell Type" as they are.
+  cells <- as.data.frame(SummarizedExperiment::colData(spe), optional = TRUE,
+                         stringsAsFactors = FALSE)
   coords <- SpatialExperiment::spatialCoords(spe)
   if (!all(c("x", "y") %in% colnames(coords))) {
     .cs_interop_abort("{.arg spe} must contain x and y spatial coordinates.", class = "cellspec_error_units", call = call)
   }
   cells$x <- as.double(coords[, "x"])
   cells$y <- as.double(coords[, "y"])
-  cells <- cells[, unique(c(meta$cells_columns, "x", "y")), drop = FALSE]
+  wanted <- unique(c(meta$cells_columns, "x", "y"))
+  # Objects converted by cellspecR <= 1.1.0 carry syntactic column names
+  # ("Cell.Type" for "Cell Type"); restore the recorded names.
+  mangled <- make.names(wanted, unique = TRUE)
+  restore <- !wanted %in% names(cells) & mangled %in% names(cells)
+  names(cells)[match(mangled[restore], names(cells))] <- wanted[restore]
+  absent <- setdiff(wanted, names(cells))
+  if (length(absent) > 0L) {
+    .cs_interop_abort(
+      c(
+        "The SpatialExperiment colData lacks columns recorded by {.fn cs_as_spe}.",
+        "x" = "Missing: {.val {absent}}."
+      ),
+      call = call
+    )
+  }
+  cells <- cells[, wanted, drop = FALSE]
   if (!"cell_id" %in% names(cells) || !"image_id" %in% names(cells)) {
     .cs_interop_abort("The SpatialExperiment colData lacks cellspec cell and image identifiers.", call = call)
   }
@@ -164,7 +187,8 @@ cs_from_spe <- function(spe) {
     .cs_interop_abort("The SpatialExperiment has no `measurements` altExp.", call = call)
   }
   measurements <- t(SummarizedExperiment::assay(raw_exp, "measurements"))
-  dictionary <- as.data.frame(SummarizedExperiment::rowData(raw_exp), stringsAsFactors = FALSE)
+  dictionary <- as.data.frame(SummarizedExperiment::rowData(raw_exp), optional = TRUE,
+                              stringsAsFactors = FALSE)
   if (!"feature_id" %in% names(dictionary)) dictionary$feature_id <- rownames(dictionary)
   rownames(measurements) <- NULL
   colnames(measurements) <- dictionary$feature_id
@@ -212,7 +236,7 @@ cs_as_anndata <- function(x, policy = NULL) {
   obs <- as.data.frame(x$cells, stringsAsFactors = FALSE)
   rownames(obs) <- cell_keys
   var <- data.frame(marker = policy$marker, row.names = policy$marker, stringsAsFactors = FALSE)
-  obsm <- list(spatial = as.matrix(x$cells[c("x", "y")]))
+  obsm <- list(spatial = cbind(x = x$cells$x, y = x$cells$y))
   result <- tryCatch(
     anndataR::AnnData(X = signal, obs = obs, var = var, obsm = obsm,
                       uns = list(cellspec = list(

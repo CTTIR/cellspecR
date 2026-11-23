@@ -73,3 +73,47 @@ test_that("SpatialExperiment conversion derives a single-source default policy",
     class = "cellspec_error"
   )
 })
+
+test_that("SpatialExperiment round trips keep non-syntactic cells columns", {
+  skip_if_not_installed("SpatialExperiment")
+  skip_if_not_installed("SingleCellExperiment")
+  skip_if_not_installed("S4Vectors")
+  path <- system.file("extdata", "qupath-0.7.0-instanseg.tsv", package = "cellspecR")
+  x <- cs_read(path, format = "qupath")
+  expect_true("Cell Type" %in% names(x$cells))
+  policy <- cs_signal_policy(cs_markers(x))
+  spe <- cs_as_spe(x, policy)
+  expect_true("Cell Type" %in% names(SummarizedExperiment::colData(spe)))
+  y <- cs_from_spe(spe)
+  for (component in names(x)) {
+    expect_identical(y[[component]], x[[component]], info = component)
+  }
+
+  # Objects written before the names were kept carry syntactic names.
+  legacy <- spe
+  coldata <- SummarizedExperiment::colData(legacy)
+  names(coldata)[names(coldata) == "Cell Type"] <- "Cell.Type"
+  SummarizedExperiment::colData(legacy) <- coldata
+  expect_identical(cs_from_spe(legacy)$cells, x$cells)
+
+  # A column that is really gone is a classed error, not a subsetting error.
+  broken <- spe
+  SummarizedExperiment::colData(broken)[["Cell Type"]] <- NULL
+  expect_error(cs_from_spe(broken), class = "cellspec_error_format")
+})
+
+test_that("objects without cells convert to SpatialExperiment and AnnData", {
+  x <- sim_object()[0, ]
+  policy <- cs_signal_policy(cs_markers(x))
+  if (requireNamespace("SpatialExperiment", quietly = TRUE) &&
+        requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+    expect_no_warning(spe <- cs_as_spe(x, policy))
+    expect_identical(dim(spe), c(3L, 0L))
+    y <- cs_from_spe(spe)
+    for (component in names(x)) {
+      expect_identical(y[[component]], x[[component]], info = component)
+    }
+  }
+  skip_if_not_installed("anndataR")
+  expect_identical(dim(cs_as_anndata(x, policy)), c(0L, 3L))
+})
