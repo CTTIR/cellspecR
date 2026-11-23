@@ -89,16 +89,27 @@
     if (is.null(fmt) || !nzchar(fmt)) fmt <- "auto"
     size <- input$pixel_size
     if (length(size) == 0L || is.na(size)) size <- NULL
-    candidate <- tryCatch(cs_detect_format(path), error = function(error) error)
-    if (inherits(candidate, "error")) {
-      append_log(conditionMessage(candidate))
+    if (.cs_app_is_canonical(path)) {
+      # A directory written by cs_write(): read and verify it as such; the
+      # format and pixel size inputs do not apply.
+      detection(data.frame(
+        format = "cellspec", score = 1,
+        evidence = "Directory with a cellspec.json sidecar",
+        stringsAsFactors = FALSE
+      ))
+      result <- tryCatch(cs_read_cellspec(path), error = function(error) error)
     } else {
-      detection(candidate)
+      candidate <- tryCatch(cs_detect_format(path), error = function(error) error)
+      if (inherits(candidate, "error")) {
+        append_log(conditionMessage(candidate))
+      } else {
+        detection(candidate)
+      }
+      result <- tryCatch(
+        cs_read(path, format = fmt, pixel_size = size),
+        error = function(error) error
+      )
     }
-    result <- tryCatch(
-      cs_read(path, format = fmt, pixel_size = size),
-      error = function(error) error
-    )
     if (inherits(result, "error")) {
       append_log(conditionMessage(result))
       return()
@@ -106,6 +117,11 @@
     state(result)
     append_log(paste("Read", nrow(result$cells), "cells with", result$provenance$reader$adapter, "adapter."))
   }, ignoreInit = TRUE)
+}
+
+# Whether `path` is a canonical cellspec directory, as written by cs_write().
+.cs_app_is_canonical <- function(path) {
+  dir.exists(path) && file.exists(file.path(path, "cellspec.json"))
 }
 
 .cs_app_upload_path <- function(upload, dir) {

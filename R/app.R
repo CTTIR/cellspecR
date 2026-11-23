@@ -20,7 +20,9 @@
 #' function returns an application object; launch it with `shiny::runApp()`.
 #'
 #' @param path Optional initial file or directory path. The user can also
-#'   select a file in the application.
+#'   select a file in the application. A directory written by [cs_write()] is
+#'   read with [cs_read_cellspec()], including its integrity verification;
+#'   any other path is read with [cs_read()].
 #' @param max_upload_mb Maximum upload size in MB. It is applied as the
 #'   `shiny.maxRequestSize` option while the application runs and the previous
 #'   value is restored when it stops.

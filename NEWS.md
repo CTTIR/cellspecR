@@ -1,5 +1,9 @@
 # cellspecR 1.2.0
 
+* The review app opens a directory written by `cs_write()`, as the README
+  describes: `cs_app(path = <directory>)` reads it with `cs_read_cellspec()`
+  and reports a failed integrity verification. Before, such a directory was
+  rejected as a tiled export without tile tables.
 * `cs_write_npy()` and `cs_write_npz()` report a destination whose directory
   does not exist, or that is itself a directory, as `cellspec_error_io`
   before writing; before, R's "cannot open the connection" error and a

@@ -281,3 +281,36 @@ test_that("uploaded gzip files retain their suffix and cannot escape staging", {
   upload$name <- "../escape.tsv.gz"
   expect_error(cellspecR:::.cs_app_upload_path(upload, dir), class = "cellspec_error_format")
 })
+
+test_that("the app opens a canonical cellspec directory and reports a damaged one", {
+  skip_if_not_installed("shiny")
+  dir <- file.path(withr::local_tempdir(), "canonical")
+  x <- cs_example()
+  cs_write(x, dir)
+  shiny::testServer(
+    function(input, output, session) {
+      cellspecR:::.cs_app_server(
+        input, output, session, initial_path = dir,
+        allow_local_paths = FALSE, max_plot_points = 10L
+      )
+    },
+    {
+      expect_match(output$status, "Initial path")
+      session$setInputs(format = "auto", btn_read = 1)
+      session$flushReact()
+      expect_match(output$status, "Read 80 cells")
+      expect_match(output$detection, "cellspec", fixed = TRUE)
+      expect_match(output$images, "img1", fixed = TRUE)
+
+      # A modified data file must fail verification and clear the review.
+      cat("tampered", file = file.path(dir, "cells.parquet"), append = TRUE)
+      session$setInputs(btn_read = 2)
+      session$flushReact()
+      expect_match(output$status, "Integrity verification failed")
+      expect_null(output$cells)
+    }
+  )
+  expect_true(cellspecR:::.cs_app_is_canonical(dir))
+  expect_false(cellspecR:::.cs_app_is_canonical(dirname(dir)))
+  expect_false(cellspecR:::.cs_app_is_canonical(file.path(dir, "cellspec.json")))
+})
