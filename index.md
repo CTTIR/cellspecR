@@ -1,5 +1,8 @@
 # cellspecR ![cellspecR logo](reference/figures/logo-with-name.png)
 
+Zenodo DOI reserved for the release: `10.5281/zenodo.24426370` (not yet
+published).
+
 `cellspecR` defines the `cellspec` 1.0 table contract for segmented
 cells from multiplexed tissue images. It reads tool exports, validates
 structure and semantics, and writes an integrity checked directory for
