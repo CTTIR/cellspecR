@@ -9,8 +9,9 @@
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24426370.svg)](https://doi.org/10.5281/zenodo.24426370)
 <!-- badges: end -->
+
+Zenodo DOI reserved for the release: `10.5281/zenodo.24426370` (not yet published).
 
 `cellspecR` defines the `cellspec` 1.0 table contract for segmented
 cells from multiplexed tissue images. It reads tool exports, validates
